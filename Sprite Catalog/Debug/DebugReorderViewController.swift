@@ -5,7 +5,7 @@
 //  Created by Jayden Irwin on 2021-04-02.
 //
 
-#if DEBUG
+#if DEBUG && canImport(UIKit)
 import UIKit
 
 class DebugReorderViewController: UICollectionViewController, UICollectionViewDragDelegate, UICollectionViewDropDelegate {

@@ -11,6 +11,7 @@ struct ImportSpritesDetailsView: View {
     
     @ObservedObject var importer: SpriteImporter
 
+    @State var frameEditorConfig: SpriteImporter.SpriteSetConfiguration?
     #if DEBUG
     @State var showingTutorial = false
     #endif
@@ -24,7 +25,7 @@ struct ImportSpritesDetailsView: View {
                             .resizable()
                             .interpolation(.none)
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 44, height: 44)
+                            .frame(width: 48, height: 48)
                     }
                     TextField("Name", text: $config.name, onCommit: {
                         config.name = config.name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -40,7 +41,21 @@ struct ImportSpritesDetailsView: View {
                                 .tag(category)
                         }
                     }
-                    .pickerStyle(MenuPickerStyle())
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    #if DEBUG
+                    Button {
+                        frameEditorConfig = config
+                    } label: {
+                        if config.frameCount == 1 {
+                            Image(systemName: "square.stack.3d.forward.dottedline")
+                                .accessibilityLabel("\(config.frameCount) Frames")
+                        } else {
+                            Image(systemName: "\(config.frameCount).square")
+                                .accessibilityLabel("\(config.frameCount) Frames")
+                        }
+                    }
+                    #endif
                     Button {
                         importer.mergeWithAbove(config: config)
                     } label: {
@@ -71,6 +86,11 @@ struct ImportSpritesDetailsView: View {
                     }
                 }
                 .disabled(!importer.spriteConfigs.allSatisfy({ !$0.name.isEmpty }))
+            }
+        }
+        .sheet(item: $frameEditorConfig) { config in
+            NavigationStack {
+                ImportSpritesFrameEditor(config: config)
             }
         }
         #if DEBUG

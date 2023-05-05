@@ -17,13 +17,13 @@ struct TileThumbnail: View {
             .foregroundColor(Color(UIColor.secondarySystemGroupedBackground))
             .aspectRatio(1, contentMode: .fit)
             .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
-            .overlay(
+            .overlay {
                 Image(uiImage: tile.variants[0].frameImage())
                     .resizable()
                     .interpolation(.none)
                     .scaledToFit()
                     .padding(6)
-            )
+            }
             .draggable(tile.variants.first!)
     }
 }

@@ -15,6 +15,10 @@ enum AppID: Int {
 
 struct HelpView: View {
     
+    enum HelpScreen {
+        case stickersHelp
+    }
+    
     let appStoreVC: SKStoreProductViewController = {
         let vc = SKStoreProductViewController()
         vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spritePencil.rawValue]) { (result, error) in
@@ -30,13 +34,13 @@ struct HelpView: View {
         return vc
     }()
     
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 Section {
-                    NavigationLink("Send iMessage Stickers", destination: StickersHelpView())
+                    NavigationLink("Send iMessage Stickers", value: HelpScreen.stickersHelp)
                 }
                 Section {
                     Link("Submit Your Sprites", destination: URL(string: "https://form.jotform.com/211994359527266")!)
@@ -60,6 +64,7 @@ struct HelpView: View {
                         }
                     }
                     .foregroundColor(Color.accentColor)
+                    
                     Button {
                         if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                             scene.windows.first?.rootViewController?.presentedViewController?.present(appStoreVC2, animated: true)
@@ -78,16 +83,28 @@ struct HelpView: View {
                         }
                     }
                     .foregroundColor(Color.accentColor)
-                    Link("Developer Website", destination: URL(string: "https://www.jaydenirwin.com/")!)
+                    
+                    Link(destination: URL(string: "https://www.jaydenirwin.com/")!) {
+                        Label("Developer Website", systemImage: "safari")
+                    }
+                    Link(destination: URL(string: "https://www.256arts.com/joincommunity/")!) {
+                        Label("Join Community", systemImage: "bubble.left.and.bubble.right")
+                    }
+                    Link(destination: URL(string: "https://github.com/256Arts/Sprite-Fonts")!) {
+                        Label("Contribute on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                    }
                 }
             }
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Help")
-            .toolbar(content: {
+            .toolbar {
                 Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
-            })
+            }
+            .navigationDestination(for: HelpScreen.self) { screen in
+                StickersHelpView()
+            }
         }
         .imageScale(.large)
     }

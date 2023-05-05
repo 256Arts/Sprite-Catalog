@@ -18,6 +18,7 @@ struct LabeledValue: View {
             Text(label)
             if let url = url {
                 Link(value, destination: url)
+                    .buttonStyle(.borderless)
                     .font(Font.callout)
             } else {
                 Text(value)

@@ -37,6 +37,7 @@ struct ImportSpritesView: View {
                     }
                     Toggle("Black Outline", isOn: $importer.blackOutline)
                     Toggle("Limited Palette", isOn: $importer.limitedPalette)
+                    Toggle("Import Filenames", isOn: $importer.importFilenames)
                 }
                 Section {
                     Button(importer.spriteConfigs.isEmpty ? "Select sprites..." : "\(importer.spriteConfigs.count) sprites selected...") {

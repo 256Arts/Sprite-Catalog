@@ -215,7 +215,19 @@ struct SpriteSet: Equatable, Identifiable, Codable {
     }
     
     func exportImageDocuments() -> [ImageDocument] {
-        tiles.flatMap({ $0.variants }).map({ ImageDocument(image: UIImage(named: $0.imageName)!, filename: name) })
+        var documents: [ImageDocument] = []
+        
+        for (tIndex, tile) in tiles.enumerated() {
+            let tileSuffix = tiles.count == 1 ? "" : " \(tile.facing?.rawValue ?? String(tIndex+1))"
+            
+            for (vIndex, variant) in tile.variants.enumerated() {
+                let variantSuffix = tile.variants.count == 1 ? "" : " \(vIndex+1)"
+                let filename = name + tileSuffix + variantSuffix
+                
+                documents.append(ImageDocument(image: UIImage(named: variant.imageName)!, filename: filename))
+            }
+        }
+        return documents
     }
     
 }

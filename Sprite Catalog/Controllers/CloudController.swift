@@ -47,6 +47,10 @@ class CloudController: ObservableObject {
     }
 
     func fetchUserSprites() throws -> SpriteCollection? {
+        #if targetEnvironment(macCatalyst)
+        // macOS 12.0 beta 5 bug: Infinate `fetchUserSprites()` loop workaround
+        return nil
+        #else
         try FileManager.default.startDownloadingUbiquitousItem(at: userSpritesDirectoryURL)
         do {
             let attributes = try userSpritesDirectoryURL.resourceValues(forKeys: [URLResourceKey.ubiquitousItemDownloadingStatusKey])
@@ -64,6 +68,7 @@ class CloudController: ObservableObject {
         }
 
         return try loadUserSprites()
+        #endif
     }
 
     func loadUserSprites() throws -> SpriteCollection? {

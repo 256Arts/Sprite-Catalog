@@ -11,49 +11,88 @@ struct SpritesGridView: View {
     
     @ObservedObject var filterSettings: FilterSettings = .shared
     
-    @State var title: String
-    @State var sprites: [SpriteSet]
+    let title: String
+    let sprites: [SpriteSet]
+    
     @State var filteredSprites: [SpriteSet] = []
-    @State var showingFilters = false
     @State var searchText = ""
+    @State var searchAll = false
     
     var body: some View {
         ScrollView {
             if title == "Artwork" {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))]) {
                     ForEach(filteredSprites) { sprite in
-                        NavigationLink(destination: SpriteDetailView(sprite: sprite)) {
+                        NavigationLink(value: sprite.id) {
                             ArtworkTileThumbnail(tile: sprite.tiles.first!)
                         }
+                        #if targetEnvironment(macCatalyst)
+                        .buttonStyle(.plain)
+                        #endif
                     }
                 }
                 .padding()
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                     ForEach(filteredSprites) { sprite in
-                        NavigationLink(destination: SpriteDetailView(sprite: sprite)) {
+                        NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles.first!)
                         }
+                        #if targetEnvironment(macCatalyst)
+                        .buttonStyle(.plain)
+                        #endif
                     }
                 }
                 .padding()
             }
         }
-        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
         .searchable(text: $searchText)
+        .searchScopes($searchAll, scopes: {
+            Text("Search \(title)").tag(false)
+            Text("Search All").tag(true)
+        })
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button {
-                showingFilters = true
+            Menu {
+                Picker("Size", selection: $filterSettings.sizeFilter) {
+                    Text("Any Size")
+                        .tag(nil as FilterSettings.SizeCategory?)
+                    ForEach(FilterSettings.SizeCategory.allCases) { sizeCategory in
+                        Text(sizeCategory.title)
+                            .tag(sizeCategory as FilterSettings.SizeCategory?)
+                    }
+                }
+                .menuActionDismissBehavior(.disabled)
+                
+                Toggle("Black Outline", isOn: Binding(get: {
+                    filterSettings.tagFilters.contains(.blackOutline)
+                }, set: { newValue in
+                    if newValue {
+                        filterSettings.tagFilters.insert(.blackOutline)
+                    } else {
+                        filterSettings.tagFilters.remove(.blackOutline)
+                    }
+                }))
+                .menuActionDismissBehavior(.disabled)
+                
+                Toggle("Animated", isOn: $filterSettings.animatedOnly)
+                    .menuActionDismissBehavior(.disabled)
             } label: {
                 Image(systemName: "line.horizontal.3.decrease.circle")
             }
         }
-        .onAppear() {
+        .onAppear {
             refreshFilter()
         }
+        .onChange(of: sprites, perform: { newValue in
+            refreshFilter(localSprites: newValue)
+        })
         .onChange(of: searchText, perform: { _ in
+            refreshFilter()
+        })
+        .onChange(of: searchAll, perform: { _ in
             refreshFilter()
         })
         .onChange(of: filterSettings.sizeFilter, perform: { _ in
@@ -65,13 +104,14 @@ struct SpritesGridView: View {
         .onChange(of: filterSettings.tagFilters, perform: { _ in
             refreshFilter()
         })
-        .sheet(isPresented: $showingFilters) {
-            FilterView(filterSettings: filterSettings)
-        }
     }
     
-    func refreshFilter() {
-        filteredSprites = sprites
+    func refreshFilter(localSprites: [SpriteSet]? = nil) {
+        if !searchText.isEmpty, searchAll {
+            filteredSprites = SpriteSet.allSprites
+        } else {
+            filteredSprites = localSprites ?? sprites
+        }
         if filterSettings.animatedOnly {
             filteredSprites = filteredSprites.filter({ 1 < $0.tiles[0].variants[0].frameCount ?? 1 })
         }
@@ -79,7 +119,7 @@ struct SpritesGridView: View {
             filteredSprites = filteredSprites.filter({ $0.tags.isSuperset(of: filterSettings.tagFilters) })
         }
         if !searchText.isEmpty {
-            filteredSprites = filteredSprites.filter({ $0.name.lowercased().contains(searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()) })
+            filteredSprites = filteredSprites.filter({ $0.name.localizedCaseInsensitiveContains(searchText.trimmingCharacters(in: .whitespacesAndNewlines)) })
         }
         if filterSettings.sizeFilter != nil {
             filteredSprites = filteredSprites.filter({

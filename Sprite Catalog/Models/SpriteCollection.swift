@@ -5,9 +5,13 @@
 //  Created by Jayden Irwin on 2021-06-26.
 //
 
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
-class SpriteCollection: ObservableObject, Identifiable, Codable {
+class SpriteCollection: ObservableObject, Identifiable, Hashable, Codable {
     
     enum SaveStickersError: Error {
         case failedToGetSharedContainer
@@ -81,6 +85,10 @@ class SpriteCollection: ObservableObject, Identifiable, Codable {
         (try? JSONDecoder().decode(SpriteCollection.self, from: Data(contentsOf: SpriteCollection.stickersCollectionFileURL))) ?? SpriteCollection(title: "iMessage Stickers", spriteIDs: [])
     }()
     
+    static func == (lhs: SpriteCollection, rhs: SpriteCollection) -> Bool {
+        lhs.title == rhs.title && lhs.spriteIDs == rhs.spriteIDs
+    }
+    
     let title: String
     var id: String {
         title
@@ -128,11 +136,22 @@ class SpriteCollection: ObservableObject, Identifiable, Codable {
         
         // Save all new files
         for sprite in sprites {
+            #if canImport(UIKit)
             guard let data = UIImage(named: sprite.tiles.first!.variants.first!.imageName)?.pngData() else {
                 throw SaveStickersError.failedToCreateImageData
             }
+            #else
+            guard let data = NSImage(named: sprite.tiles.first!.variants.first!.imageName)?.pngData() else {
+                throw SaveStickersError.failedToCreateImageData
+            }
+            #endif
             try data.write(to: containerURL.appendingPathComponent(sprite.id).appendingPathExtension("png"))
         }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(spriteIDs)
     }
     
 }

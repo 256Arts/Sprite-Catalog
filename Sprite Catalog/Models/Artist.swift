@@ -83,14 +83,20 @@ struct Artist: Identifiable, Hashable, Codable {
                 return "https://www.ascensiongamedev.com/profile/1137-kyrise/"
             case "Macko":
                 return nil
+            case "Matt Firth (cheekyinkling)":
+                return "https://game-icons.net"
             case "Megacrash":
                 return "https://megacrash.itch.io/"
             case "Mobius_Peverell":
                 return "https://www.curseforge.com/members/mobius_peverell/"
+            case "Cpt Corn":
+                return "https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/resource-packs/1223548-32x-16x-coterie-craft-default-revamped"
             case "uheartbeast":
                 return "http://www.patreon.com/uheartbeast"
             case "loel":
                 return "https://opengameart.org/users/loel"
+            case "Quintino Pixels":
+                return "https://ko-fi.com/quintinopixels"
             case "RedVoxel":
                 return "https://red-voxel.itch.io/"
             case "Refuzzle":

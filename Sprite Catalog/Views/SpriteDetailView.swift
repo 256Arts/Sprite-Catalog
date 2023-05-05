@@ -23,6 +23,7 @@ struct SpriteDetailView: View {
     
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.openURL) var openURL
+    @Environment(\.openWindow) var openWindow
     
     @ObservedObject var myCollection = SpriteCollection.myCollection
     @ObservedObject var stickersCollection = SpriteCollection.stickersCollection
@@ -37,6 +38,12 @@ struct SpriteDetailView: View {
     @State var showingHueRotationRow = false
     @State var showingJaydenCode = false
     
+    var transferableImage: Image? {
+        let original = UIImage(named: sprite.states[stateIndex].variants.first!.imageName)
+        guard let filteredImage = try? original?.hueRotate(angle: hueRotationDegrees) else { return nil }
+        
+        return Image(uiImage: filteredImage)
+    }
     var jaydenCode: String {
         JaydenCodeGenerator.generateCode(secret: "R2FB47ULFA")
     }
@@ -59,7 +66,11 @@ struct SpriteDetailView: View {
                     .padding()
                 }
                 .onTapGesture {
+                    #if targetEnvironment(macCatalyst)
+                    openWindow(value: sprite.id)
+                    #else
                     showingFullscreen = true
+                    #endif
                 }
                 .onDrag {
                     NSItemProvider(object: UIImage(named: sprite.states[stateIndex].variants.first!.imageName)!)
@@ -78,20 +89,9 @@ struct SpriteDetailView: View {
                             .frame(idealWidth: .infinity, maxWidth: .infinity)
                     })
                     .buttonStyle(.borderedProminent)
-                    Button(action: {
-                        showingExport = true
-                    }, label: {
-                        Image(systemName: "folder")
-                            .font(Font.system(size: 20, weight: .medium, design: .default))
-                            .frame(width: 20, height: 24)
-                    })
-                    Button(action: {
-                        showShareSheet()
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(Font.system(size: 20, weight: .medium, design: .default))
-                            .frame(width: 20, height: 24)
-                    })
+                    #if !targetEnvironment(macCatalyst)
+                    saveAndShareButton()
+                    #endif
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
@@ -142,7 +142,8 @@ struct SpriteDetailView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("Artist")
-                    NavigationLink(sprite.artist.name, destination: CollectionView(collection: SpriteCollection(artist: sprite.artist), webpageURL: sprite.artist.url))
+                    NavigationLink(sprite.artist.name, value: sprite.artist)
+                        .buttonStyle(.borderless)
                         .font(Font.callout)
                 }
                 LabeledValue(value: sprite.licence.name, label: "Licence", url: sprite.licence.url)
@@ -153,15 +154,18 @@ struct SpriteDetailView: View {
                     .font(.headline)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                     ForEach(sprite.relatedSprites().prefix(10)) { sprite in
-                        NavigationLink(destination: SpriteDetailView(sprite: sprite)) {
+                        NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles.first!)
                         }
+                        #if targetEnvironment(macCatalyst)
+                        .buttonStyle(.plain)
+                        #endif
                     }
                 }
             }
             .padding()
             .frame(idealWidth: .infinity, maxWidth: .infinity)
-            .background(Color(UIColor.secondarySystemBackground))
+            .background(Color(UIColor.secondarySystemBackground), ignoresSafeAreaEdges: .bottom)
         }
         .navigationTitle(sprite.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -173,6 +177,9 @@ struct SpriteDetailView: View {
                 } label: {
                     Image(systemName: "number.square")
                 }
+                #endif
+                #if targetEnvironment(macCatalyst)
+                saveAndShareButton()
                 #endif
                 Menu {
                     Button(action: {
@@ -261,11 +268,30 @@ struct SpriteDetailView: View {
         }
     }
     
-    func openInSpritePencil() throws {
+    private func saveAndShareButton() -> some View {
+        Group {
+            Button(action: {
+                showingExport = true
+            }, label: {
+                Image(systemName: "square.and.arrow.down")
+                    .font(Font.system(size: 20, weight: .medium, design: .default))
+                    .frame(width: 20, height: 24)
+            })
+            if let transferableImage {
+                ShareLink(item: transferableImage, subject: Text(sprite.name), message: Text("Found in Sprite Catalog"), preview: .init(sprite.name, icon: transferableImage)) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(Font.system(size: 20, weight: .medium, design: .default))
+                        .frame(width: 20, height: 24)
+                }
+            }
+        }
+    }
+    
+    private func openInSpritePencil() throws {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Sprite_CatalogApp.spritePencilAppGroupID) else {
             throw OpenSpritePencilError.failedToGetSharedContainer
         }
-        guard let data = UIImage(named: sprite.states[stateIndex].variants.first!.imageName)?.hueRotate(angle: hueRotationDegrees)?.pngData() else {
+        guard let data = try UIImage(named: sprite.states[stateIndex].variants.first!.imageName)?.hueRotate(angle: hueRotationDegrees).pngData() else {
             throw OpenSpritePencilError.failedToRotateHueOrCreateImageData
         }
         try data.write(to: containerURL.appendingPathComponent("Import").appendingPathExtension("png"))
@@ -277,19 +303,6 @@ struct SpriteDetailView: View {
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 SKStoreReviewController.requestReview(in: scene)
             }
-        }
-    }
-    
-    func showShareSheet() {
-        guard let shareImage = UIImage(named: sprite.states[stateIndex].variants.first!.imageName)?.hueRotate(angle: hueRotationDegrees) else { return }
-        let previewImage = sprite.states[stateIndex].variants.first?.frameImage(frame: 0).hueRotate(angle: hueRotationDegrees)
-        let items: [Any] = [shareImage, ShareTextSource(image: previewImage, title: sprite.name)]
-        let av = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
-            av.popoverPresentationController?.sourceView = rootVC.view
-            av.popoverPresentationController?.sourceRect = rootVC.view.bounds
-            av.popoverPresentationController?.permittedArrowDirections = []
-            rootVC.present(av, animated: true, completion: nil)
         }
     }
     

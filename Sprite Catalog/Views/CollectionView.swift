@@ -25,9 +25,12 @@ struct CollectionView: View {
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                 ForEach(collection.sprites) { sprite in
-                    NavigationLink(destination: SpriteDetailView(sprite: sprite)) {
+                    NavigationLink(value: sprite.id) {
                         TileThumbnail(tile: sprite.tiles.first!)
                     }
+                    #if targetEnvironment(macCatalyst)
+                    .buttonStyle(.plain)
+                    #endif
                 }
             }
             .padding()

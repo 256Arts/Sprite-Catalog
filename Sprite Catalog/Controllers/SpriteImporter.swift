@@ -5,7 +5,6 @@
 //  Created by Jayden Irwin on 2021-07-10.
 //
 
-import UIKit
 import SwiftUI
 
 class SpriteImporter: ObservableObject {
@@ -15,8 +14,9 @@ class SpriteImporter: ObservableObject {
         var id: URL {
             importedFileURLs.first!
         }
-        var name = ""
+        var name: String
         var category: SpriteSet.Tag
+        var frameCount = 1
     }
     
     static let categories: [SpriteSet.Tag] = [.peopleAnimal, .food, .weaponTool, .clothing, .treasure, .miscItem, .nature, .object, .effect, .tile, .interface, .artwork]
@@ -38,6 +38,7 @@ class SpriteImporter: ObservableObject {
     @Published var defaultCategory: SpriteSet.Tag = .miscItem
     @Published var blackOutline = true
     @Published var limitedPalette = true
+    @Published var importFilenames = true
     
     @Published var spriteConfigs: [SpriteSetConfiguration] = []
     
@@ -63,7 +64,14 @@ class SpriteImporter: ObservableObject {
                 }
                 try fileManager.copyItem(at: pickedURL, to: importedURL)
                 pickedURL.stopAccessingSecurityScopedResource()
-                spriteConfigs.append(SpriteSetConfiguration(importedFileURLs: [importedURL], category: defaultCategory))
+                
+                let name = importFilenames ? pickedURL.deletingPathExtension().lastPathComponent
+                    .replacingOccurrences(of: "-", with: " ")
+                    .replacingOccurrences(of: "_", with: " ")
+                    .replacingOccurrences(of: ".", with: " ")
+                    .localizedCapitalized : ""
+                
+                spriteConfigs.append(SpriteSetConfiguration(importedFileURLs: [importedURL], name: name, category: defaultCategory))
             } catch {
                 print("Failed to move imported files")
             }

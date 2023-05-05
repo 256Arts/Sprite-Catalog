@@ -29,14 +29,18 @@ struct FullscreenSpriteView: View {
             }
         }
         .tabViewStyle(PageTabViewStyle())
-        .overlay(Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }, label: {
-            Image(systemName: "xmark.circle.fill")
-                .imageScale(.large)
-                .foregroundColor(Color(UIColor.secondaryLabel))
-                .padding()
-        }), alignment: .topLeading)
+        #if !targetEnvironment(macCatalyst)
+        .overlay(alignment: .topLeading) {
+            Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .imageScale(.large)
+                    .foregroundColor(Color(UIColor.secondaryLabel))
+                    .padding()
+            }
+        }
+        #endif
         .onReceive(timer) { (_) in
             guard let frameCount = sprite.states[0].variants.first?.frameCount, 1 < frameCount else { return }
             if frame + 1 == frameCount {
