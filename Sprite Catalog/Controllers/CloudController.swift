@@ -2,7 +2,7 @@
 //  CloudController.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2022-04-26.
+//  Created by 256 Arts Developer on 2022-04-26.
 //
 
 import Foundation

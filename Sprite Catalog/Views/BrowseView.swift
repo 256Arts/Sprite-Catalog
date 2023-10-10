@@ -2,7 +2,7 @@
 //  BrowseView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-06-16.
+//  Created by 256 Arts Developer on 2021-06-16.
 //
 
 import StoreKit
@@ -10,13 +10,15 @@ import SwiftUI
 
 struct BrowseView: View {
     
-    let featuredArtists = [
-        Artist(name: "SciGho"),
-        Artist(name: "Gif"),
-        Artist(name: "Henry Software"),
-        Artist(name: "devurandom"),
-        Artist(name: "Josehzz")
-    ]
+    static let featuredArtists: [Artist] = {
+        let allArtists = SpriteSet.allSprites.map({ $0.artist }).filter { $0.name != "Anonymous" }
+        // Count number of occurrances of each artist
+        let counts = allArtists.reduce(into: [:]) { counts, artist in counts[artist, default: 0] += 1 }
+        // Only return artists with 20+ sprites
+        let validArtists = counts.filter { 20 <= $0.value }.map { $0.key }
+        // Pick 6 randomly
+        return Array(validArtists.shuffled().prefix(6))
+    }()
     
     var suggestions: [SpriteSet] {
         guard let ids = UserDefaults.standard.stringArray(forKey: UserDefaults.Key.suggestions) else { return [] }
@@ -32,8 +34,9 @@ struct BrowseView: View {
                             .font(.headline)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .safeAreaPadding(.horizontal, 20)
                     .padding(.top)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(SpriteCollection.gaming) { collection in
@@ -46,16 +49,19 @@ struct BrowseView: View {
                             }
                             Spacer()
                         }
-                        .padding(.horizontal)
+                        .scrollTargetLayout()
                     }
+                    .scrollTargetBehavior(.viewAligned)
+                    .safeAreaPadding(.horizontal, 20)
                     
                     HStack {
                         Text("Featured")
                             .font(.headline)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .safeAreaPadding(.horizontal, 20)
                     .padding(.top)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(SpriteCollection.featured) { collection in
@@ -68,19 +74,22 @@ struct BrowseView: View {
                             }
                             Spacer()
                         }
-                        .padding(.horizontal)
+                        .scrollTargetLayout()
                     }
+                    .scrollTargetBehavior(.viewAligned)
+                    .safeAreaPadding(.horizontal, 20)
                     
                     HStack {
                         Text("Artists")
                             .font(.headline)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .safeAreaPadding(.horizontal, 20)
                     .padding(.top)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(featuredArtists) { artist in
+                            ForEach(Self.featuredArtists) { artist in
                                 NavigationLink(value: artist) {
                                     BrowseCollectionPreview(collection: SpriteCollection(artist: artist), isLarge: false)
                                 }
@@ -90,8 +99,10 @@ struct BrowseView: View {
                             }
                             Spacer()
                         }
-                        .padding(.horizontal)
+                        .scrollTargetLayout()
                     }
+                    .scrollTargetBehavior(.viewAligned)
+                    .safeAreaPadding(.horizontal, 20)
                 }
                 
                 SpritePencilAd()
@@ -103,8 +114,9 @@ struct BrowseView: View {
                             .font(.headline)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .safeAreaPadding(.horizontal, 20)
                     .padding(.top)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(suggestions) { sprite in
@@ -117,8 +129,10 @@ struct BrowseView: View {
                             }
                             Spacer()
                         }
-                        .padding(.horizontal)
+                        .scrollTargetLayout()
                     }
+                    .scrollTargetBehavior(.viewAligned)
+                    .safeAreaPadding(.horizontal, 20)
                 }
                 
                 Spacer()

@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-24.
+//  Created by 256 Arts Developer on 2021-03-24.
 //
 
 import SwiftUI
@@ -86,24 +86,24 @@ struct SpritesGridView: View {
         .onAppear {
             refreshFilter()
         }
-        .onChange(of: sprites, perform: { newValue in
+        .onChange(of: sprites) { _, newValue in
             refreshFilter(localSprites: newValue)
-        })
-        .onChange(of: searchText, perform: { _ in
+        }
+        .onChange(of: searchText) {
             refreshFilter()
-        })
-        .onChange(of: searchAll, perform: { _ in
+        }
+        .onChange(of: searchAll) {
             refreshFilter()
-        })
-        .onChange(of: filterSettings.sizeFilter, perform: { _ in
+        }
+        .onChange(of: filterSettings.sizeFilter) {
             refreshFilter()
-        })
-        .onChange(of: filterSettings.animatedOnly, perform: { _ in
+        }
+        .onChange(of: filterSettings.animatedOnly) {
             refreshFilter()
-        })
-        .onChange(of: filterSettings.tagFilters, perform: { _ in
+        }
+        .onChange(of: filterSettings.tagFilters) {
             refreshFilter()
-        })
+        }
     }
     
     func refreshFilter(localSprites: [SpriteSet]? = nil) {
@@ -119,7 +119,8 @@ struct SpritesGridView: View {
             filteredSprites = filteredSprites.filter({ $0.tags.isSuperset(of: filterSettings.tagFilters) })
         }
         if !searchText.isEmpty {
-            filteredSprites = filteredSprites.filter({ $0.name.localizedCaseInsensitiveContains(searchText.trimmingCharacters(in: .whitespacesAndNewlines)) })
+            let trimmedSearch = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            filteredSprites = filteredSprites.filter({ $0.name.localizedCaseInsensitiveContains(trimmedSearch) })
         }
         if filterSettings.sizeFilter != nil {
             filteredSprites = filteredSprites.filter({

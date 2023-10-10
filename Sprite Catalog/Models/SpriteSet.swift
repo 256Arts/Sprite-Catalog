@@ -2,7 +2,7 @@
 //  Sprite.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-24.
+//  Created by 256 Arts Developer on 2021-03-24.
 //
 
 import SwiftUI

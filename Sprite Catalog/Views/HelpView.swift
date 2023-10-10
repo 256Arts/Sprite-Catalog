@@ -2,7 +2,7 @@
 //  HelpView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-04-05.
+//  Created by 256 Arts Developer on 2021-04-05.
 //
 
 import SwiftUI
@@ -10,7 +10,6 @@ import StoreKit
 
 enum AppID: Int {
     case spritePencil = 1437835952
-    case spriteFonts = 1554027877
 }
 
 struct HelpView: View {
@@ -22,13 +21,6 @@ struct HelpView: View {
     let appStoreVC: SKStoreProductViewController = {
         let vc = SKStoreProductViewController()
         vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spritePencil.rawValue]) { (result, error) in
-            print(error?.localizedDescription as Any)
-        }
-        return vc
-    }()
-    let appStoreVC2: SKStoreProductViewController = {
-        let vc = SKStoreProductViewController()
-        vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spriteFonts.rawValue]) { (result, error) in
             print(error?.localizedDescription as Any)
         }
         return vc
@@ -65,26 +57,7 @@ struct HelpView: View {
                     }
                     .foregroundColor(Color.accentColor)
                     
-                    Button {
-                        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                            scene.windows.first?.rootViewController?.presentedViewController?.present(appStoreVC2, animated: true)
-                        }
-                    } label: {
-                        Label {
-                            VStack(alignment: .leading) {
-                                Text("Try Sprite Fonts")
-                                Text("Install Pixel Fonts")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color(UIColor.secondaryLabel))
-                            }
-                        } icon: {
-                            Image(systemName: "arrow.down.app")
-                                .imageScale(.large)
-                        }
-                    }
-                    .foregroundColor(Color.accentColor)
-                    
-                    Link(destination: URL(string: "https://www.jaydenirwin.com/")!) {
+                    Link(destination: URL(string: "https://www.256arts.com/")!) {
                         Label("Developer Website", systemImage: "safari")
                     }
                     Link(destination: URL(string: "https://www.256arts.com/joincommunity/")!) {
@@ -98,8 +71,10 @@ struct HelpView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Help")
             .toolbar {
-                Button("Done") {
-                    dismiss()
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
                 }
             }
             .navigationDestination(for: HelpScreen.self) { screen in

@@ -2,7 +2,7 @@
 //  FilterSettings.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-07-07.
+//  Created by 256 Arts Developer on 2021-07-07.
 //
 
 import Foundation

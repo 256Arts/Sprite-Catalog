@@ -2,7 +2,7 @@
 //  Sidebar.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-26.
+//  Created by 256 Arts Developer on 2021-03-26.
 //
 
 import SwiftUI
@@ -23,6 +23,7 @@ struct Sidebar: View {
     @Binding var selectedScreen: MainScreen?
     
     @State var showingWelcome = false
+    @State var showingCutter = false
     @State var showingHelp = false
     
     #if DEBUG
@@ -33,61 +34,68 @@ struct Sidebar: View {
     
     var body: some View {
         List(selection: $selectedScreen) {
-            NavigationLink(value: MainScreen.browse) {
-                Label(title: {
-                    Text("Browse")
-                }) {
-                    Image("lzpsnc")
-                        .sidebarIcon()
+            Section {
+                NavigationLink(value: MainScreen.browse) {
+                    Label {
+                        Text("Browse")
+                    } icon: {
+                        Image("lzpsnc")
+                            .sidebarIcon()
+                    }
+                }
+                Group {
+                    CategoryLink(tag: .peopleAnimal, iconName: "ybcclv")
+                    CategoryLink(tag: .food, iconName: "vu654q")
+                    CategoryLink(tag: .weaponTool, iconName: "46sbsg")
+                    CategoryLink(tag: .clothing, iconName: "zbkmsq")
+                    CategoryLink(tag: .treasure, iconName: "gzkavm")
+                    CategoryLink(tag: .miscItem, iconName: "jf4lyr")
+                }
+                Group {
+                    CategoryLink(tag: .nature, iconName: "y4oe7l")
+                    CategoryLink(tag: .object, iconName: "vwtecl")
+                    CategoryLink(tag: .effect, iconName: "60by9c")
+                    CategoryLink(tag: .interface, iconName: "c3pj4c")
+                    CategoryLink(tag: .tile, iconName: "eg4s6n")
+                    CategoryLink(tag: .artwork, iconName: "zfqsjq")
+                }
+                NavigationLink(value: MainScreen.fonts) {
+                    Label {
+                        Text("Fonts")
+                    } icon: {
+                        Image("Fonts")
+                            .sidebarIcon()
+                    }
                 }
             }
-            Group {
-                CategoryLink(tag: .peopleAnimal, iconName: "ybcclv")
-                CategoryLink(tag: .food, iconName: "vu654q")
-                CategoryLink(tag: .weaponTool, iconName: "46sbsg")
-                CategoryLink(tag: .clothing, iconName: "zbkmsq")
-                CategoryLink(tag: .treasure, iconName: "gzkavm")
-                CategoryLink(tag: .miscItem, iconName: "jf4lyr")
-            }
-            Group {
-                CategoryLink(tag: .nature, iconName: "y4oe7l")
-                CategoryLink(tag: .object, iconName: "ohdawf")
-                CategoryLink(tag: .effect, iconName: "60by9c")
-                CategoryLink(tag: .interface, iconName: "c3pj4c")
-                CategoryLink(tag: .tile, iconName: "eg4s6n")
-                CategoryLink(tag: .artwork, iconName: "zfqsjq")
-            }
-            Section(header: Text("Library")) {
+            
+            Section {
                 NavigationLink(value: MainScreen.collection(.myCollection)) {
-                    Label(title: {
+                    Label {
                         Text("My Collection")
-                    }) {
+                    } icon: {
                         Image("6j6ljq")
                             .sidebarIcon()
                     }
                 }
                 NavigationLink(value: MainScreen.collection(.stickersCollection)) {
-                    Label(title: {
-                        Text("Stickers")
-                    }) {
-                        Image("6j6ljq")
+                    Label {
+                        Text("iMessage Stickers")
+                    } icon: {
+                        Image("Stickers Folder")
                             .sidebarIcon()
                     }
                 }
-                NavigationLink {
-                    if let collection = cloudController.spriteCollection {
-                        ImportedCollectionSpritesGridView(userCollection: collection)
-                    } else {
-                        ProgressView()
-                    }
-                } label: {
-                    Label(title: {
-                        Text("Imported")
-                    }) {
-                        Image("6j6ljq")
+                NavigationLink(value: MainScreen.imports) {
+                    Label {
+                        Text("Imports")
+                    } icon: {
+                        Image("Imports Folder")
                             .sidebarIcon()
                     }
                 }
+            } header: {
+                Text("Library")
             }
         }
         .listStyle(SidebarListStyle())
@@ -132,6 +140,13 @@ struct Sidebar: View {
             #endif
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    showingCutter = true
+                } label: {
+                    Image(systemName: "scissors")
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
                     showingHelp = true
                 } label: {
                     Image(systemName: "questionmark.circle")
@@ -150,9 +165,14 @@ struct Sidebar: View {
         }, content: {
             WelcomeView(isFirstLaunch: whatsNewVersion == 0, appName: "Sprite Catalog", features: welcomeFeatures)
         })
-        .sheet(isPresented: $showingHelp, content: {
+        .sheet(isPresented: $showingCutter) {
+            NavigationStack {
+                CutterView()
+            }
+        }
+        .sheet(isPresented: $showingHelp) {
             HelpView()
-        })
+        }
         #if DEBUG
         .sheet(isPresented: $showingDebugImportSprites, content: {
             ImportSpritesView(importer: .init(debugMode: true))
@@ -174,9 +194,9 @@ struct CategoryLink: View {
     
     var body: some View {
         NavigationLink(value: MainScreen.category(tag)) {
-            Label(title: {
+            Label {
                 Text(tag.rawValue)
-            }) {
+            } icon: {
                 Image(iconName)
                     .sidebarIcon()
             }

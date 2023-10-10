@@ -2,7 +2,7 @@
 //  ArtistView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-04-03.
+//  Created by 256 Arts Developer on 2021-04-03.
 //
 
 import SwiftUI

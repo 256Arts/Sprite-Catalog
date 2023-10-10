@@ -30,6 +30,83 @@
 	<array>
 		<string>com.jaydenirwin.spritecatalog.viewsprite</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>8-bit Arcade In.ttf</string>
+		<string>8-bit Arcade Out.ttf</string>
+		<string>Alkhemikal.ttf</string>
+		<string>AprilSans.otf</string>
+		<string>BasicHandwriting.ttf</string>
+		<string>BetterPixels.ttf</string>
+		<string>BitCasual.ttf</string>
+		<string>blocks.ttf</string>
+		<string>Born2bSporty.ttf</string>
+		<string>Code.ttf</string>
+		<string>Comicoro.ttf</string>
+		<string>CursivePixel.ttf</string>
+		<string>CyborgSister.ttf</string>
+		<string>DigitalDisco Thin.ttf</string>
+		<string>DigitalDisco.ttf</string>
+		<string>Disrespectful.ttf</string>
+		<string>Dogica Bold.ttf</string>
+		<string>Dogica.ttf</string>
+		<string>ElfBoyClassic.ttf</string>
+		<string>EnterCommand Bold.ttf</string>
+		<string>EnterCommand Italic.ttf</string>
+		<string>EnterCommand.ttf</string>
+		<string>European Teletext Nuevo.ttf</string>
+		<string>European Teletext.ttf</string>
+		<string>Extrude.ttf</string>
+		<string>Forma.ttf</string>
+		<string>Generic Mobile System Nuevo O.ttf</string>
+		<string>Generic Mobile System Nuevo.ttf</string>
+		<string>Generic Mobile System O.ttf</string>
+		<string>Generic Mobile System.ttf</string>
+		<string>Generic.ttf</string>
+		<string>Gothic Pixel.ttf</string>
+		<string>Half Eighties.ttf</string>
+		<string>HelvetiPixel.ttf</string>
+		<string>ImpactBits.ttf</string>
+		<string>ISL_ONYX.ttf</string>
+		<string>justabit.ttf</string>
+		<string>Kapel.ttf</string>
+		<string>KarenBook.ttf</string>
+		<string>KiwiSoda.ttf</string>
+		<string>ldcBlackRound.ttf</string>
+		<string>littleLightPixel.ttf</string>
+		<string>LycheeSoda.ttf</string>
+		<string>MeleeSans.ttf</string>
+		<string>Minimal4.ttf</string>
+		<string>Minitel.ttf</string>
+		<string>Notepen.ttf</string>
+		<string>OldWizard.ttf</string>
+		<string>Oskool.ttf</string>
+		<string>OwlsNInk.ttf</string>
+		<string>OwreKynge.ttf</string>
+		<string>PearSoda.ttf</string>
+		<string>Piacevoli.ttf</string>
+		<string>Pixeled.ttf</string>
+		<string>Pixellari.ttf</string>
+		<string>PixelMechaBold.ttf</string>
+		<string>Pixerif.ttf</string>
+		<string>PixieKid.ttf</string>
+		<string>PlanetaryContact.ttf</string>
+		<string>Press Start 2P.ttf</string>
+		<string>PxArt.ttf</string>
+		<string>RobotY.ttf</string>
+		<string>Silverfinster.ttf</string>
+		<string>SirClive.ttf</string>
+		<string>SquareSounds.ttf</string>
+		<string>Squarewave Bold.ttf</string>
+		<string>Squarewave Italic.ttf</string>
+		<string>Squarewave.ttf</string>
+		<string>SylladexFanon.ttf</string>
+		<string>TheWall.ttf</string>
+		<string>TimesNewPixel.ttf</string>
+		<string>TomAndJerry.ttf</string>
+		<string>VCR OSD Mono.ttf</string>
+		<string>W95FA.otf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -38,7 +115,12 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<key>UIImageName</key>
+		<string>Word Logo</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

@@ -2,7 +2,7 @@
 //  Sprite_CatalogApp.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-24.
+//  Created by 256 Arts Developer on 2021-03-24.
 //
 
 import SwiftUI
@@ -12,8 +12,13 @@ struct Sprite_CatalogApp: App {
     
     static let spritePencilAppGroupID =  "group.com.jaydenirwin.spritepencil"
     static let appWhatsNewVersion = 1
+    static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
+    
+    @ObservedObject var cloudController: CloudController = .shared
     
     @State var selectedScreen: MainScreen? = .browse
+    @State var fontPreviewMode: FamilyDetailView.PreviewMode = .sample
+    @State var fontTestString = Self.defaultFontTestString
     
     var body: some Scene {
         WindowGroup {
@@ -25,6 +30,14 @@ struct Sprite_CatalogApp: App {
                         switch selectedScreen {
                         case .browse:
                             BrowseView()
+                        case .fonts:
+                            FontsGridView()
+                        case .imports:
+                            if let collection = cloudController.spriteCollection {
+                                ImportedCollectionSpritesGridView(userCollection: collection)
+                            } else {
+                                ProgressView()
+                            }
                         case .category(let tag):
                             SpritesGridView(title: tag.rawValue, sprites: SpriteSet.allSprites.filter({ $0.tags.contains(tag) }))
                         case .collection(let collection):
@@ -41,6 +54,9 @@ struct Sprite_CatalogApp: App {
                     }
                     .navigationDestination(for: Artist.self) { artist in
                         CollectionView(collection: SpriteCollection(artist: artist), webpageURL: artist.url)
+                    }
+                    .navigationDestination(for: FontFamily.self) { family in
+                        FamilyDetailView(previewMode: $fontPreviewMode, customString: $fontTestString, family: family)
                     }
                 }
             }

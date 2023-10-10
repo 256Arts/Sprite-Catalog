@@ -2,7 +2,7 @@
 //  DebugImportSpritesTutorial.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-11-12.
+//  Created by 256 Arts Developer on 2021-11-12.
 //
 
 #if DEBUG

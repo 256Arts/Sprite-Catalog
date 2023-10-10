@@ -2,7 +2,7 @@
 //  Licence.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-27.
+//  Created by 256 Arts Developer on 2021-03-27.
 //
 
 import Foundation
@@ -34,7 +34,7 @@ enum Licence: String, CaseIterable, Identifiable, Codable {
     var url: URL {
         switch self {
         case .none:
-            return URL(string: "https://creativecommons.org/licenses")!
+            return URL(string: "https://apple.com")!
         case .cc0:
             return URL(string: "https://creativecommons.org/publicdomain/zero/1.0")!
         case .attribution:

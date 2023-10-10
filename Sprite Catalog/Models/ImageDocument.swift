@@ -2,7 +2,7 @@
 //  ImageDocument.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-12-08.
+//  Created by 256 Arts Developer on 2021-12-08.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  Artist.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-04-06.
+//  Created by 256 Arts Developer on 2021-04-06.
 //
 
 import Foundation
@@ -53,6 +53,8 @@ struct Artist: Identifiable, Hashable, Codable {
                 return "https://opengameart.org/users/josehzz"
             case "Jayden Irwin":
                 return "https://www.jaydenirwin.com/"
+            case "PiiiXL":
+                return "https://piiixl.itch.io"
             case "Pixel-Boy & AAA":
                 return "https://twitter.com/2Pblog1"
             case "polyphorge":

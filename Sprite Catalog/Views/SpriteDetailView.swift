@@ -2,7 +2,7 @@
 //  SpriteDetailView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-03-24.
+//  Created by 256 Arts Developer on 2021-03-24.
 //
 
 import SwiftUI
@@ -77,17 +77,17 @@ struct SpriteDetailView: View {
                 }
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
-                    Button(action: {
+                    Button {
                         do {
                             try openInSpritePencil()
                         } catch {
                             print(error)
                         }
-                    }, label: {
+                    } label: {
                         Text("Edit in Sprite Pencil")
                             .font(Font.system(size: 20, weight: .medium, design: .default))
                             .frame(idealWidth: .infinity, maxWidth: .infinity)
-                    })
+                    }
                     .buttonStyle(.borderedProminent)
                     #if !targetEnvironment(macCatalyst)
                     saveAndShareButton()
@@ -95,6 +95,7 @@ struct SpriteDetailView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                
                 if 1 < sprite.states.count {
                     Text("States")
                         .font(.title2)
@@ -112,6 +113,7 @@ struct SpriteDetailView: View {
                     }
                     .padding(-16)
                 }
+                
                 if showingHueRotationRow {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Quick Recolor")
@@ -119,6 +121,7 @@ struct SpriteDetailView: View {
                         Slider(value: $hueRotationDegrees, in: 0...360)
                     }
                 }
+                
                 if !sprite.tiles.compactMap({ $0.facing }).isEmpty {
                     VStack(alignment: .leading) {
                         Text("Directions")
@@ -130,25 +133,30 @@ struct SpriteDetailView: View {
                         .foregroundColor(Color(UIColor.secondaryLabel))
                     }
                 }
+                
                 if sprite.tiles.contains(where: { $0.connectedEdges != nil }) {
                     Label("Connected Tileset", systemImage: "square.grid.3x3.middle.fill")
                         .font(Font.system(size: 17))
                         .foregroundColor(Color(UIColor.secondaryLabel))
                 }
+                
                 if sprite.states.first?.variants.count != 1 {
                     Label("Multiple Random Variants", systemImage: "square.fill.on.square.fill")
                         .font(Font.system(size: 17))
                         .foregroundColor(Color(UIColor.secondaryLabel))
                 }
+                
                 VStack(alignment: .leading) {
                     Text("Artist")
                     NavigationLink(sprite.artist.name, value: sprite.artist)
                         .buttonStyle(.borderless)
                         .font(Font.callout)
                 }
+                
                 LabeledValue(value: sprite.licence.name, label: "Licence", url: sprite.licence.url)
             }
             .padding()
+            
             VStack(alignment: .leading) {
                 Text("Related")
                     .font(.headline)
@@ -182,7 +190,7 @@ struct SpriteDetailView: View {
                 saveAndShareButton()
                 #endif
                 Menu {
-                    Button(action: {
+                    Button {
                         if myCollection.spriteIDs.contains(sprite.id) {
                             myCollection.spriteIDs.remove(sprite.id)
                         } else {
@@ -194,10 +202,14 @@ struct SpriteDetailView: View {
                         do {
                             try myCollection.save(to: SpriteCollection.myCollectionFileURL)
                         } catch { }
-                    }, label: {
-                        Label("My Collection", systemImage: myCollection.spriteIDs.contains(sprite.id) ? "checkmark" : "")
-                    })
-                    Button(action: {
+                    } label: {
+                        if myCollection.spriteIDs.contains(sprite.id) {
+                            Label("My Collection", systemImage: "checkmark")
+                        } else {
+                            Text("My Collection")
+                        }
+                    }
+                    Button {
                         if stickersCollection.spriteIDs.contains(sprite.id) {
                             stickersCollection.spriteIDs.remove(sprite.id)
                         } else {
@@ -207,9 +219,13 @@ struct SpriteDetailView: View {
                             try stickersCollection.save(to: SpriteCollection.stickersCollectionFileURL)
                             try stickersCollection.saveStickers()
                         } catch { }
-                    }, label: {
-                        Label("Stickers", systemImage: stickersCollection.spriteIDs.contains(sprite.id) ? "checkmark" : "")
-                    })
+                    } label: {
+                        if stickersCollection.spriteIDs.contains(sprite.id) {
+                            Label("Stickers", systemImage: "checkmark")
+                        } else {
+                            Text("Stickers")
+                        }
+                    }
                 } label: {
                     Image(systemName: "plus.circle")
                         .imageScale(.large)
@@ -254,10 +270,10 @@ struct SpriteDetailView: View {
                 }
             }
         }
-        .onChange(of: sizeClass, perform: { (sizeClass) in
+        .onChange(of: sizeClass) {
             showingHueRotationPopover = false
             showingHueRotationRow = false
-        })
+        }
         .onReceive(timer) { (_) in
             guard let frameCount = sprite.states[stateIndex].variants.first?.frameCount, 1 < frameCount else { return }
             if frame + 1 == frameCount {
@@ -270,13 +286,13 @@ struct SpriteDetailView: View {
     
     private func saveAndShareButton() -> some View {
         Group {
-            Button(action: {
+            Button {
                 showingExport = true
-            }, label: {
+            } label: {
                 Image(systemName: "square.and.arrow.down")
                     .font(Font.system(size: 20, weight: .medium, design: .default))
                     .frame(width: 20, height: 24)
-            })
+            }
             if let transferableImage {
                 ShareLink(item: transferableImage, subject: Text(sprite.name), message: Text("Found in Sprite Catalog"), preview: .init(sprite.name, icon: transferableImage)) {
                     Image(systemName: "square.and.arrow.up")

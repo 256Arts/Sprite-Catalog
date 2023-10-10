@@ -2,7 +2,7 @@
 //  BrowseCollectionPreview.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-07-05.
+//  Created by 256 Arts Developer on 2021-07-05.
 //
 
 import SwiftUI
@@ -24,27 +24,23 @@ struct BrowseCollectionPreview: View {
                 ForEach(0..<rows) { row in
                     GridRow {
                         ForEach(0..<columns) { column in
-                            if let tile = tile(row: row, column: column) {
-                                PlainTileThumbnail(tile: tile)
-                                    .frame(width: isLarge ? 46 : 40, height: isLarge ? 46 : 40)
-                            }
+                            PlainTileThumbnail(tile: tile(row: row, column: column))
+                                .frame(width: isLarge ? 46 : 40, height: isLarge ? 46 : 40)
                         }
                     }
                 }
             }
             .padding()
-            .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom))
-            .cornerRadius(16)
+            .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: 16))
+            
             Text(collection.title)
                 .foregroundColor(.primary)
         }
     }
     
-    func tile(row: Int, column: Int) -> SpriteSet.Tile? {
-        let index = (row * columns) + column
-        guard collection.sprites.indices.contains(index) else { return nil }
-        
-        return collection.sprites[index].tiles.first
+    func tile(row: Int, column: Int) -> SpriteSet.Tile {
+        let index = ((row * columns) + column) % collection.sprites.count
+        return collection.sprites[index].tiles[0]
     }
     
     func generateGradient(for string: String) -> Gradient {

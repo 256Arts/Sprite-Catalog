@@ -2,7 +2,7 @@
 //  UserDefaults.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-04-05.
+//  Created by 256 Arts Developer on 2021-04-05.
 //
 
 import Foundation

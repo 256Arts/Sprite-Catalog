@@ -2,7 +2,7 @@
 //  ImportSpritesFrameEditor.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2022-08-24.
+//  Created by 256 Arts Developer on 2022-08-24.
 //
 
 import SwiftUI

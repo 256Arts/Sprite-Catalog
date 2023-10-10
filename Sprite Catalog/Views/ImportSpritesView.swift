@@ -2,7 +2,7 @@
 //  ImportSpritesView.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-04-03.
+//  Created by 256 Arts Developer on 2021-04-03.
 //
 
 import SwiftUI
@@ -24,10 +24,13 @@ struct ImportSpritesView: View {
                     TextField("Artist Display Name", text: $importer.artistName)
                         .disableAutocorrection(true)
                     Picker("Licence", selection: $importer.licence) {
-                        ForEach(Licence.allCases) { (licence) in
+                        ForEach([Licence.cc0, .attribution, .attributionShareAlike, .attributionNonCommercial]) { (licence) in
                             Text("\(licence.name) (\(licence.rawValue))")
                                 .tag(licence)
                         }
+                        Divider()
+                        Text("N/A")
+                            .tag(Licence.none)
                     }
                     Picker("Category", selection: $importer.defaultCategory) {
                         ForEach(SpriteImporter.categories) { category in

@@ -2,7 +2,7 @@
 //  NSUserActivity.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-06-16.
+//  Created by 256 Arts Developer on 2021-06-16.
 //
 
 import Foundation

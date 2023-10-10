@@ -2,7 +2,7 @@
 //  DebugHTMLGenerator.swift
 //  Sprite Catalog
 //
-//  Created by Jayden Irwin on 2021-07-05.
+//  Created by 256 Arts Developer on 2021-07-05.
 //
 
 #if DEBUG
@@ -164,30 +164,28 @@ struct DebugCreateHTMLView: View {
                 </a>
             </section>
         </section>
-        <div id="modal-dark-overlay" class="modal-dark-overlay">
-            <div class="sheet">
-                <div class="title-bar">
-                    <h3 id="sprite-title">Sprite Title</h3>
-                    <div>
-                        <a title="Not Available on Web" class="disabled">
-                            <img srcset="/global/plus_icon_3x.png 3x">
-                        </a>
-                        <a title="Not Available on Web" class="disabled">
-                            <img srcset="/global/recolor_icon_3x.png 3x">
-                        </a>
-                        <a onclick="closeSprite()">Close</a>
-                    </div>
-                </div>
-                <img id="sprite-preview" src="/global/animals.png">
-                <p>Artist: <a id="artist-link" target="_blank">Artist Name</a></p>
-                <p>Licence: <a id="licence-link" target="_blank">Licence</a></p>
+        <dialog id="modal" class="sheet">
+            <div class="title-bar">
+                <h3 id="sprite-title">Sprite Title</h3>
                 <div>
-                    <a download="Sprite" id="download" class="button filled">Download</a>
-                    <a id="open-sp" class="button">Edit in Sprite Pencil</a>
-                    <a id="share" class="button">Share</a>
+                    <a title="Not Available on Web" class="disabled">
+                        <img srcset="/global/plus_icon_3x.png 3x">
+                    </a>
+                    <a title="Not Available on Web" class="disabled">
+                        <img srcset="/global/recolor_icon_3x.png 3x">
+                    </a>
+                    <a onclick="closeSprite()">Close</a>
                 </div>
             </div>
-        </div>
+            <img id="sprite-preview" src="/global/animals.png">
+            <p>Artist: <a id="artist-link" target="_blank">Artist Name</a></p>
+            <p>Licence: <a id="licence-link" target="_blank">Licence</a></p>
+            <div>
+                <a download="Sprite" id="download" class="button filled">Download</a>
+                <a id="open-sp" class="button">Edit in Sprite Pencil</a>
+                <a id="share" class="button">Share</a>
+            </div>
+        </dialog>
         <footer>
             <section class="content">
                 <p class="secondary">Copyright &#169; Jayden Irwin. All rights reserved.</p>
