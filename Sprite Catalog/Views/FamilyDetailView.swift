@@ -17,6 +17,7 @@ struct FamilyDetailView: View {
     
     @Binding var previewMode: PreviewMode
     @Binding var customString: String
+    @State var showingExport = false
     
     let family: FontFamily
     
@@ -53,6 +54,7 @@ struct FamilyDetailView: View {
                     #endif
                 }
                 
+                #if !targetEnvironment(macCatalyst)
                 HStack(spacing: 8) {
                     Button {
                         if family.isRegistered {
@@ -77,18 +79,11 @@ struct FamilyDetailView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     
-                    #if !targetEnvironment(macCatalyst)
-                    ShareLink(items: family.fonts, message: Text("Found in Sprite Catalog")) { item in
-                        SharePreview("\(family.name) \(item.style)")
-                    } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(Font.system(size: 20, weight: .medium, design: .default))
-                            .frame(width: 20, height: 24)
-                    }
-                    #endif
+                    saveAndShareButton()
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                #endif
                 
                 LabeledValue(value: family.author.name, label: "Author", url: family.author.url)
                 LabeledValue(value: "\(family.capHeight) px", label: "Cap Height")
@@ -98,20 +93,45 @@ struct FamilyDetailView: View {
         }
         .navigationTitle(family.name)
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: customString) {
-            if customString.isEmpty {
+        .toolbar {
+            #if targetEnvironment(macCatalyst)
+            saveAndShareButton()
+            #endif
+        }
+        .fileExporter(isPresented: $showingExport, documents: family.exportFontDocuments(), contentType: .font) { result in
+            //
+        }
+        .onChange(of: customString) { _, newValue in
+            if newValue.isEmpty {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    if customString.isEmpty {
+                    if newValue.isEmpty {
                         customString = Sprite_CatalogApp.defaultFontTestString
                     }
                 }
             }
         }
     }
+    
+    private func saveAndShareButton() -> some View {
+        Group {
+            Button {
+                showingExport = true
+            } label: {
+                Image(systemName: "square.and.arrow.down")
+                    .font(Font.system(size: 20, weight: .medium, design: .default))
+                    .frame(width: 20, height: 24)
+            }
+//            if let transferableFonts = family.fonts {
+//                ShareLink(items: transferableFonts, subject: Text(family.name), message: Text("Found in Sprite Catalog")) {
+//                    Image(systemName: "square.and.arrow.up")
+//                        .font(Font.system(size: 20, weight: .medium, design: .default))
+//                        .frame(width: 20, height: 24)
+//                }
+//            }
+        }
+    }
 }
 
-struct FontDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        FamilyDetailView(previewMode: .constant(.sample), customString: .constant("Quick fox."), family: FontFamily.allFamilies[0])
-    }
+#Preview {
+    FamilyDetailView(previewMode: .constant(.sample), customString: .constant("Quick fox."), family: FontFamily.allFamilies[0])
 }

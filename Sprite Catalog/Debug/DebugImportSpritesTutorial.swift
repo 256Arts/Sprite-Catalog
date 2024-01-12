@@ -10,7 +10,7 @@ import SwiftUI
 
 struct DebugImportSpritesTutorial: View {
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading) {
                 Text("1. Import sprites with this UI.")
                 Text("2. Add variant metadata to \"WIP Sprites.json\" records if nessisary.")
@@ -23,13 +23,10 @@ struct DebugImportSpritesTutorial: View {
             }
             .navigationTitle("Tutorial")
         }
-        .navigationViewStyle(.stack)
     }
 }
 
-struct DebugImportSpritesTutorial_Previews: PreviewProvider {
-    static var previews: some View {
-        DebugImportSpritesTutorial()
-    }
+#Preview {
+    DebugImportSpritesTutorial()
 }
 #endif

@@ -11,7 +11,7 @@ struct FullscreenSpriteView: View {
     
     let timer = Timer.publish(every: 0.3, on: .main, in: .default).autoconnect()
     
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     @State var sprite: SpriteSet
     @State var frame: Int = 0
@@ -28,19 +28,21 @@ struct FullscreenSpriteView: View {
                     }
             }
         }
-        .tabViewStyle(PageTabViewStyle())
+        .tabViewStyle(.page)
         #if !targetEnvironment(macCatalyst)
         .overlay(alignment: .topLeading) {
             Button {
-                presentationMode.wrappedValue.dismiss()
+                dismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
                     .imageScale(.large)
                     .foregroundColor(Color(UIColor.secondaryLabel))
                     .padding()
             }
+            .buttonBorderShape(.circle)
         }
         #endif
+        .scenePadding()
         .onReceive(timer) { (_) in
             guard let frameCount = sprite.states[0].variants.first?.frameCount, 1 < frameCount else { return }
             if frame + 1 == frameCount {
@@ -52,8 +54,6 @@ struct FullscreenSpriteView: View {
     }
 }
 
-struct FullscreenSprite_Previews: PreviewProvider {
-    static var previews: some View {
-        FullscreenSpriteView(sprite: SpriteSet(id: "xxxxxx", name: "Title", artist: Artist(name: "Jayden"), licence: .cc0, layer: .object, tags: [], tiles: [.init(variants: [.init(imageName: "")])]))
-    }
+#Preview {
+    FullscreenSpriteView(sprite: SpriteSet(id: "xxxxxx", name: "Title", artist: Artist(name: "Jayden"), licence: .cc0, layer: .object, tags: [], tiles: [.init(variants: [.init(imageName: "")])]))
 }

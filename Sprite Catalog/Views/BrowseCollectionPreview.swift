@@ -11,11 +11,19 @@ struct BrowseCollectionPreview: View {
     
     @State var collection: SpriteCollection
     @State var isLarge: Bool
+    
     var rows: Int {
         isLarge ? 3 : 2
     }
     var columns: Int {
         isLarge ? 4 : 3
+    }
+    var heroRadius: CGFloat {
+        #if os(visionOS)
+        8
+        #else
+        16
+        #endif
     }
     
     var body: some View {
@@ -31,11 +39,15 @@ struct BrowseCollectionPreview: View {
                 }
             }
             .padding()
-            .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: 16))
+            .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: heroRadius))
             
             Text(collection.title)
                 .foregroundColor(.primary)
         }
+        #if os(visionOS)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 2)
+        #endif
     }
     
     func tile(row: Int, column: Int) -> SpriteSet.Tile {
@@ -73,8 +85,6 @@ struct BrowseCollectionPreview: View {
     
 }
 
-struct BrowseCollectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        BrowseCollectionPreview(collection: SpriteCollection(title: "", spriteIDs: []), isLarge: true)
-    }
+#Preview {
+    BrowseCollectionPreview(collection: SpriteCollection(title: "", spriteIDs: []), isLarge: true)
 }

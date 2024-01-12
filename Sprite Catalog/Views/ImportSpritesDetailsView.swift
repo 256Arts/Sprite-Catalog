@@ -94,16 +94,14 @@ struct ImportSpritesDetailsView: View {
             }
         }
         #if DEBUG
-        .sheet(isPresented: $showingTutorial, content: {
+        .sheet(isPresented: $showingTutorial) {
             DebugImportSpritesTutorial()
-        })
+        }
         #endif
     }
     
 }
 
-struct DebugImportSpritesDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ImportSpritesDetailsView(importer: SpriteImporter(debugMode: false))
-    }
+#Preview {
+    ImportSpritesDetailsView(importer: SpriteImporter(debugMode: false))
 }

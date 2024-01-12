@@ -43,7 +43,8 @@ struct BrowseView: View {
                                 NavigationLink(value: collection) {
                                     BrowseCollectionPreview(collection: collection, isLarge: false)
                                 }
-                                #if targetEnvironment(macCatalyst)
+                                #if os(visionOS) || targetEnvironment(macCatalyst)
+                                .buttonBorderShape(.roundedRectangle)
                                 .buttonStyle(.plain)
                                 #endif
                             }
@@ -68,7 +69,8 @@ struct BrowseView: View {
                                 NavigationLink(value: collection) {
                                     BrowseCollectionPreview(collection: collection, isLarge: true)
                                 }
-                                #if targetEnvironment(macCatalyst)
+                                #if os(visionOS) || targetEnvironment(macCatalyst)
+                                .buttonBorderShape(.roundedRectangle)
                                 .buttonStyle(.plain)
                                 #endif
                             }
@@ -93,7 +95,8 @@ struct BrowseView: View {
                                 NavigationLink(value: artist) {
                                     BrowseCollectionPreview(collection: SpriteCollection(artist: artist), isLarge: false)
                                 }
-                                #if targetEnvironment(macCatalyst)
+                                #if os(visionOS) || targetEnvironment(macCatalyst)
+                                .buttonBorderShape(.roundedRectangle)
                                 .buttonStyle(.plain)
                                 #endif
                             }
@@ -123,7 +126,8 @@ struct BrowseView: View {
                                 NavigationLink(value: sprite.id) {
                                     TileThumbnail(tile: sprite.tiles[0])
                                 }
-                                #if targetEnvironment(macCatalyst)
+                                #if os(visionOS) || targetEnvironment(macCatalyst)
+                                .buttonBorderShape(.roundedRectangle)
                                 .buttonStyle(.plain)
                                 #endif
                             }
@@ -146,6 +150,7 @@ struct BrowseView: View {
 
 struct SpritePencilAd: View {
     
+    #if !os(visionOS)
     let appStoreVC: SKStoreProductViewController = {
         let vc = SKStoreProductViewController()
         vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spritePencil.rawValue]) { (result, error) in
@@ -153,6 +158,7 @@ struct SpritePencilAd: View {
         }
         return vc
     }()
+    #endif
     
     @Environment(\.horizontalSizeClass) var hSizeClass
     
@@ -192,15 +198,20 @@ struct SpritePencilAd: View {
             }
         }
         .onTapGesture {
+            #if os(visionOS)
+            openURL(URL(string: "https://apps.apple.com/app/sprite-pencil/id1437835952")!)
+            #else
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 scene.windows.first?.rootViewController?.present(appStoreVC, animated: true)
             }
+            #endif
         }
     }
+    
+    @Environment(\.openURL) private var openURL
+    
 }
 
-struct BrowseView_Previews: PreviewProvider {
-    static var previews: some View {
-        BrowseView()
-    }
+#Preview {
+    BrowseView()
 }

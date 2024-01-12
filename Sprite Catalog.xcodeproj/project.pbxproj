@@ -115,6 +115,10 @@
 		1BA2CC3C273ED058009F3D40 /* DebugImportSpritesTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA2CC3B273ED058009F3D40 /* DebugImportSpritesTutorial.swift */; };
 		1BA98FC6260E58B900557973 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA98FC5260E58B900557973 /* Sidebar.swift */; };
 		1BA98FD3260FFB2C00557973 /* Licence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA98FD2260FFB2C00557973 /* Licence.swift */; };
+		1BAFB64D2B4F777C000722B2 /* FontDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAFB64C2B4F777C000722B2 /* FontDocument.swift */; };
+		1BAFB6502B4F9B4C000722B2 /* SpriteSet2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAFB64E2B4F9A98000722B2 /* SpriteSet2.swift */; };
+		1BAFB6522B4FB8CB000722B2 /* LoadingSpritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAFB6512B4FB8CB000722B2 /* LoadingSpritesView.swift */; };
+		1BAFB6542B50C975000722B2 /* RootDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAFB6532B50C975000722B2 /* RootDetailView.swift */; };
 		1BBD1C6926C18BA200BB544E /* MessagesAppGroupID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBD1C6826C18BA200BB544E /* MessagesAppGroupID.swift */; };
 		1BBD1C7926C1CBA200BB544E /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBD1C5326C1865900BB544E /* Messages.framework */; };
 		1BBD1C8126C1CBA300BB544E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BBD1C8026C1CBA300BB544E /* Assets.xcassets */; };
@@ -270,6 +274,11 @@
 		1BA98FC5260E58B900557973 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		1BA98FCF260EEC6700557973 /* Sprite Catalog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sprite Catalog.entitlements"; sourceTree = "<group>"; };
 		1BA98FD2260FFB2C00557973 /* Licence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licence.swift; sourceTree = "<group>"; };
+		1BAFB6492B4F44E6000722B2 /* WelcomeKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = WelcomeKit; path = "../../../Swift Packages/WelcomeKit"; sourceTree = "<group>"; };
+		1BAFB64C2B4F777C000722B2 /* FontDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontDocument.swift; sourceTree = "<group>"; };
+		1BAFB64E2B4F9A98000722B2 /* SpriteSet2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteSet2.swift; sourceTree = "<group>"; };
+		1BAFB6512B4FB8CB000722B2 /* LoadingSpritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpritesView.swift; sourceTree = "<group>"; };
+		1BAFB6532B50C975000722B2 /* RootDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootDetailView.swift; sourceTree = "<group>"; };
 		1BBD1C5326C1865900BB544E /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		1BBD1C5626C1865900BB544E /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		1BBD1C6826C18BA200BB544E /* MessagesAppGroupID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesAppGroupID.swift; sourceTree = "<group>"; };
@@ -399,12 +408,14 @@
 			children = (
 				1B4F2BB22687908700260D49 /* SpriteCollection.swift */,
 				1B88D65A260BA9080098366A /* SpriteSet.swift */,
+				1BAFB64E2B4F9A98000722B2 /* SpriteSet2.swift */,
 				1BD89A42261D627200BA8B0F /* Artist.swift */,
 				1BA98FD2260FFB2C00557973 /* Licence.swift */,
 				1B1DE1692A2136F8001917B6 /* FontFamily.swift */,
 				1B5F116B28B2E4C6009BA5F6 /* MainScreen.swift */,
 				1B7F1430269628D100504972 /* FilterSettings.swift */,
 				1B8179BC276195FD00F3E25C /* ImageDocument.swift */,
+				1BAFB64C2B4F777C000722B2 /* FontDocument.swift */,
 				1BFC6A3A2AD356E70037B4DF /* Cutter.swift */,
 				1B9EE78E2646242100CC2449 /* UIImage.swift */,
 				1B43CF3D261BB5C300551740 /* UserDefaults.swift */,
@@ -427,6 +438,7 @@
 		1B88D63B260BA4320098366A = {
 			isa = PBXGroup;
 			children = (
+				1BAFB6492B4F44E6000722B2 /* WelcomeKit */,
 				1BBD1C6726C18B6700BB544E /* Shared */,
 				1B88D646260BA4320098366A /* Sprite Catalog */,
 				1BBD1C7A26C1CBA200BB544E /* Messages */,
@@ -466,9 +478,11 @@
 			isa = PBXGroup;
 			children = (
 				1BA98FC5260E58B900557973 /* Sidebar.swift */,
+				1BAFB6532B50C975000722B2 /* RootDetailView.swift */,
 				1BFC6A362AD356690037B4DF /* CutterView.swift */,
 				1BFC6A382AD356E30037B4DF /* IntField.swift */,
 				1B43CF4F261BD73A00551740 /* HelpView.swift */,
+				1BAFB6512B4FB8CB000722B2 /* LoadingSpritesView.swift */,
 				1B179B42267A972E00F9F278 /* BrowseView.swift */,
 				1B48E5DB2693EB1500403E65 /* BrowseCollectionPreview.swift */,
 				1B88D649260BA4320098366A /* SpritesGridView.swift */,
@@ -587,7 +601,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1250;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					1B88D643260BA4320098366A = {
 						CreatedOnToolsVersion = 12.4;
@@ -721,6 +735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1BFC6A4B2AD369500037B4DF /* SpriteCutterAppShortcutsProvider.swift in Sources */,
+				1BAFB6522B4FB8CB000722B2 /* LoadingSpritesView.swift in Sources */,
 				1B9CD162268909AD00200684 /* UserCollectionSpritesGridView.swift in Sources */,
 				1B88D65E260BBBA40098366A /* LabeledValue.swift in Sources */,
 				1BEFBB6D260CF5670098EF40 /* TileThumbnail.swift in Sources */,
@@ -741,6 +756,7 @@
 				1B8179BD276195FD00F3E25C /* ImageDocument.swift in Sources */,
 				1B7F1435269A0EBE00504972 /* SpriteImporter.swift in Sources */,
 				1B43CF3226182A9500551740 /* CollectionView.swift in Sources */,
+				1BAFB64D2B4F777C000722B2 /* FontDocument.swift in Sources */,
 				1BFC6A4C2AD369500037B4DF /* CutSprites.swift in Sources */,
 				1B93F2D7269AB8C100B67C83 /* FullscreenSpriteView.swift in Sources */,
 				1B1DE16E2A213841001917B6 /* FontsGridView.swift in Sources */,
@@ -749,12 +765,14 @@
 				1B179B43267A972E00F9F278 /* BrowseView.swift in Sources */,
 				35BC1FDB2818572F00EBA756 /* CloudController.swift in Sources */,
 				1B7F1433269A0E0100504972 /* ImportSpritesDetailsView.swift in Sources */,
+				1BAFB6542B50C975000722B2 /* RootDetailView.swift in Sources */,
 				1BA2CC3C273ED058009F3D40 /* DebugImportSpritesTutorial.swift in Sources */,
 				1BD89A43261D627200BA8B0F /* Artist.swift in Sources */,
 				1BFC6A372AD356690037B4DF /* CutterView.swift in Sources */,
 				1B88D65B260BA9080098366A /* SpriteSet.swift in Sources */,
 				1BFC6A3D2AD356E80037B4DF /* IntField.swift in Sources */,
 				1BFC6A3F2AD356E80037B4DF /* Cutter.swift in Sources */,
+				1BAFB6502B4F9B4C000722B2 /* SpriteSet2.swift in Sources */,
 				1B1DE2072A21407E001917B6 /* FamilyDetailView.swift in Sources */,
 				1B43CF352619026500551740 /* ImportSpritesView.swift in Sources */,
 				1B9EE78F2646242100CC2449 /* UIImage.swift in Sources */,
@@ -846,6 +864,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Debug;
 		};
@@ -902,6 +921,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Release;
 		};
@@ -913,7 +933,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Sprite Catalog/Sprite Catalog.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = VA3SY54YU8;
 				ENABLE_PREVIEWS = YES;
@@ -924,14 +944,16 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9;
+				MARKETING_VERSION = 1.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2,6,7";
 			};
 			name = Debug;
 		};
@@ -943,7 +965,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Sprite Catalog/Sprite Catalog.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = VA3SY54YU8;
 				ENABLE_PREVIEWS = YES;
@@ -954,14 +976,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9;
+				MARKETING_VERSION = 1.10;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2,6,7";
 			};
 			name = Release;
 		};

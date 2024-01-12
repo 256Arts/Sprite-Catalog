@@ -31,8 +31,6 @@ struct ImportedCollectionSpritesGridView: View {
     }
 }
 
-struct ImportedCollectionSpritesGridView_Previews: PreviewProvider {
-    static var previews: some View {
-        ImportedCollectionSpritesGridView(userCollection: .myCollection)
-    }
+#Preview {
+    ImportedCollectionSpritesGridView(userCollection: .myCollection)
 }

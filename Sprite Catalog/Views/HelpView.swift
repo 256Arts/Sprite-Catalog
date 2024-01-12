@@ -18,6 +18,7 @@ struct HelpView: View {
         case stickersHelp
     }
     
+    #if !os(visionOS)
     let appStoreVC: SKStoreProductViewController = {
         let vc = SKStoreProductViewController()
         vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spritePencil.rawValue]) { (result, error) in
@@ -25,6 +26,7 @@ struct HelpView: View {
         }
         return vc
     }()
+    #endif
     
     @Environment(\.dismiss) var dismiss
     
@@ -38,6 +40,7 @@ struct HelpView: View {
                     Link("Submit Your Sprites", destination: URL(string: "https://form.jotform.com/211994359527266")!)
                 }
                 Section {
+                    #if !os(visionOS)
                     Button {
                         if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                             scene.windows.first?.rootViewController?.presentedViewController?.present(appStoreVC, animated: true)
@@ -48,7 +51,7 @@ struct HelpView: View {
                                 Text("Try Sprite Pencil")
                                 Text("Create Pixel Art")
                                     .font(.subheadline)
-                                    .foregroundColor(Color(UIColor.secondaryLabel))
+                                    .foregroundStyle(.secondary)
                             }
                         } icon: {
                             Image(systemName: "arrow.down.app")
@@ -56,6 +59,7 @@ struct HelpView: View {
                         }
                     }
                     .foregroundColor(Color.accentColor)
+                    #endif
                     
                     Link(destination: URL(string: "https://www.256arts.com/")!) {
                         Label("Developer Website", systemImage: "safari")
@@ -68,7 +72,6 @@ struct HelpView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Help")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -111,8 +114,6 @@ struct StickersHelpView: View {
     }
 }
 
-struct HelpView_Previews: PreviewProvider {
-    static var previews: some View {
-        HelpView()
-    }
+#Preview {
+    HelpView()
 }

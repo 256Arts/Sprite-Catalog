@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class SpriteImporter: ObservableObject {
+final class SpriteImporter: ObservableObject {
     
     struct SpriteSetConfiguration: Identifiable {
         var importedFileURLs: [URL]

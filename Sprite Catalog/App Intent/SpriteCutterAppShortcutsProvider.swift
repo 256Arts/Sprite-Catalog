@@ -15,7 +15,8 @@ struct SpriteCatalogAppShortcutsProvider: AppShortcutsProvider {
                 "Cut sprites",
                 "Cut spritesheet"
             ],
-            shortTitle: "Cut Sprites"
+            shortTitle: "Cut Sprites",
+            systemImageName: "scissors"
         )
     }
     static var shortcutTileColor: ShortcutTileColor = .teal

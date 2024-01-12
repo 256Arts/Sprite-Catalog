@@ -29,8 +29,6 @@ struct LabeledValue: View {
     }
 }
 
-struct LabeledValue_Previews: PreviewProvider {
-    static var previews: some View {
-        LabeledValue(value: "Jayden", label: "Author")
-    }
+#Preview {
+    LabeledValue(value: "Jayden", label: "Author")
 }

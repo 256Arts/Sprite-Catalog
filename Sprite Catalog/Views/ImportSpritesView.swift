@@ -83,8 +83,6 @@ struct ImportSpritesView: View {
     
 }
 
-struct ImportSpritesView_Previews: PreviewProvider {
-    static var previews: some View {
-        ImportSpritesView(importer: .init(debugMode: false))
-    }
+#Preview {
+    ImportSpritesView(importer: .init(debugMode: false))
 }

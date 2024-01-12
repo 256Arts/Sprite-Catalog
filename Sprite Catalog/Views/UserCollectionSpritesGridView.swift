@@ -18,8 +18,6 @@ struct UserCollectionSpritesGridView: View {
     }
 }
 
-struct UserCollectionSpritesGridView_Previews: PreviewProvider {
-    static var previews: some View {
-        UserCollectionSpritesGridView(userCollection: .myCollection)
-    }
+#Preview {
+    UserCollectionSpritesGridView(userCollection: .myCollection)
 }

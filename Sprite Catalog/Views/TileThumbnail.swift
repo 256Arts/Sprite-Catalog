@@ -13,8 +13,17 @@ struct TileThumbnail: View {
     @State var tile: SpriteSet.Tile
     
     var body: some View {
+        #if os(visionOS)
+        Image(uiImage: tile.variants[0].frameImage())
+            .resizable()
+            .interpolation(.none)
+            .scaledToFit()
+            .padding(6)
+            .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
+            .draggable(tile.variants[0])
+        #else
         RoundedRectangle(cornerRadius: 16)
-            .foregroundColor(Color(UIColor.secondarySystemGroupedBackground))
+            .foregroundStyle(Color(UIColor.secondarySystemGroupedBackground))
             .aspectRatio(1, contentMode: .fit)
             .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
             .overlay {
@@ -24,7 +33,8 @@ struct TileThumbnail: View {
                     .scaledToFit()
                     .padding(6)
             }
-            .draggable(tile.variants.first!)
+            .draggable(tile.variants[0])
+        #endif
     }
 }
 
@@ -58,12 +68,10 @@ struct ArtworkTileThumbnail: View {
             )
             .aspectRatio(1, contentMode: .fit)
             .cornerRadius(16)
-            .draggable(tile.variants.first!)
+            .draggable(tile.variants[0])
     }
 }
 
-struct TileThumbnail_Previews: PreviewProvider {
-    static var previews: some View {
-        TileThumbnail(tile: .init(variants: [.init(imageName: "")]))
-    }
+#Preview {
+    TileThumbnail(tile: .init(variants: [.init(imageName: "")]))
 }

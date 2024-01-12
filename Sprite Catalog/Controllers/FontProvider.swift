@@ -6,16 +6,20 @@
 //
 
 import UIKit
+#if canImport(NotificationCenter)
 import NotificationCenter
+#endif
 
-class FontProvider: ObservableObject {
+final class FontProvider: ObservableObject {
     
     static let shared = FontProvider()
     
     @Published var registeredFamilies = Set<String>()
     
     init() {
+        #if canImport(NotificationCenter)
         NotificationCenter.default.addObserver(self, selector: #selector(updateRegisteredFonts), name: kCTFontManagerRegisteredFontsChangedNotification as Notification.Name, object: nil)
+        #endif
     }
     
     @objc func updateRegisteredFonts(_ sender: Any) {

@@ -25,8 +25,6 @@ struct IntField: View {
     }
 }
 
-struct IntField_Previews: PreviewProvider {
-    static var previews: some View {
-        IntField(title: "", value: .constant(0))
-    }
+#Preview {
+    IntField(title: "", value: .constant(0))
 }

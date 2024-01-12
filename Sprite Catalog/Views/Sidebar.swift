@@ -78,6 +78,7 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
+                #if !os(visionOS)
                 NavigationLink(value: MainScreen.collection(.stickersCollection)) {
                     Label {
                         Text("iMessage Stickers")
@@ -86,6 +87,7 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
+                #endif
                 NavigationLink(value: MainScreen.imports) {
                     Label {
                         Text("Imports")
@@ -98,12 +100,9 @@ struct Sidebar: View {
                 Text("Library")
             }
         }
-        .listStyle(SidebarListStyle())
+        .listStyle(.sidebar)
         .navigationTitle("Sprite Catalog")
         .navigationBarTitleDisplayMode(.inline)
-        #if targetEnvironment(macCatalyst)
-        .navigationBarHidden(true)
-        #endif
         .toolbar {
             #if DEBUG
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -138,12 +137,36 @@ struct Sidebar: View {
                 }
             }
             #endif
+            #if os(visionOS)
+            ToolbarItem(placement: .navigationBarTrailing) {
+                // visionOS does NOT have space to show the title and both buttons
+                Menu {
+                    Button {
+                        showingCutter = true
+                    } label: {
+                        Label("Cut Sprites", systemImage: "scissors")
+                    }
+                    .buttonBorderShape(.circle)
+                    Button {
+                        showingHelp = true
+                    } label: {
+                        Label("Help", systemImage: "questionmark.circle")
+                    }
+                    .buttonBorderShape(.circle)
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .symbolVariant(.circle)
+                }
+                .buttonBorderShape(.circle)
+            }
+            #else
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingCutter = true
                 } label: {
                     Image(systemName: "scissors")
                 }
+                .buttonBorderShape(.circle)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
@@ -151,7 +174,9 @@ struct Sidebar: View {
                 } label: {
                     Image(systemName: "questionmark.circle")
                 }
+                .buttonBorderShape(.circle)
             }
+            #endif
         }
         .onAppear {
             if whatsNewVersion < Sprite_CatalogApp.appWhatsNewVersion {
@@ -174,15 +199,15 @@ struct Sidebar: View {
             HelpView()
         }
         #if DEBUG
-        .sheet(isPresented: $showingDebugImportSprites, content: {
+        .sheet(isPresented: $showingDebugImportSprites) {
             ImportSpritesView(importer: .init(debugMode: true))
-        })
-        .sheet(isPresented: $showingDebugCreateHTML, content: {
+        }
+        .sheet(isPresented: $showingDebugCreateHTML) {
             DebugCreateHTMLView()
-        })
-        .sheet(isPresented: $showingDebugPromoGrid, content: {
+        }
+        .sheet(isPresented: $showingDebugPromoGrid) {
             DebugPromoGridView()
-        })
+        }
         #endif
     }
 }
@@ -222,8 +247,6 @@ extension Image {
     }
 }
 
-struct CategoriesView_Previews: PreviewProvider {
-    static var previews: some View {
-        Sidebar(selectedScreen: .constant(.browse))
-    }
+#Preview {
+    Sidebar(selectedScreen: .constant(.browse))
 }

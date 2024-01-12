@@ -59,9 +59,8 @@ struct FontFamily: Hashable, Identifiable {
         case monospaced = "Monospaced"
         case lowercaseIncluded = "Lowercase Included"
         case installed = "Installed"
-        var id: Tag {
-            self
-        }
+        
+        var id: Tag { self }
     }
     
     let name: String
@@ -106,6 +105,10 @@ struct FontFamily: Hashable, Identifiable {
     
     static func == (lhs: FontFamily, rhs: FontFamily) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    func exportFontDocuments() -> [FontDocument] {
+        fonts.map({ FontDocument(font: $0, filename: "\(name) \($0.style)") })
     }
     
     static let allFamilies = [

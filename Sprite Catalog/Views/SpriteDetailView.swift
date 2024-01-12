@@ -107,6 +107,11 @@ struct SpriteDetailView: View {
                                 } label: {
                                     TileThumbnail(tile: sprite.states[stateIndex])
                                 }
+                                #if os(visionOS)
+                                .buttonBorderShape(.roundedRectangle)
+                                #elseif targetEnvironment(macCatalyst)
+                                .buttonStyle(.plain)
+                                #endif
                             }
                         }
                         .padding()
@@ -165,7 +170,9 @@ struct SpriteDetailView: View {
                         NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles.first!)
                         }
-                        #if targetEnvironment(macCatalyst)
+                        #if os(visionOS)
+                        .buttonBorderShape(.roundedRectangle)
+                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -241,9 +248,9 @@ struct SpriteDetailView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $showingFullscreen, content: {
+        .fullScreenCover(isPresented: $showingFullscreen) {
             FullscreenSpriteView(sprite: sprite)
-        })
+        }
         .alert("Secret Code: \(jaydenCode)", isPresented: $showingJaydenCode) {
             Button("Copy") {
                 UIPasteboard.general.string = jaydenCode
@@ -313,7 +320,7 @@ struct SpriteDetailView: View {
         try data.write(to: containerURL.appendingPathComponent("Import").appendingPathExtension("png"))
         let appGroupDefaults = UserDefaults(suiteName: Sprite_CatalogApp.spritePencilAppGroupID)
         appGroupDefaults?.set(sprite.name, forKey: "importSpriteName")
-        openURL(URL(string: "https://www.jaydenirwin.com/spritepencil/importfromapp/")!)
+        openURL(URL(string: "https://www.256arts.com/spritepencil/importfromapp/")!)
         spritesEdited += 1
         if spritesEdited == 5 || spritesEdited == 30 {
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
@@ -324,8 +331,6 @@ struct SpriteDetailView: View {
     
 }
 
-struct SpriteDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        SpriteDetailView(sprite: SpriteSet(id: "xxxxxx", name: "Title", artist: Artist(name: "Jayden"), licence: .cc0, layer: .object, tags: [], tiles: [.init(variants: [.init(imageName: "")])]))
-    }
+#Preview {
+    SpriteDetailView(sprite: SpriteSet(id: "xxxxxx", name: "Title", artist: Artist(name: "Jayden"), licence: .cc0, layer: .object, tags: [], tiles: [.init(variants: [.init(imageName: "")])]))
 }

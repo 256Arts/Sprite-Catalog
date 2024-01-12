@@ -26,7 +26,9 @@ struct SpritesGridView: View {
                         NavigationLink(value: sprite.id) {
                             ArtworkTileThumbnail(tile: sprite.tiles.first!)
                         }
-                        #if targetEnvironment(macCatalyst)
+                        #if os(visionOS)
+                        .buttonBorderShape(.roundedRectangle)
+                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -38,7 +40,9 @@ struct SpritesGridView: View {
                         NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles.first!)
                         }
-                        #if targetEnvironment(macCatalyst)
+                        #if os(visionOS)
+                        .buttonBorderShape(.roundedRectangle)
+                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -138,8 +142,6 @@ struct SpritesGridView: View {
     
 }
 
-struct BrowserView_Previews: PreviewProvider {
-    static var previews: some View {
-        SpritesGridView(title: "All", sprites: [])
-    }
+#Preview {
+    SpritesGridView(title: "All", sprites: [])
 }

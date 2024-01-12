@@ -19,7 +19,9 @@ struct FontsGridView: View {
                     NavigationLink(value: family) {
                         FontThumbnail(family: family)
                     }
-                    #if targetEnvironment(macCatalyst)
+                    #if os(visionOS)
+                    .buttonBorderShape(.roundedRectangle)
+                    #elseif targetEnvironment(macCatalyst)
                     .buttonStyle(.plain)
                     #endif
                 }
@@ -46,6 +48,17 @@ struct FontThumbnail: View {
     @State var family: FontFamily
     
     var body: some View {
+        #if os(visionOS)
+        Color.clear
+        .overlay {
+            Text("Aa")
+                .font(.custom(family.fontNames.first ?? "", size: family.displaySize * 2.5))
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: true, vertical: true)
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .draggable(family.fonts.first!)
+        #else
         Color(uiColor: .secondarySystemGroupedBackground)
         .overlay {
             Text("Aa")
@@ -56,11 +69,10 @@ struct FontThumbnail: View {
         .aspectRatio(1, contentMode: .fit)
         .cornerRadius(16)
         .draggable(family.fonts.first!)
+        #endif
     }
 }
 
-struct FontsGridView_Previews: PreviewProvider {
-    static var previews: some View {
-        FontsGridView()
-    }
+#Preview {
+    FontsGridView()
 }

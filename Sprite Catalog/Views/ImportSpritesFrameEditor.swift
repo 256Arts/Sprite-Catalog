@@ -52,8 +52,6 @@ struct ImportSpritesFrameEditor: View {
     }
 }
 
-struct ImportSpritesFrameEditor_Previews: PreviewProvider {
-    static var previews: some View {
-        ImportSpritesFrameEditor(config: .init(importedFileURLs: [], name: "", category: .miscItem))
-    }
+#Preview {
+    ImportSpritesFrameEditor(config: .init(importedFileURLs: [], name: "", category: .miscItem))
 }

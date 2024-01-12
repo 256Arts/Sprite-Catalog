@@ -79,7 +79,7 @@ class DebugReorderViewController: UICollectionViewController, UICollectionViewDr
     
 }
 
-class DebugImageCell: UICollectionViewCell {
+final class DebugImageCell: UICollectionViewCell {
     
     let imageView = UIImageView()
     

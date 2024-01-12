@@ -21,7 +21,7 @@ struct DebugPromoGridView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 HStack {
                     Stepper("Size", value: $size)
@@ -51,9 +51,7 @@ struct DebugPromoGridView: View {
     }
 }
 
-struct DebugPromoGridView_Previews: PreviewProvider {
-    static var previews: some View {
-        DebugPromoGridView()
-    }
+#Preview {
+    DebugPromoGridView()
 }
 #endif

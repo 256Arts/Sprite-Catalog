@@ -28,7 +28,9 @@ struct CollectionView: View {
                     NavigationLink(value: sprite.id) {
                         TileThumbnail(tile: sprite.tiles.first!)
                     }
-                    #if targetEnvironment(macCatalyst)
+                    #if os(visionOS)
+                    .buttonBorderShape(.roundedRectangle)
+                    #elseif targetEnvironment(macCatalyst)
                     .buttonStyle(.plain)
                     #endif
                 }
@@ -41,8 +43,6 @@ struct CollectionView: View {
     }
 }
 
-struct ArtistView_Previews: PreviewProvider {
-    static var previews: some View {
-        CollectionView(collection: SpriteCollection(title: "", spriteIDs: []), webpageURL: nil)
-    }
+#Preview {
+    CollectionView(collection: SpriteCollection(title: "", spriteIDs: []), webpageURL: nil)
 }

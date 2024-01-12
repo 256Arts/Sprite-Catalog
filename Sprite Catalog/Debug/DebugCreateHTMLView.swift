@@ -13,7 +13,7 @@ struct DebugCreateHTMLView: View {
     @State var category: SpriteSet.Tag = .peopleAnimal
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Picker("Category", selection: $category) {
                     ForEach(SpriteImporter.categories) { category in
@@ -21,12 +21,12 @@ struct DebugCreateHTMLView: View {
                             .tag(category)
                     }
                 }
-                .controlSize(.large)
                 Button("Export HTML") {
                     exportHTML(createPageHTML())
                 }
                 .buttonStyle(.bordered)
             }
+            .controlSize(.large)
             .padding()
             .navigationTitle("Create HTML Pages")
         }
@@ -132,14 +132,17 @@ struct DebugCreateHTMLView: View {
                     <img src="/global/artwork.png">
                     Artwork
                 </a>
+                <a title="Not Available on Web" class="disabled">
+                    <picture>
+                        <source srcset="/global/fonts_dark.png" media="(prefers-color-scheme: dark)">
+                        <img src="/global/fonts.png">
+                    </picture>
+                    Fonts
+                </a>
                 <h4>Library</h4>
                 <a title="Not Available on Web" class="disabled">
                     <img src="/global/folder.png">
                     My Collection
-                </a>
-                <a class="donate" href="https://www.patreon.com/jaydenirwin/" target="_blank">
-                    Help keep this website running
-                    <div class="button">Support</div>
                 </a>
                 <div class="footer">
                     <a href="https://form.jotform.com/211994359527266" target="_blank">Submit Your Sprites</a>
@@ -188,10 +191,10 @@ struct DebugCreateHTMLView: View {
         </dialog>
         <footer>
             <section class="content">
-                <p class="secondary">Copyright &#169; Jayden Irwin. All rights reserved.</p>
-                <a href="https://www.jaydenirwin.com/spritecatalog/">Website</a>
+                <p class="secondary">Copyright &#169; 256 Arts Inc. All rights reserved.</p>
+                <a href="https://www.256arts.com/spritecatalog/">Website</a>
                 <a href="/api/">API</a>
-                <a href="https://www.jaydenirwin.com/contact/">Contact</a>
+                <a href="https://www.256arts.com/contact/">Contact</a>
             </section>
         </footer>
         <script async src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -233,9 +236,7 @@ struct DebugCreateHTMLView: View {
     
 }
 
-struct DebugHTMLGenerator_Previews: PreviewProvider {
-    static var previews: some View {
-        DebugCreateHTMLView()
-    }
+#Preview {
+    DebugCreateHTMLView()
 }
 #endif
