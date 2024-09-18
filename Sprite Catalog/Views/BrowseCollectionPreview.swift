@@ -42,7 +42,10 @@ struct BrowseCollectionPreview: View {
             .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: heroRadius))
             
             Text(collection.title)
+                .lineLimit(1)
+                .allowsTightening(true)
                 .foregroundColor(.primary)
+                .frame(width: 1)
         }
         #if os(visionOS)
         .padding(.vertical, 6)

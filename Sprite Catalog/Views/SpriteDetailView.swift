@@ -39,7 +39,7 @@ struct SpriteDetailView: View {
     @State var showingJaydenCode = false
     
     var transferableImage: Image? {
-        let original = UIImage(named: sprite.states[stateIndex].variants.first!.imageName)
+        let original = UIImage(named: sprite.states[stateIndex].variants[0].imageName)
         guard let filteredImage = try? original?.hueRotate(angle: hueRotationDegrees) else { return nil }
         
         return Image(uiImage: filteredImage)
@@ -50,7 +50,7 @@ struct SpriteDetailView: View {
     
     var body: some View {
         ScrollView {
-            Image(uiImage: sprite.states[stateIndex].variants.first!.frameImages()[frame])
+            Image(uiImage: sprite.states[stateIndex].variants[0].frameImages()[frame])
                 .resizable()
                 .interpolation(.none)
                 .hueRotation(Angle.degrees(hueRotationDegrees))
@@ -73,7 +73,7 @@ struct SpriteDetailView: View {
                     #endif
                 }
                 .onDrag {
-                    NSItemProvider(object: UIImage(named: sprite.states[stateIndex].variants.first!.imageName)!)
+                    NSItemProvider(object: UIImage(named: sprite.states[stateIndex].variants[0].imageName)!)
                 }
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
@@ -107,9 +107,8 @@ struct SpriteDetailView: View {
                                 } label: {
                                     TileThumbnail(tile: sprite.states[stateIndex])
                                 }
-                                #if os(visionOS)
+                                #if os(visionOS) || targetEnvironment(macCatalyst)
                                 .buttonBorderShape(.roundedRectangle)
-                                #elseif targetEnvironment(macCatalyst)
                                 .buttonStyle(.plain)
                                 #endif
                             }
@@ -168,11 +167,10 @@ struct SpriteDetailView: View {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                     ForEach(sprite.relatedSprites().prefix(10)) { sprite in
                         NavigationLink(value: sprite.id) {
-                            TileThumbnail(tile: sprite.tiles.first!)
+                            TileThumbnail(tile: sprite.tiles[0])
                         }
-                        #if os(visionOS)
+                        #if os(visionOS) || targetEnvironment(macCatalyst)
                         .buttonBorderShape(.roundedRectangle)
-                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -314,7 +312,7 @@ struct SpriteDetailView: View {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Sprite_CatalogApp.spritePencilAppGroupID) else {
             throw OpenSpritePencilError.failedToGetSharedContainer
         }
-        guard let data = try UIImage(named: sprite.states[stateIndex].variants.first!.imageName)?.hueRotate(angle: hueRotationDegrees).pngData() else {
+        guard let data = try UIImage(named: sprite.states[stateIndex].variants[0].imageName)?.hueRotate(angle: hueRotationDegrees).pngData() else {
             throw OpenSpritePencilError.failedToRotateHueOrCreateImageData
         }
         try data.write(to: containerURL.appendingPathComponent("Import").appendingPathExtension("png"))

@@ -18,7 +18,7 @@ struct ImportSpritesView: View {
     @State var showingImportError = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section {
                     TextField("Artist Display Name", text: $importer.artistName)

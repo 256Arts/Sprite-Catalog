@@ -48,7 +48,7 @@ struct PlainTileThumbnail: View {
             .resizable()
             .interpolation(.none)
             .aspectRatio(contentMode: .fit)
-            .draggable(tile.variants.first!)
+            .draggable(tile.variants[0])
     }
 }
 

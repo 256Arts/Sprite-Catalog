@@ -19,9 +19,8 @@ struct FontsGridView: View {
                     NavigationLink(value: family) {
                         FontThumbnail(family: family)
                     }
-                    #if os(visionOS)
+                    #if os(visionOS) || targetEnvironment(macCatalyst)
                     .buttonBorderShape(.roundedRectangle)
-                    #elseif targetEnvironment(macCatalyst)
                     .buttonStyle(.plain)
                     #endif
                 }
@@ -57,7 +56,7 @@ struct FontThumbnail: View {
                 .fixedSize(horizontal: true, vertical: true)
         }
         .aspectRatio(1, contentMode: .fit)
-        .draggable(family.fonts.first!)
+        .draggable(family.fonts[0])
         #else
         Color(uiColor: .secondarySystemGroupedBackground)
         .overlay {
@@ -68,7 +67,7 @@ struct FontThumbnail: View {
         }
         .aspectRatio(1, contentMode: .fit)
         .cornerRadius(16)
-        .draggable(family.fonts.first!)
+        .draggable(family.fonts[0])
         #endif
     }
 }

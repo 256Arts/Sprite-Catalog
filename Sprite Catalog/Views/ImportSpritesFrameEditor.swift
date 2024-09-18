@@ -21,7 +21,7 @@ struct ImportSpritesFrameEditor: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            if let uiImage = UIImage(contentsOfFile: config.importedFileURLs.first!.path) {
+            if let uiImage = UIImage(contentsOfFile: config.importedFileURLs[0].path) {
                 ZStack {
                     Image(uiImage: uiImage)
                         .resizable()

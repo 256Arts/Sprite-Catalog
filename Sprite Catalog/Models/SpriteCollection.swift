@@ -137,11 +137,11 @@ class SpriteCollection: ObservableObject, Identifiable, Hashable, Codable {
         // Save all new files
         for sprite in sprites {
             #if canImport(UIKit)
-            guard let data = UIImage(named: sprite.tiles.first!.variants.first!.imageName)?.pngData() else {
+            guard let data = UIImage(named: sprite.tiles[0].variants[0].imageName)?.pngData() else {
                 throw SaveStickersError.failedToCreateImageData
             }
             #else
-            guard let data = NSImage(named: sprite.tiles.first!.variants.first!.imageName)?.pngData() else {
+            guard let data = NSImage(named: sprite.tiles[0].variants[0].imageName)?.pngData() else {
                 throw SaveStickersError.failedToCreateImageData
             }
             #endif

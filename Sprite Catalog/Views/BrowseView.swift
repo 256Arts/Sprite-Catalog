@@ -143,7 +143,7 @@ struct BrowseView: View {
                     .frame(height: 20)
             }
         }
-        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
         .navigationTitle("Browse")
     }
 }
@@ -164,29 +164,29 @@ struct SpritePencilAd: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [.blue, .init(red: 0.0, green: 1.0, blue: 0.45)]), startPoint: .leading, endPoint: .bottomTrailing)
             if hSizeClass == .compact {
-                VStack {
-                    Text("Sprite Pencil")
-                        .font(.largeTitle)
-                        .foregroundColor(.white)
-                    Text("Create Pixel Art")
-                        .font(.title)
-                        .foregroundColor(.secondary)
+                VStack(alignment: .leading) {
+                    VStack(alignment: .leading) {
+                        Text("Sprite Pencil")
+                            .font(.title)
+                        Text("Create Pixel Art")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
                     Image("SP iPad")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 }
-                .padding()
+                .scenePadding()
             } else {
                 HStack {
                     Spacer()
                     VStack(alignment: .leading) {
                         Text("Sprite Pencil")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
+                            .font(.title)
                         Text("Create Pixel Art")
-                            .font(.title2)
+                            .font(.headline)
                             .foregroundColor(.secondary)
                     }
                     .fixedSize()
@@ -197,6 +197,7 @@ struct SpritePencilAd: View {
                 .padding(24)
             }
         }
+        .background(Color(UIColor.secondarySystemGroupedBackground), ignoresSafeAreaEdges: .all)
         .onTapGesture {
             #if os(visionOS)
             openURL(URL(string: "https://apps.apple.com/app/sprite-pencil/id1437835952")!)

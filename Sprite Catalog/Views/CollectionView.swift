@@ -26,18 +26,17 @@ struct CollectionView: View {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                 ForEach(collection.sprites) { sprite in
                     NavigationLink(value: sprite.id) {
-                        TileThumbnail(tile: sprite.tiles.first!)
+                        TileThumbnail(tile: sprite.tiles[0])
                     }
-                    #if os(visionOS)
+                    #if os(visionOS) || targetEnvironment(macCatalyst)
                     .buttonBorderShape(.roundedRectangle)
-                    #elseif targetEnvironment(macCatalyst)
                     .buttonStyle(.plain)
                     #endif
                 }
             }
             .padding()
         }
-        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
         .navigationTitle(collection.title)
         .navigationBarTitleDisplayMode(.large)
     }

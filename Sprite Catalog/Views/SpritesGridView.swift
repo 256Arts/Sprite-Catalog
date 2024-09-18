@@ -24,11 +24,10 @@ struct SpritesGridView: View {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))]) {
                     ForEach(filteredSprites) { sprite in
                         NavigationLink(value: sprite.id) {
-                            ArtworkTileThumbnail(tile: sprite.tiles.first!)
+                            ArtworkTileThumbnail(tile: sprite.tiles[0])
                         }
-                        #if os(visionOS)
+                        #if os(visionOS) || targetEnvironment(macCatalyst)
                         .buttonBorderShape(.roundedRectangle)
-                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -38,11 +37,10 @@ struct SpritesGridView: View {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                     ForEach(filteredSprites) { sprite in
                         NavigationLink(value: sprite.id) {
-                            TileThumbnail(tile: sprite.tiles.first!)
+                            TileThumbnail(tile: sprite.tiles[0])
                         }
-                        #if os(visionOS)
+                        #if os(visionOS) || targetEnvironment(macCatalyst)
                         .buttonBorderShape(.roundedRectangle)
-                        #elseif targetEnvironment(macCatalyst)
                         .buttonStyle(.plain)
                         #endif
                     }
@@ -128,7 +126,7 @@ struct SpritesGridView: View {
         }
         if filterSettings.sizeFilter != nil {
             filteredSprites = filteredSprites.filter({
-                let size = $0.tiles.first!.variants.first!.frameImage().size
+                let size = $0.tiles[0].variants[0].frameImage().size
                 if size == CGSize(width: 16, height: 16) {
                     return (filterSettings.sizeFilter == .equal16)
                 } else if 16 < size.width || 16 < size.height {

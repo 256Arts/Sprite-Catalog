@@ -140,7 +140,7 @@ struct SpriteSet: Equatable, Identifiable, Codable {
         let facing: Direction?
         let variants: [RandomVariant]
         var id: String {
-            variants.first!.imageName
+            variants[0].imageName
         }
         
         init(borders: ConnectedEdges? = nil, facing: Direction? = nil, variants: [RandomVariant]) {
@@ -191,7 +191,7 @@ struct SpriteSet: Equatable, Identifiable, Codable {
     
     var states: [Tile] {
         // Tiles with the same border and direction used to store different sprite 'states'
-        tiles.filter({ $0.connectedEdges == tiles.first!.connectedEdges && $0.facing == tiles.first!.facing })
+        tiles.filter({ $0.connectedEdges == tiles[0].connectedEdges && $0.facing == tiles[0].facing })
     }
     
     func relatedScore(to other: SpriteSet) -> Int {

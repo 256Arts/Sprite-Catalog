@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct Sprite_CatalogApp: App {
     
-    static let spritePencilAppGroupID =  "group.com.jaydenirwin.spritepencil"
+    static let spritePencilAppGroupID = "group.com.jaydenirwin.spritepencil"
     static let appWhatsNewVersion = 1
     static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
     

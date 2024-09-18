@@ -61,7 +61,8 @@ struct DebugCreateHTMLView: View {
         <link rel="stylesheet" href="page.css">
         <title>{category} - Sprite Catalog</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <meta name="theme-color" content="#fff">
+        <meta name="theme-color" content="#f7f7f7" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
         <meta name="og:image" content="/global/opengraph.png">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="keywords" content="{category}, game, developer, iphone, ipad, mac, iOS, iPadOS, macOS, sprite, pixel, art, pencil, app">
@@ -197,7 +198,7 @@ struct DebugCreateHTMLView: View {
                 <a href="https://www.256arts.com/contact/">Contact</a>
             </section>
         </footer>
-        <script async src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script async src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script async src="/global/script.js"></script>
     </body>
 </html>

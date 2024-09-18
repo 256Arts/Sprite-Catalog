@@ -12,7 +12,7 @@ final class SpriteImporter: ObservableObject {
     struct SpriteSetConfiguration: Identifiable {
         var importedFileURLs: [URL]
         var id: URL {
-            importedFileURLs.first!
+            importedFileURLs[0]
         }
         var name: String
         var category: SpriteSet.Tag

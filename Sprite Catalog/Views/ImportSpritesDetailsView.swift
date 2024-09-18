@@ -20,7 +20,7 @@ struct ImportSpritesDetailsView: View {
         List {
             ForEach($importer.spriteConfigs) { $config in
                 HStack {
-                    if let uiImage = UIImage(contentsOfFile: config.importedFileURLs.first!.path) {
+                    if let uiImage = UIImage(contentsOfFile: config.importedFileURLs[0].path) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .interpolation(.none)

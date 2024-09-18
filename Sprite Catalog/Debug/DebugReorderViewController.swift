@@ -28,7 +28,7 @@ class DebugReorderViewController: UICollectionViewController, UICollectionViewDr
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! DebugImageCell
         let sprite = SpriteSet.allSprites[indexPath.item]
-        cell.imageView.image = sprite.states.first!.variants.first!.frameImage()
+        cell.imageView.image = sprite.states[0].variants[0].frameImage()
         return cell
     }
     
