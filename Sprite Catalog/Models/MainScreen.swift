@@ -13,15 +13,15 @@ enum MainScreen: Hashable, Identifiable {
     var id: String {
         switch self {
         case .browse:
-            return "browse"
+            "browse"
         case .fonts:
-            return "fonts"
+            "fonts"
         case .imports:
-            return "imports"
+            "imports"
         case .category(let tag):
-            return tag.rawValue
+            tag.rawValue
         case .collection(let collection):
-            return collection.title
+            "collection-" + collection.title
         }
     }
 }

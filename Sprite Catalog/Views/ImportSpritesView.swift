@@ -12,7 +12,7 @@ struct ImportSpritesView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    @ObservedObject var importer: SpriteImporter
+    @Bindable var importer: SpriteImporter
     
     @State var showingImport = false
     @State var showingImportError = false

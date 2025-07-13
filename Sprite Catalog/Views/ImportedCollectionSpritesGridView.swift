@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ImportedCollectionSpritesGridView: View {
 
-    @ObservedObject var userCollection: SpriteCollection
+    @Bindable var userCollection: SpriteCollection
 
     @State var showingImport = false
 
@@ -17,11 +17,8 @@ struct ImportedCollectionSpritesGridView: View {
         SpritesGridView(title: userCollection.title, sprites: userCollection.sprites)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
+                    Button("Import", systemImage: "plus") {
                         showingImport = true
-                    } label: {
-                        Image(systemName: "plus.circle")
-                            .symbolVariant(.fill)
                     }
                 }
             }

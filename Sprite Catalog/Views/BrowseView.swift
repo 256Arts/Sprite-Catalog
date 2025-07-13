@@ -5,7 +5,6 @@
 //  Created by 256 Arts Developer on 2021-06-16.
 //
 
-import StoreKit
 import SwiftUI
 
 struct BrowseView: View {
@@ -108,9 +107,6 @@ struct BrowseView: View {
                     .safeAreaPadding(.horizontal, 20)
                 }
                 
-                SpritePencilAd()
-                    .padding(.top)
-                
                 if 3 < suggestions.count {
                     HStack {
                         Text("Based on Your Recent Activity")
@@ -146,71 +142,6 @@ struct BrowseView: View {
         .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
         .navigationTitle("Browse")
     }
-}
-
-struct SpritePencilAd: View {
-    
-    #if !os(visionOS)
-    let appStoreVC: SKStoreProductViewController = {
-        let vc = SKStoreProductViewController()
-        vc.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: AppID.spritePencil.rawValue]) { (result, error) in
-            print(error?.localizedDescription as Any)
-        }
-        return vc
-    }()
-    #endif
-    
-    @Environment(\.horizontalSizeClass) var hSizeClass
-    
-    var body: some View {
-        ZStack {
-            if hSizeClass == .compact {
-                VStack(alignment: .leading) {
-                    VStack(alignment: .leading) {
-                        Text("Sprite Pencil")
-                            .font(.title)
-                        Text("Create Pixel Art")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal)
-                    Image("SP iPad")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }
-                .scenePadding()
-            } else {
-                HStack {
-                    Spacer()
-                    VStack(alignment: .leading) {
-                        Text("Sprite Pencil")
-                            .font(.title)
-                        Text("Create Pixel Art")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                    }
-                    .fixedSize()
-                    Spacer()
-                    Image("SP iPad")
-                    Spacer()
-                }
-                .padding(24)
-            }
-        }
-        .background(Color(UIColor.secondarySystemGroupedBackground), ignoresSafeAreaEdges: .all)
-        .onTapGesture {
-            #if os(visionOS)
-            openURL(URL(string: "https://apps.apple.com/app/sprite-pencil/id1437835952")!)
-            #else
-            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                scene.windows.first?.rootViewController?.present(appStoreVC, animated: true)
-            }
-            #endif
-        }
-    }
-    
-    @Environment(\.openURL) private var openURL
-    
 }
 
 #Preview {

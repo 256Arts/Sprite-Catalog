@@ -7,7 +7,8 @@
 
 import Foundation
 
-class CloudController: ObservableObject {
+@Observable
+class CloudController {
 
     enum FetchError: Error {
         case noObjectForKey
@@ -18,7 +19,7 @@ class CloudController: ObservableObject {
     let userSpritesDirectoryURL = FileManager.default.url(forUbiquityContainerIdentifier: nil) ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     let metadataQuery = NSMetadataQuery()
 
-    @Published var spriteCollection: SpriteCollection?
+    var spriteCollection: SpriteCollection?
 
     init() {
         metadataQuery.notificationBatchingInterval = 1

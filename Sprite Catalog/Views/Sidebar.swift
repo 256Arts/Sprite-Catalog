@@ -6,25 +6,16 @@
 //
 
 import SwiftUI
-import WelcomeKit
 
 struct Sidebar: View {
     
-    let welcomeFeatures = [
-        WelcomeFeature(image: Image(systemName: "square.grid.2x2.fill"), title: "2000+ Sprites", body: "Including exclusive sprites."),
-        WelcomeFeature(image: Image(systemName: "paintbrush.fill"), title: "Quick Recolor", body: "Recolor any sprite."),
-        WelcomeFeature(image: Image("Sprite Pencil"), title: "One-Tap Edit", body: "Open in Sprite Pencil in one tap.")
-    ]
-    
-    @AppStorage(UserDefaults.Key.whatsNewVersion) var whatsNewVersion = 0
+    @Environment(\.accessibilityAssistiveAccessEnabled) private var isAssistiveAccessEnabled
 
-    @ObservedObject var cloudController: CloudController = .shared
+    @Bindable var cloudController: CloudController = .shared
     
     @Binding var selectedScreen: MainScreen?
     
-    @State var showingWelcome = false
     @State var showingCutter = false
-    @State var showingHelp = false
     
     #if DEBUG
     @State var showingDebugImportSprites = false
@@ -69,7 +60,7 @@ struct Sidebar: View {
                 }
             }
             
-            Section {
+            Section("Library") {
                 NavigationLink(value: MainScreen.collection(.myCollection)) {
                     Label {
                         Text("My Collection")
@@ -96,47 +87,11 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
-            } header: {
-                Text("Library")
             }
         }
         .listStyle(.sidebar)
         .navigationTitle("Sprite Catalog")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            #if DEBUG
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button {
-                        showingDebugImportSprites = true
-                    } label: {
-                        Label("Import Sprites", systemImage: "plus.square")
-                    }
-                    Button {
-                        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                            let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
-                            let navVC = UINavigationController(rootViewController: debugVC)
-                            navVC.modalPresentationStyle = .fullScreen
-                            scene.windows.first?.rootViewController?.present(navVC, animated: true)
-                        }
-                    } label: {
-                        Label("Reorder", systemImage: "square.grid.2x2")
-                    }
-                    Button {
-                        showingDebugCreateHTML = true
-                    } label: {
-                        Label("Create HTML Pages", systemImage: "chevron.left.forwardslash.chevron.right")
-                    }
-                    Button {
-                        showingDebugPromoGrid = true
-                    } label: {
-                        Label("Create Promo Grid", systemImage: "square.grid.3x3.square")
-                    }
-                } label: {
-                    Image(systemName: "ant")
-                }
-            }
-            #endif
             #if os(visionOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 // visionOS does NOT have space to show the title and both buttons
@@ -147,12 +102,6 @@ struct Sidebar: View {
                         Label("Cut Sprites", systemImage: "scissors")
                     }
                     .buttonBorderShape(.circle)
-                    Button {
-                        showingHelp = true
-                    } label: {
-                        Label("Help", systemImage: "questionmark.circle")
-                    }
-                    .buttonBorderShape(.circle)
                 } label: {
                     Image(systemName: "ellipsis")
                         .symbolVariant(.circle)
@@ -160,43 +109,61 @@ struct Sidebar: View {
                 .buttonBorderShape(.circle)
             }
             #else
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showingCutter = true
-                } label: {
-                    Image(systemName: "scissors")
+            if !isAssistiveAccessEnabled {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showingCutter = true
+                    } label: {
+                        Image(systemName: "scissors")
+                    }
+                    .buttonBorderShape(.circle)
                 }
-                .buttonBorderShape(.circle)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showingHelp = true
-                } label: {
-                    Image(systemName: "questionmark.circle")
+                
+                ToolbarItemGroup(placement: .secondaryAction) {
+                    #if DEBUG
+                    Menu("Debug", systemImage: "ant") {
+                        Button("Import Sprites", systemImage: "plus.square") {
+                            showingDebugImportSprites = true
+                        }
+                        Button("Reorder", systemImage: "square.grid.2x2") {
+                            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                                let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
+                                let navVC = UINavigationController(rootViewController: debugVC)
+                                navVC.modalPresentationStyle = .fullScreen
+                                scene.windows.first?.rootViewController?.present(navVC, animated: true)
+                            }
+                        }
+                        Button("Create HTML Pages", systemImage: "chevron.left.forwardslash.chevron.right") {
+                            showingDebugCreateHTML = true
+                        }
+                        Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
+                            showingDebugPromoGrid = true
+                        }
+                    }
+                    #endif
+                    
+                    Section {
+                        Link(destination: URL(string: "https://www.256arts.com/")!) {
+                            Label("Developer Website", systemImage: "safari")
+                        }
+                        Link(destination: URL(string: "https://www.256arts.com/joincommunity/")!) {
+                            Label("Join Community", systemImage: "bubble.left.and.bubble.right")
+                        }
+                        Link(destination: URL(string: "https://form.jotform.com/211994359527266")!) {
+                            Label("Submit Your Sprites", systemImage: "paperplane")
+                        }
+                        Link(destination: URL(string: "https://github.com/256Arts/Sprite-Catalog")!) {
+                            Label("Contribute on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                        }
+                    }
                 }
-                .buttonBorderShape(.circle)
             }
             #endif
         }
-        .onAppear {
-            if whatsNewVersion < Sprite_CatalogApp.appWhatsNewVersion {
-                showingWelcome = true
-            }
-        }
-        .sheet(isPresented: $showingWelcome, onDismiss: {
-            if whatsNewVersion < Sprite_CatalogApp.appWhatsNewVersion {
-                whatsNewVersion = Sprite_CatalogApp.appWhatsNewVersion
-            }
-        }, content: {
-            WelcomeView(isFirstLaunch: whatsNewVersion == 0, appName: "Sprite Catalog", features: welcomeFeatures)
-        })
         .sheet(isPresented: $showingCutter) {
             NavigationStack {
                 CutterView()
             }
-        }
-        .sheet(isPresented: $showingHelp) {
-            HelpView()
         }
         #if DEBUG
         .sheet(isPresented: $showingDebugImportSprites) {

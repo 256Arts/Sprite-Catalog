@@ -116,8 +116,8 @@ struct CutterView: View, DropDelegate {
             #endif
         }
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", systemImage: "xmark") {
                     dismiss()
                 }
             }

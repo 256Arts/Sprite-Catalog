@@ -10,11 +10,12 @@ import UIKit
 import NotificationCenter
 #endif
 
-final class FontProvider: ObservableObject {
+@Observable
+final class FontProvider {
     
     static let shared = FontProvider()
     
-    @Published var registeredFamilies = Set<String>()
+    var registeredFamilies = Set<String>()
     
     init() {
         #if canImport(NotificationCenter)

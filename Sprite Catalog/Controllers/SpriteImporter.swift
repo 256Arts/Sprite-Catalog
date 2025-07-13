@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-final class SpriteImporter: ObservableObject {
+@Observable
+final class SpriteImporter {
     
     struct SpriteSetConfiguration: Identifiable {
         var importedFileURLs: [URL]
@@ -32,15 +33,15 @@ final class SpriteImporter: ObservableObject {
         debugMode ? fileManager.temporaryDirectory : CloudController.shared.userSpritesDirectoryURL
     }
     
-    @Published var artistName = ""
-    @Published var artistWebsite = ""
-    @Published var licence: Licence = .none
-    @Published var defaultCategory: SpriteSet.Tag = .miscItem
-    @Published var blackOutline = true
-    @Published var limitedPalette = true
-    @Published var importFilenames = true
+    var artistName = ""
+    var artistWebsite = ""
+    var licence: Licence = .none
+    var defaultCategory: SpriteSet.Tag = .miscItem
+    var blackOutline = true
+    var limitedPalette = true
+    var importFilenames = true
     
-    @Published var spriteConfigs: [SpriteSetConfiguration] = []
+    var spriteConfigs: [SpriteSetConfiguration] = []
     
     func clearImportedDirectory() throws {
         guard debugMode else { return }

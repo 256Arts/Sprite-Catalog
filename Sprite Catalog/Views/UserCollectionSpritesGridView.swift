@@ -9,12 +9,24 @@ import SwiftUI
 
 struct UserCollectionSpritesGridView: View {
     
-    @ObservedObject var userCollection: SpriteCollection
+    @Bindable var userCollection: SpriteCollection
 
-    @State var showingImport = false
+    @State var showingHelp = false
     
     var body: some View {
         SpritesGridView(title: userCollection.title, sprites: userCollection.sprites)
+            .toolbar {
+                if userCollection.title == SpriteCollection.stickersCollection.title {
+                    Button("Help", systemImage: "questionmark.circle") {
+                        showingHelp = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingHelp) {
+                NavigationStack {
+                    StickersHelpView()
+                }
+            }
     }
 }
 

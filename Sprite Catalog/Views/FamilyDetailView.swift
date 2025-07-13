@@ -13,7 +13,7 @@ struct FamilyDetailView: View {
         case sample, custom
     }
     
-    @ObservedObject var provider = FontProvider.shared
+    @Bindable var provider = FontProvider.shared
     
     @Binding var previewMode: PreviewMode
     @Binding var customString: String

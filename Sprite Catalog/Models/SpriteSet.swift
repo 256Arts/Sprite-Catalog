@@ -94,9 +94,9 @@ struct SpriteSet: Equatable, Identifiable, Codable {
 
             private var uiImage: UIImage {
                 if imageName.starts(with: "c-") {
-                    return UIImage(contentsOfFile: url.path) ?? UIImage()
+                    UIImage(contentsOfFile: url.path) ?? UIImage()
                 } else {
-                    return UIImage(named: imageName)!
+                    UIImage(named: imageName)!
                 }
             }
             

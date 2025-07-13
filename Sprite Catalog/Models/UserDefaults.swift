@@ -10,7 +10,6 @@ import Foundation
 extension UserDefaults {
     
     struct Key {
-        static let whatsNewVersion = "whatsNewVersion"
         static let spritesViewed = "spritesViewed"
         static let spritesEdited = "spritesEdited"
         static let suggestions = "suggestions"
@@ -18,7 +17,6 @@ extension UserDefaults {
     
     func register() {
         register(defaults: [
-            Key.whatsNewVersion: 0,
             Key.spritesViewed: 0,
             Key.spritesEdited: 0,
             Key.suggestions: [String](),

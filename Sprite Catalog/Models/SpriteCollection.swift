@@ -11,7 +11,8 @@ import UIKit
 import AppKit
 #endif
 
-class SpriteCollection: ObservableObject, Identifiable, Hashable, Codable {
+@Observable
+class SpriteCollection: Identifiable, Hashable, Codable {
     
     enum SaveStickersError: Error {
         case failedToGetSharedContainer
@@ -94,11 +95,7 @@ class SpriteCollection: ObservableObject, Identifiable, Hashable, Codable {
         title
     }
     
-    var spriteIDs: Set<String> {
-        willSet {
-            objectWillChange.send()
-        }
-    }
+    var spriteIDs: Set<String>
     var sprites: [SpriteSet] {
         SpriteSet.allSprites.filter({ spriteIDs.contains($0.id) })
     }

@@ -8,7 +8,7 @@
 import UIKit
 import Messages
 
-class MessagesViewController: MSMessagesAppViewController {
+final class MessagesViewController: MSMessagesAppViewController {
     
 //    let browserVC = StickerBrowserViewController(stickerSize: .small)
     

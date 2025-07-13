@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ImportSpritesDetailsView: View {
     
-    @ObservedObject var importer: SpriteImporter
+    @Bindable var importer: SpriteImporter
 
     @State var frameEditorConfig: SpriteImporter.SpriteSetConfiguration?
     #if DEBUG
@@ -29,7 +29,7 @@ struct ImportSpritesDetailsView: View {
                     }
                     TextField("Name", text: $config.name, onCommit: {
                         config.name = config.name.trimmingCharacters(in: .whitespacesAndNewlines)
-                        importer.objectWillChange.send()
+//                        importer.objectWillChange.send()
                     })
                         .textInputAutocapitalization(.words)
                     if 1 < config.importedFileURLs.count {

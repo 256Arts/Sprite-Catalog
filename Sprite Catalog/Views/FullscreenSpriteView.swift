@@ -31,15 +31,9 @@ struct FullscreenSpriteView: View {
         .tabViewStyle(.page)
         #if !targetEnvironment(macCatalyst)
         .overlay(alignment: .topLeading) {
-            Button {
+            Button("Close", systemImage: "xmark") {
                 dismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .imageScale(.large)
-                    .foregroundColor(Color(UIColor.secondaryLabel))
-                    .padding()
             }
-            .buttonBorderShape(.circle)
         }
         #endif
         .scenePadding()

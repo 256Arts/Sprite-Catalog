@@ -14,7 +14,7 @@ struct Sprite_CatalogApp: App {
     static let appWhatsNewVersion = 1
     static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
     
-    @ObservedObject var cloudController: CloudController = .shared
+    @Bindable var cloudController: CloudController = .shared
     
     @State var selectedScreen: MainScreen? = .browse
     @State var fontPreviewMode: FamilyDetailView.PreviewMode = .sample

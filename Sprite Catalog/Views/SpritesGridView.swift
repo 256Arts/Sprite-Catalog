@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SpritesGridView: View {
     
-    @ObservedObject var filterSettings: FilterSettings = .shared
+    @Bindable var filterSettings: FilterSettings = .shared
     
     let title: String
     let sprites: [SpriteSet]
@@ -82,7 +82,7 @@ struct SpritesGridView: View {
                 Toggle("Animated", isOn: $filterSettings.animatedOnly)
                     .menuActionDismissBehavior(.disabled)
             } label: {
-                Image(systemName: "line.horizontal.3.decrease.circle")
+                Image(systemName: "line.horizontal.3.decrease")
             }
         }
         .onAppear {

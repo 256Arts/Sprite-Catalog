@@ -20,29 +20,29 @@ enum Licence: String, CaseIterable, Identifiable, Codable {
     var name: String {
         switch self {
         case .none:
-            return "N/A"
+            "N/A"
         case .cc0:
-            return "Public Domain"
+            "Public Domain"
         case .attribution:
-            return "Attribution"
+            "Attribution"
         case .attributionShareAlike:
-            return "Attribution-Share Alike"
+            "Attribution-Share Alike"
         case .attributionNonCommercial:
-            return "Attribution-Non Commercial"
+            "Attribution-Non Commercial"
         }
     }
     var url: URL {
         switch self {
         case .none:
-            return URL(string: "https://apple.com")!
+            URL(string: "https://apple.com")!
         case .cc0:
-            return URL(string: "https://creativecommons.org/publicdomain/zero/1.0")!
+            URL(string: "https://creativecommons.org/publicdomain/zero/1.0")!
         case .attribution:
-            return URL(string: "https://creativecommons.org/licenses/by/4.0")!
+            URL(string: "https://creativecommons.org/licenses/by/4.0")!
         case .attributionShareAlike:
-            return URL(string: "https://creativecommons.org/licenses/by-sa/4.0")!
+            URL(string: "https://creativecommons.org/licenses/by-sa/4.0")!
         case .attributionNonCommercial:
-            return URL(string: "https://creativecommons.org/licenses/by-nc/4.0")!
+            URL(string: "https://creativecommons.org/licenses/by-nc/4.0")!
         }
     }
 }

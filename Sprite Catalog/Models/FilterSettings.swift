@@ -7,7 +7,8 @@
 
 import Foundation
 
-class FilterSettings: ObservableObject {
+@Observable
+class FilterSettings {
     
     enum SizeCategory: Identifiable, CaseIterable {
         case lessThan16, equal16, moreThan16
@@ -16,19 +17,19 @@ class FilterSettings: ObservableObject {
         var title: String {
             switch self {
             case .lessThan16:
-                return "Small"
+                "Small"
             case .equal16:
-                return "Medium (16x16)"
+                "Medium (16x16)"
             case .moreThan16:
-                return "Large"
+                "Large"
             }
         }
     }
     
     static let shared = FilterSettings()
     
-    @Published var sizeFilter: SizeCategory?
-    @Published var animatedOnly = false
-    @Published var tagFilters: Set<SpriteSet.Tag> = []
+    var sizeFilter: SizeCategory?
+    var animatedOnly = false
+    var tagFilters: Set<SpriteSet.Tag> = []
     
 }

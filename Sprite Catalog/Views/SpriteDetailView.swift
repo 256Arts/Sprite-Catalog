@@ -7,7 +7,6 @@
 
 import SwiftUI
 import StoreKit
-import JaydenCodeGenerator
 
 struct SpriteDetailView: View {
     
@@ -25,8 +24,8 @@ struct SpriteDetailView: View {
     @Environment(\.openURL) var openURL
     @Environment(\.openWindow) var openWindow
     
-    @ObservedObject var myCollection = SpriteCollection.myCollection
-    @ObservedObject var stickersCollection = SpriteCollection.stickersCollection
+    @Bindable var myCollection = SpriteCollection.myCollection
+    @Bindable var stickersCollection = SpriteCollection.stickersCollection
     
     @State var sprite: SpriteSet
     @State var stateIndex: Int = 0
@@ -36,16 +35,12 @@ struct SpriteDetailView: View {
     @State var showingExport = false
     @State var showingHueRotationPopover = false
     @State var showingHueRotationRow = false
-    @State var showingJaydenCode = false
     
     var transferableImage: Image? {
         let original = UIImage(named: sprite.states[stateIndex].variants[0].imageName)
         guard let filteredImage = try? original?.hueRotate(angle: hueRotationDegrees) else { return nil }
         
         return Image(uiImage: filteredImage)
-    }
-    var jaydenCode: String {
-        JaydenCodeGenerator.generateCode(secret: "R2FB47ULFA")
     }
     
     var body: some View {
@@ -178,7 +173,10 @@ struct SpriteDetailView: View {
             }
             .padding()
             .frame(idealWidth: .infinity, maxWidth: .infinity)
-            .background(Color(UIColor.secondarySystemBackground), ignoresSafeAreaEdges: .bottom)
+            .background {
+                Color(UIColor.secondarySystemBackground)
+                    .padding(.bottom, -32)
+            }
         }
         .navigationTitle(sprite.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -194,15 +192,12 @@ struct SpriteDetailView: View {
                 #if targetEnvironment(macCatalyst)
                 saveAndShareButton()
                 #endif
-                Menu {
+                Menu("Add to...", systemImage: "rectangle.stack.badge.plus") {
                     Button {
                         if myCollection.spriteIDs.contains(sprite.id) {
                             myCollection.spriteIDs.remove(sprite.id)
                         } else {
                             myCollection.spriteIDs.insert(sprite.id)
-                            if myCollection.spriteIDs == ["kuuznq", "w98ngk"] {
-                                showingJaydenCode = true
-                            }
                         }
                         do {
                             try myCollection.save(to: SpriteCollection.myCollectionFileURL)
@@ -231,9 +226,6 @@ struct SpriteDetailView: View {
                             Text("Stickers")
                         }
                     }
-                } label: {
-                    Image(systemName: "plus.circle")
-                        .imageScale(.large)
                 }
                 Button {
                     if sizeClass == .regular {
@@ -248,12 +240,6 @@ struct SpriteDetailView: View {
         }
         .fullScreenCover(isPresented: $showingFullscreen) {
             FullscreenSpriteView(sprite: sprite)
-        }
-        .alert("Secret Code: \(jaydenCode)", isPresented: $showingJaydenCode) {
-            Button("Copy") {
-                UIPasteboard.general.string = jaydenCode
-            }
-            Button("OK", role: .cancel, action: { })
         }
         .fileExporter(isPresented: $showingExport, documents: sprite.exportImageDocuments(), contentType: .png) { result in
             //
@@ -271,7 +257,7 @@ struct SpriteDetailView: View {
             spritesViewed += 1
             if (spritesViewed == 25 || spritesViewed == 100) {
                 if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                    SKStoreReviewController.requestReview(in: scene)
+                    AppStore.requestReview(in: scene)
                 }
             }
         }
@@ -322,7 +308,7 @@ struct SpriteDetailView: View {
         spritesEdited += 1
         if spritesEdited == 5 || spritesEdited == 30 {
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                SKStoreReviewController.requestReview(in: scene)
+                AppStore.requestReview(in: scene)
             }
         }
     }

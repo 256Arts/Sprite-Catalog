@@ -7,7 +7,7 @@
 
 import Messages
 
-class StickerBrowserViewController: MSStickerBrowserViewController {
+final class StickerBrowserViewController: MSStickerBrowserViewController {
     
     static let stickerMaxSize: CGFloat = 206.0 * 3.0 // @3x
     
