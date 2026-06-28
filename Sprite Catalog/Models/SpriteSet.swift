@@ -95,39 +95,37 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 }
             }
 
+            /// The variant's full image. Falls back to an empty image rather than crashing when a bundle resource is missing or a `c-` file hasn't finished downloading from iCloud.
             var uiImage: UIImage {
                 if imageName.starts(with: "c-") {
                     UIImage(contentsOfFile: url.path) ?? UIImage()
+                } else if let image = UIImage(named: imageName) {
+                    image
                 } else {
-                    UIImage(named: imageName)!
+                    // A non-empty name with no matching asset means a stale catalog entry — surface it in development, degrade to blank in production. An empty name is an intentional placeholder.
+                    assert(imageName.isEmpty, "Missing bundled sprite image: \(imageName)")
+                    UIImage()
                 }
             }
-            
+
             func frameImage(frame: Int = 0) -> UIImage {
-                if let frameCount = frameCount {
-                    let cgImage = uiImage.cgImage!
-                    let frameWidth = cgImage.width / frameCount
-                    let frameSize = CGSize(width: frameWidth, height: cgImage.height)
-                    let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
-                    let frame = cgImage.cropping(to: frameRect)!
-                    return UIImage(cgImage: frame)
-                } else {
-                    return uiImage
-                }
+                let image = uiImage
+                guard let frameCount, frameCount > 0, let cgImage = image.cgImage else { return image }
+                let frameWidth = cgImage.width / frameCount
+                let frameSize = CGSize(width: frameWidth, height: cgImage.height)
+                let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
+                guard frameWidth > 0, let slice = cgImage.cropping(to: frameRect) else { return image }
+                return UIImage(cgImage: slice)
             }
             func frameImages() -> [UIImage] {
-                if let frameCount = frameCount {
-                    let cgImage = uiImage.cgImage!
-                    let frameWidth = cgImage.width / frameCount
-                    let frameSize = CGSize(width: frameWidth, height: cgImage.height)
-                    var images: [UIImage] = []
-                    for frame in 0..<frameCount {
-                        let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
-                        images.append(UIImage(cgImage: cgImage.cropping(to: frameRect)!))
-                    }
-                    return images
-                } else {
-                    return [uiImage]
+                let image = uiImage
+                guard let frameCount, frameCount > 0, let cgImage = image.cgImage else { return [image] }
+                let frameWidth = cgImage.width / frameCount
+                guard frameWidth > 0 else { return [image] }
+                let frameSize = CGSize(width: frameWidth, height: cgImage.height)
+                return (0..<frameCount).compactMap { frame in
+                    let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
+                    return cgImage.cropping(to: frameRect).map(UIImage.init(cgImage:))
                 }
             }
             
