@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,14 +24,12 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		1BBD1C8926C1CBA300BB544E /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 13;
+			dstSubfolder = PlugIns;
 			files = (
 				1BBD1C8526C1CBA300BB544E /* Messages Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -85,18 +83,14 @@
 /* Begin PBXFrameworksBuildPhase section */
 		1B88D641260BA4320098366A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1BBD1C7526C1CBA200BB544E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				1BBD1C7926C1CBA200BB544E /* Messages.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -151,8 +145,6 @@
 				1B7DF63C2E2409E60071B353 /* Shared */,
 			);
 			name = "Sprite Catalog";
-			packageProductDependencies = (
-			);
 			productName = "Sprite Catalog";
 			productReference = 1B88D644260BA4320098366A /* Sprite Catalog.app */;
 			productType = "com.apple.product-type.application";
@@ -166,8 +158,6 @@
 				1BBD1C7626C1CBA200BB544E /* Resources */,
 			);
 			buildRules = (
-			);
-			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
 				1B7DF63C2E2409E60071B353 /* Shared */,
@@ -206,7 +196,7 @@
 			mainGroup = 1B88D63B260BA4320098366A;
 			packageReferences = (
 			);
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 1B88D645260BA4320098366A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -220,34 +210,26 @@
 /* Begin PBXResourcesBuildPhase section */
 		1B88D642260BA4320098366A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1BBD1C7626C1CBA200BB544E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1B88D640260BA4320098366A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1BBD1C7426C1CBA200BB544E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -261,7 +243,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1B88D651260BA43A0098366A /* Debug */ = {
+		1B88D651260BA43A0098366A /* Debug configuration for PBXProject "Sprite Catalog" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -326,7 +308,7 @@
 			};
 			name = Debug;
 		};
-		1B88D652260BA43A0098366A /* Release */ = {
+		1B88D652260BA43A0098366A /* Release configuration for PBXProject "Sprite Catalog" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -385,14 +367,14 @@
 			};
 			name = Release;
 		};
-		1B88D654260BA43A0098366A /* Debug */ = {
+		1B88D654260BA43A0098366A /* Debug configuration for PBXNativeTarget "Sprite Catalog" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = App;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Sprite Catalog/Sprite Catalog.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -405,7 +387,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
@@ -419,14 +401,14 @@
 			};
 			name = Debug;
 		};
-		1B88D655260BA43A0098366A /* Release */ = {
+		1B88D655260BA43A0098366A /* Release configuration for PBXNativeTarget "Sprite Catalog" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = App;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Sprite Catalog/Sprite Catalog.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -439,7 +421,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.12;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -454,13 +436,13 @@
 			};
 			name = Release;
 		};
-		1BBD1C8726C1CBA300BB544E /* Debug */ = {
+		1BBD1C8726C1CBA300BB544E /* Debug configuration for PBXNativeTarget "Messages Extension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
 				CODE_SIGN_ENTITLEMENTS = Messages/Messages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				INFOPLIST_FILE = Messages/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -468,7 +450,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.messages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -478,13 +460,13 @@
 			};
 			name = Debug;
 		};
-		1BBD1C8826C1CBA300BB544E /* Release */ = {
+		1BBD1C8826C1CBA300BB544E /* Release configuration for PBXNativeTarget "Messages Extension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
 				CODE_SIGN_ENTITLEMENTS = Messages/Messages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				INFOPLIST_FILE = Messages/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -492,7 +474,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.messages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -508,28 +490,25 @@
 		1B88D63F260BA4320098366A /* Build configuration list for PBXProject "Sprite Catalog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B88D651260BA43A0098366A /* Debug */,
-				1B88D652260BA43A0098366A /* Release */,
+				1B88D651260BA43A0098366A /* Debug configuration for PBXProject "Sprite Catalog" */,
+				1B88D652260BA43A0098366A /* Release configuration for PBXProject "Sprite Catalog" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		1B88D653260BA43A0098366A /* Build configuration list for PBXNativeTarget "Sprite Catalog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B88D654260BA43A0098366A /* Debug */,
-				1B88D655260BA43A0098366A /* Release */,
+				1B88D654260BA43A0098366A /* Debug configuration for PBXNativeTarget "Sprite Catalog" */,
+				1B88D655260BA43A0098366A /* Release configuration for PBXNativeTarget "Sprite Catalog" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		1BBD1C8626C1CBA300BB544E /* Build configuration list for PBXNativeTarget "Messages Extension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1BBD1C8726C1CBA300BB544E /* Debug */,
-				1BBD1C8826C1CBA300BB544E /* Release */,
+				1BBD1C8726C1CBA300BB544E /* Debug configuration for PBXNativeTarget "Messages Extension" */,
+				1BBD1C8826C1CBA300BB544E /* Release configuration for PBXNativeTarget "Messages Extension" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

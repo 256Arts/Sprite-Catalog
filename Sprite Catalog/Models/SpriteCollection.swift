@@ -97,7 +97,7 @@ class SpriteCollection: Identifiable, Hashable, Codable {
     
     var spriteIDs: Set<String>
     var sprites: [SpriteSet] {
-        SpriteSet.allSprites.filter({ spriteIDs.contains($0.id) })
+        (SpriteSet.allSprites + CloudController.shared.userSprites).filter({ spriteIDs.contains($0.id) })
     }
     
     init(title: String, spriteIDs: Set<String>) {
@@ -134,7 +134,7 @@ class SpriteCollection: Identifiable, Hashable, Codable {
         // Save all new files
         for sprite in sprites {
             #if canImport(UIKit)
-            guard let data = UIImage(named: sprite.tiles[0].variants[0].imageName)?.pngData() else {
+            guard let data = sprite.tiles[0].variants[0].uiImage.pngData() else {
                 throw SaveStickersError.failedToCreateImageData
             }
             #else

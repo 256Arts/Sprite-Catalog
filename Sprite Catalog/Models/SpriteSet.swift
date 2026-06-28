@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
 struct SpriteSet: Equatable, Identifiable, Codable {
     
@@ -85,14 +88,14 @@ struct SpriteSet: Equatable, Identifiable, Codable {
             let imageName: String
             var url: URL {
                 if imageName.starts(with: "c-") {
-                    let fileName = String(imageName.dropFirst(2))
-                    return CloudController.shared.userSpritesDirectoryURL.appendingPathComponent(fileName, isDirectory: false).appendingPathExtension("png")
+                    // User-imported sprites are stored as "<imageName>.png" (the "c-" prefix is part of the filename, see SpriteImporter.save()).
+                    return CloudController.shared.userSpritesDirectoryURL.appendingPathComponent(imageName, isDirectory: false).appendingPathExtension("png")
                 } else {
                     return Bundle.main.url(forResource: imageName, withExtension: "png")!
                 }
             }
 
-            private var uiImage: UIImage {
+            var uiImage: UIImage {
                 if imageName.starts(with: "c-") {
                     UIImage(contentsOfFile: url.path) ?? UIImage()
                 } else {
@@ -180,7 +183,12 @@ struct SpriteSet: Equatable, Identifiable, Codable {
             return []
         }
     }()
-    
+
+    /// Resolves a sprite by `id`, searching the built-in catalog first, then user-imported (`c-`) sprites.
+    static func withID(_ id: String) -> SpriteSet? {
+        allSprites.first(where: { $0.id == id }) ?? CloudController.shared.userSprites.first(where: { $0.id == id })
+    }
+
     var id: String
     let name: String
     let artist: Artist
@@ -213,6 +221,18 @@ struct SpriteSet: Equatable, Identifiable, Codable {
         matchesAndScores.sort(by: { $0.rating > $1.rating })
         return matchesAndScores.map({ $0.sprite })
     }
+
+    /// Related sprites for display, re-ranked by Apple Intelligence when available, otherwise the heuristic ``relatedSprites()``.
+    func suggestedRelatedSprites(limit: Int = 10) async -> [SpriteSet] {
+        let candidates = relatedSprites()
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *),
+           let ranked = await Self.aiRankedRelated(target: self, candidates: Array(candidates.prefix(40)), limit: limit) {
+            return ranked
+        }
+        #endif
+        return Array(candidates.prefix(limit))
+    }
     
     func exportImageDocuments() -> [ImageDocument] {
         var documents: [ImageDocument] = []
@@ -224,10 +244,61 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 let variantSuffix = tile.variants.count == 1 ? "" : " \(vIndex+1)"
                 let filename = name + tileSuffix + variantSuffix
                 
-                documents.append(ImageDocument(image: UIImage(named: variant.imageName)!, filename: filename))
+                documents.append(ImageDocument(image: variant.uiImage, filename: filename))
             }
         }
         return documents
     }
-    
+
 }
+
+#if canImport(FoundationModels)
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+extension SpriteSet {
+
+    @Generable
+    private struct RelatedRanking {
+        @Guide(description: "Indices into the candidate list, most related first.")
+        let indices: [Int]
+    }
+
+    /// Asks the on-device model to rank `candidates` by relevance to `target`. Returns `nil` when Apple Intelligence is unavailable or errors, so the caller can fall back to the heuristic order.
+    static func aiRankedRelated(target: SpriteSet, candidates: [SpriteSet], limit: Int) async -> [SpriteSet]? {
+        guard case .available = SystemLanguageModel.default.availability, !candidates.isEmpty else { return nil }
+
+        func describe(_ sprite: SpriteSet) -> String {
+            "\(sprite.name) [\(sprite.tags.map(\.rawValue).joined(separator: ", "))]"
+        }
+        let list = candidates.enumerated()
+            .map({ "\($0.offset): \(describe($0.element))" })
+            .joined(separator: "\n")
+        let prompt = """
+        Target sprite: \(describe(target))
+
+        Candidate sprites:
+        \(list)
+
+        Choose up to \(limit) candidates most thematically related to the target — same subject, setting, or use. Reply with their indices, most related first.
+        """
+        do {
+            let session = LanguageModelSession(instructions: "You curate related items for a pixel-art sprite catalog.")
+            let ranking = try await session.respond(to: prompt, generating: RelatedRanking.self).content
+            var ordered: [SpriteSet] = []
+            for index in ranking.indices where candidates.indices.contains(index) {
+                let sprite = candidates[index]
+                if !ordered.contains(sprite) {
+                    ordered.append(sprite)
+                }
+            }
+            // Top up with the remaining heuristic order so the section is never sparse.
+            for sprite in candidates where !ordered.contains(sprite) {
+                ordered.append(sprite)
+            }
+            return Array(ordered.prefix(limit))
+        } catch {
+            return nil
+        }
+    }
+
+}
+#endif

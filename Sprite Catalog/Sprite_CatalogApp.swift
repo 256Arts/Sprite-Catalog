@@ -19,6 +19,7 @@ struct Sprite_CatalogApp: App {
     @State var selectedScreen: MainScreen? = .browse
     @State var fontPreviewMode: FamilyDetailView.PreviewMode = .sample
     @State var fontTestString = Self.defaultFontTestString
+    @State var showingEvent = false
     
     var body: some Scene {
         WindowGroup {
@@ -47,7 +48,9 @@ struct Sprite_CatalogApp: App {
                         }
                     }
                     .navigationDestination(for: String.self) { spriteID in
-                        SpriteDetailView(sprite: SpriteSet.allSprites.first(where: { $0.id == spriteID })!)
+                        if let sprite = SpriteSet.withID(spriteID) {
+                            SpriteDetailView(sprite: sprite)
+                        }
                     }
                     .navigationDestination(for: SpriteCollection.self) { collection in
                         CollectionView(collection: collection, webpageURL: nil)
@@ -60,10 +63,20 @@ struct Sprite_CatalogApp: App {
                     }
                 }
             }
+            .alert("Event Intro", isPresented: $showingEvent) {
+                Button("OK", role: .close) { }
+            } message: {
+                Text("Now you can celebrate by tapping the sprite collection from the \"Browse\" tab, and trying out the new features!")
+            }
+            .onOpenURL { url in
+                if url.path().contains("spritecatalog/appstoreevent") {
+                    showingEvent = true
+                }
+            }
         }
         
         WindowGroup("Fullscreen Sprite", for: String.self) { $id in
-            if let sprite = SpriteSet.allSprites.first(where: { $0.id == id }) {
+            if let id, let sprite = SpriteSet.withID(id) {
                 FullscreenSpriteView(sprite: sprite)
             }
         }

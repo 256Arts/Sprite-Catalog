@@ -93,7 +93,7 @@ struct CutterView: View, DropDelegate {
             Divider()
             HStack {
                 Spacer()
-                Button("Cut") {
+                Button("Cut", systemImage: "scissors") {
                     showingExport = true
                 }
                 .buttonStyle(.borderedProminent)
@@ -105,11 +105,15 @@ struct CutterView: View, DropDelegate {
             Button {
                 showingExport = true
             } label: {
-                Text("Cut")
+                Label("Cut", systemImage: "scissors")
                     .font(.headline)
                     .frame(idealWidth: .infinity, maxWidth: .infinity)
             }
+            #if os(visionOS)
             .buttonStyle(.borderedProminent)
+            #else
+            .buttonStyle(.glassProminent)
+            #endif
             .controlSize(.large)
             .disabled(!cutter.canCut)
             .padding()
@@ -122,9 +126,6 @@ struct CutterView: View, DropDelegate {
                 }
             }
         }
-        #if targetEnvironment(macCatalyst)
-        .navigationBarHidden(true)
-        #endif
         .fileImporter(isPresented: $showingImport, allowedContentTypes: [.image], onCompletion: { result in
             guard let url = try? result.get(), url.startAccessingSecurityScopedResource(), let image = UIImage(contentsOfFile: url.path) else {
                 showingImportError = true

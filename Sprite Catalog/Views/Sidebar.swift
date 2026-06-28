@@ -93,20 +93,12 @@ struct Sidebar: View {
         .navigationTitle("Sprite Catalog")
         .toolbar {
             #if os(visionOS)
-            ToolbarItem(placement: .navigationBarTrailing) {
-                // visionOS does NOT have space to show the title and both buttons
-                Menu {
-                    Button {
-                        showingCutter = true
-                    } label: {
-                        Label("Cut Sprites", systemImage: "scissors")
-                    }
-                    .buttonBorderShape(.circle)
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showingCutter = true
                 } label: {
-                    Image(systemName: "ellipsis")
-                        .symbolVariant(.circle)
+                    Label("Cut Sprites", systemImage: "scissors")
                 }
-                .buttonBorderShape(.circle)
             }
             #else
             if !isAssistiveAccessEnabled {

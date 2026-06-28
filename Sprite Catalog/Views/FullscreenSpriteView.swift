@@ -24,7 +24,7 @@ struct FullscreenSpriteView: View {
                     .interpolation(.none)
                     .aspectRatio(contentMode: .fit)
                     .onDrag {
-                        NSItemProvider(object: UIImage(named: tile.variants[0].imageName)!)
+                        NSItemProvider(object: tile.variants[0].uiImage)
                     }
             }
         }

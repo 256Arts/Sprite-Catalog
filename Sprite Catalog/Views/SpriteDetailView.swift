@@ -23,11 +23,13 @@ struct SpriteDetailView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.openURL) var openURL
     @Environment(\.openWindow) var openWindow
+    @Environment(\.requestReview) private var requestReview
     
     @Bindable var myCollection = SpriteCollection.myCollection
     @Bindable var stickersCollection = SpriteCollection.stickersCollection
     
     @State var sprite: SpriteSet
+    @State private var relatedSprites: [SpriteSet] = []
     @State var stateIndex: Int = 0
     @State var frame: Int = 0
     @State var hueRotationDegrees = 0.0
@@ -37,8 +39,8 @@ struct SpriteDetailView: View {
     @State var showingHueRotationRow = false
     
     var transferableImage: Image? {
-        let original = UIImage(named: sprite.states[stateIndex].variants[0].imageName)
-        guard let filteredImage = try? original?.hueRotate(angle: hueRotationDegrees) else { return nil }
+        let original = sprite.states[stateIndex].variants[0].uiImage
+        guard let filteredImage = try? original.hueRotate(angle: hueRotationDegrees) else { return nil }
         
         return Image(uiImage: filteredImage)
     }
@@ -68,7 +70,7 @@ struct SpriteDetailView: View {
                     #endif
                 }
                 .onDrag {
-                    NSItemProvider(object: UIImage(named: sprite.states[stateIndex].variants[0].imageName)!)
+                    NSItemProvider(object: sprite.states[stateIndex].variants[0].uiImage)
                 }
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
@@ -83,7 +85,11 @@ struct SpriteDetailView: View {
                             .font(Font.system(size: 20, weight: .medium, design: .default))
                             .frame(idealWidth: .infinity, maxWidth: .infinity)
                     }
+                    #if os(visionOS)
                     .buttonStyle(.borderedProminent)
+                    #else
+                    .buttonStyle(.glassProminent)
+                    #endif
                     #if !targetEnvironment(macCatalyst)
                     saveAndShareButton()
                     #endif
@@ -160,7 +166,7 @@ struct SpriteDetailView: View {
                 Text("Related")
                     .font(.headline)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
-                    ForEach(sprite.relatedSprites().prefix(10)) { sprite in
+                    ForEach(relatedSprites) { sprite in
                         NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles[0])
                         }
@@ -176,10 +182,15 @@ struct SpriteDetailView: View {
             .background {
                 Color(UIColor.secondarySystemBackground)
                     .padding(.bottom, -32)
+                    .backgroundExtensionEffect()
             }
         }
         .navigationTitle(sprite.name)
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: sprite.id) {
+            relatedSprites = Array(sprite.relatedSprites().prefix(10)) // Instant heuristic
+            relatedSprites = await sprite.suggestedRelatedSprites()    // Refined by Apple Intelligence when available
+        }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 #if DEBUG
@@ -192,7 +203,7 @@ struct SpriteDetailView: View {
                 #if targetEnvironment(macCatalyst)
                 saveAndShareButton()
                 #endif
-                Menu("Add to...", systemImage: "rectangle.stack.badge.plus") {
+                Menu("Add to...", systemImage: "folder.badge.plus") {
                     Button {
                         if myCollection.spriteIDs.contains(sprite.id) {
                             myCollection.spriteIDs.remove(sprite.id)
@@ -227,6 +238,7 @@ struct SpriteDetailView: View {
                         }
                     }
                 }
+                #if !targetEnvironment(macCatalyst)
                 Button {
                     if sizeClass == .regular {
                         showingHueRotationPopover = true
@@ -236,6 +248,7 @@ struct SpriteDetailView: View {
                 } label: {
                     Image("Color Wheel")
                 }
+                #endif
             }
         }
         .fullScreenCover(isPresented: $showingFullscreen) {
@@ -255,10 +268,8 @@ struct SpriteDetailView: View {
         .onAppear {
             UserDefaults.standard.addSuggestion(basedOn: sprite)
             spritesViewed += 1
-            if (spritesViewed == 25 || spritesViewed == 100) {
-                if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                    AppStore.requestReview(in: scene)
-                }
+            if [20, 50, 100, 200, 500].contains(spritesViewed) {
+                requestReview()
             }
         }
         .onChange(of: sizeClass) {
@@ -281,24 +292,30 @@ struct SpriteDetailView: View {
                 showingExport = true
             } label: {
                 Image(systemName: "square.and.arrow.down")
+                    #if !targetEnvironment(macCatalyst)
                     .font(Font.system(size: 20, weight: .medium, design: .default))
                     .frame(width: 20, height: 24)
+                    #endif
             }
+            
             if let transferableImage {
                 ShareLink(item: transferableImage, subject: Text(sprite.name), message: Text("Found in Sprite Catalog"), preview: .init(sprite.name, icon: transferableImage)) {
                     Image(systemName: "square.and.arrow.up")
+                        #if !targetEnvironment(macCatalyst)
                         .font(Font.system(size: 20, weight: .medium, design: .default))
                         .frame(width: 20, height: 24)
+                        #endif
                 }
             }
         }
+        .buttonBorderShape(.circle)
     }
     
     private func openInSpritePencil() throws {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Sprite_CatalogApp.spritePencilAppGroupID) else {
             throw OpenSpritePencilError.failedToGetSharedContainer
         }
-        guard let data = try UIImage(named: sprite.states[stateIndex].variants[0].imageName)?.hueRotate(angle: hueRotationDegrees).pngData() else {
+        guard let data = try sprite.states[stateIndex].variants[0].uiImage.hueRotate(angle: hueRotationDegrees).pngData() else {
             throw OpenSpritePencilError.failedToRotateHueOrCreateImageData
         }
         try data.write(to: containerURL.appendingPathComponent("Import").appendingPathExtension("png"))
