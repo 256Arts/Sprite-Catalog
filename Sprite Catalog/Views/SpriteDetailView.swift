@@ -41,8 +41,58 @@ struct SpriteDetailView: View {
     var transferableImage: Image? {
         let original = sprite.states[stateIndex].variants[0].uiImage
         guard let filteredImage = try? original.hueRotate(angle: hueRotationDegrees) else { return nil }
-        
+
         return Image(uiImage: filteredImage)
+    }
+
+    private var addToCollectionMenu: some View {
+        Menu("Add to...", systemImage: "folder.badge.plus") {
+            Button {
+                if myCollection.spriteIDs.contains(sprite.id) {
+                    myCollection.spriteIDs.remove(sprite.id)
+                } else {
+                    myCollection.spriteIDs.insert(sprite.id)
+                }
+                do {
+                    try myCollection.save(to: SpriteCollection.myCollectionFileURL)
+                } catch { }
+            } label: {
+                if myCollection.spriteIDs.contains(sprite.id) {
+                    Label("My Collection", systemImage: "checkmark")
+                } else {
+                    Text("My Collection")
+                }
+            }
+            Button {
+                if stickersCollection.spriteIDs.contains(sprite.id) {
+                    stickersCollection.spriteIDs.remove(sprite.id)
+                } else {
+                    stickersCollection.spriteIDs.insert(sprite.id)
+                }
+                do {
+                    try stickersCollection.save(to: SpriteCollection.stickersCollectionFileURL)
+                    try stickersCollection.saveStickers()
+                } catch { }
+            } label: {
+                if stickersCollection.spriteIDs.contains(sprite.id) {
+                    Label("Stickers", systemImage: "checkmark")
+                } else {
+                    Text("Stickers")
+                }
+            }
+        }
+    }
+
+    private var recolorButton: some View {
+        Button {
+            if sizeClass == .regular {
+                showingHueRotationPopover = true
+            } else {
+                showingHueRotationRow.toggle()
+            }
+        } label: {
+            Image("Color Wheel")
+        }
     }
     
     var body: some View {
@@ -102,7 +152,7 @@ struct SpriteDetailView: View {
                         .font(.title2)
                     ScrollView(.horizontal) {
                         HStack {
-                            ForEach(sprite.states.indices) { stateIndex in
+                            ForEach(sprite.states.indices, id: \.self) { stateIndex in
                                 Button {
                                     self.stateIndex = stateIndex
                                 } label: {
@@ -192,64 +242,33 @@ struct SpriteDetailView: View {
             relatedSprites = await sprite.suggestedRelatedSprites()    // Refined by Apple Intelligence when available
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                #if DEBUG
-                Button {
+            #if DEBUG
+            ToolbarOverflowMenu {
+                Button("Copy ID", systemImage: "number.square") {
                     UIPasteboard.general.string = sprite.id
-                } label: {
-                    Image(systemName: "number.square")
                 }
-                #endif
-                #if targetEnvironment(macCatalyst)
-                saveAndShareButton()
-                #endif
-                Menu("Add to...", systemImage: "folder.badge.plus") {
-                    Button {
-                        if myCollection.spriteIDs.contains(sprite.id) {
-                            myCollection.spriteIDs.remove(sprite.id)
-                        } else {
-                            myCollection.spriteIDs.insert(sprite.id)
-                        }
-                        do {
-                            try myCollection.save(to: SpriteCollection.myCollectionFileURL)
-                        } catch { }
-                    } label: {
-                        if myCollection.spriteIDs.contains(sprite.id) {
-                            Label("My Collection", systemImage: "checkmark")
-                        } else {
-                            Text("My Collection")
-                        }
-                    }
-                    Button {
-                        if stickersCollection.spriteIDs.contains(sprite.id) {
-                            stickersCollection.spriteIDs.remove(sprite.id)
-                        } else {
-                            stickersCollection.spriteIDs.insert(sprite.id)
-                        }
-                        do {
-                            try stickersCollection.save(to: SpriteCollection.stickersCollectionFileURL)
-                            try stickersCollection.saveStickers()
-                        } catch { }
-                    } label: {
-                        if stickersCollection.spriteIDs.contains(sprite.id) {
-                            Label("Stickers", systemImage: "checkmark")
-                        } else {
-                            Text("Stickers")
-                        }
-                    }
-                }
-                #if !targetEnvironment(macCatalyst)
-                Button {
-                    if sizeClass == .regular {
-                        showingHueRotationPopover = true
-                    } else {
-                        showingHueRotationRow.toggle()
-                    }
-                } label: {
-                    Image("Color Wheel")
-                }
-                #endif
             }
+            #endif
+            #if targetEnvironment(macCatalyst)
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                saveAndShareButton()
+            }
+            #endif
+            ToolbarItem(placement: .topBarPinnedTrailing) {
+                addToCollectionMenu
+            }
+            #if targetEnvironment(macCatalyst)
+            // Recolor is unavailable on Mac Catalyst.
+            #elseif os(visionOS)
+            ToolbarItem(placement: .topBarTrailing) {
+                recolorButton
+            }
+            #else
+            ToolbarItem(placement: .topBarTrailing) {
+                recolorButton
+            }
+            .visibilityPriority(.low)
+            #endif
         }
         .fullScreenCover(isPresented: $showingFullscreen) {
             FullscreenSpriteView(sprite: sprite)

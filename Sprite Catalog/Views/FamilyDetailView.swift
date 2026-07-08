@@ -102,11 +102,11 @@ struct FamilyDetailView: View {
             //
         }
         .onChange(of: customString) { _, newValue in
-            if newValue.isEmpty {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    if newValue.isEmpty {
-                        customString = Sprite_CatalogApp.defaultFontTestString
-                    }
+            guard newValue.isEmpty else { return }
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                if customString.isEmpty {
+                    customString = Sprite_CatalogApp.defaultFontTestString
                 }
             }
         }

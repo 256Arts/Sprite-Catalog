@@ -98,13 +98,13 @@ struct SpriteSet: Equatable, Identifiable, Codable {
             /// The variant's full image. Falls back to an empty image rather than crashing when a bundle resource is missing or a `c-` file hasn't finished downloading from iCloud.
             var uiImage: UIImage {
                 if imageName.starts(with: "c-") {
-                    UIImage(contentsOfFile: url.path) ?? UIImage()
+                    return UIImage(contentsOfFile: url.path) ?? UIImage()
                 } else if let image = UIImage(named: imageName) {
-                    image
+                    return image
                 } else {
                     // A non-empty name with no matching asset means a stale catalog entry — surface it in development, degrade to blank in production. An empty name is an intentional placeholder.
                     assert(imageName.isEmpty, "Missing bundled sprite image: \(imageName)")
-                    UIImage()
+                    return UIImage()
                 }
             }
 
@@ -255,7 +255,7 @@ struct SpriteSet: Equatable, Identifiable, Codable {
 extension SpriteSet {
 
     @Generable
-    private struct RelatedRanking {
+    struct RelatedRanking {
         @Guide(description: "Indices into the candidate list, most related first.")
         let indices: [Int]
     }

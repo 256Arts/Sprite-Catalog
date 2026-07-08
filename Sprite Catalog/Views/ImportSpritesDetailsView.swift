@@ -69,7 +69,7 @@ struct ImportSpritesDetailsView: View {
         .navigationTitle("Import Sprites")
         .toolbar {
             #if DEBUG
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showingTutorial = true
                 } label: {
