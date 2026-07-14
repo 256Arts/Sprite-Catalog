@@ -1,10 +1,3 @@
-//
-//  SpriteCollection.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-06-26.
-//
-
 #if canImport(UIKit)
 import UIKit
 #else

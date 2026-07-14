@@ -1,10 +1,3 @@
-//
-//  SpriteCatalogAppShortcutsProvider.swift
-//  Sprite Cutter
-//
-//  Created by Jayden Irwin on 2023-10-08.
-//
-
 import AppIntents
 
 struct SpriteCatalogAppShortcutsProvider: AppShortcutsProvider {

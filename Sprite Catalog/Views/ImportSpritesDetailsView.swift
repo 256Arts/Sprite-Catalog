@@ -1,10 +1,3 @@
-//
-//  ImportSpritesDetailsView.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-07-10.
-//
-
 import SwiftUI
 
 struct ImportSpritesDetailsView: View {

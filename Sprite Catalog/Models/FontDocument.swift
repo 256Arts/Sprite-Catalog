@@ -1,10 +1,3 @@
-//
-//  FontDocument.swift
-//  Sprite Catalog
-//
-//  Created by Jayden Irwin on 2024-01-10.
-//
-
 import SwiftUI
 import UniformTypeIdentifiers
 

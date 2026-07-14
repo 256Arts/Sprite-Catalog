@@ -1,10 +1,3 @@
-//
-//  DebugPromoGridView.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-07-06.
-//
-
 #if DEBUG
 import SwiftUI
 

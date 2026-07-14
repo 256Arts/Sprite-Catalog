@@ -1,10 +1,3 @@
-//
-//  ImportSpritesView.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-04-03.
-//
-
 import SwiftUI
 import UniformTypeIdentifiers
 

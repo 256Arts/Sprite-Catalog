@@ -1,10 +1,3 @@
-//
-//  Sprite.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-03-24.
-//
-
 import SwiftUI
 #if canImport(FoundationModels)
 import FoundationModels

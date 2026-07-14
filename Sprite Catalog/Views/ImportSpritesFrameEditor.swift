@@ -1,10 +1,3 @@
-//
-//  ImportSpritesFrameEditor.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2022-08-24.
-//
-
 import SwiftUI
 
 struct ImportSpritesFrameEditor: View {

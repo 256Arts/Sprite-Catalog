@@ -1,10 +1,3 @@
-//
-//  SpriteLink.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-03-25.
-//
-
 import SwiftUI
 
 /// Normal thumbnail for use in the grid

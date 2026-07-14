@@ -1,10 +1,3 @@
-//
-//  UIImage.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-05-07.
-//
-
 import UIKit
 import CoreImage.CIFilterBuiltins
 

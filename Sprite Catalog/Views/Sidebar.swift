@@ -1,10 +1,3 @@
-//
-//  Sidebar.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-03-26.
-//
-
 import SwiftUI
 
 struct Sidebar: View {

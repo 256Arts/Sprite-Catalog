@@ -1,10 +1,3 @@
-//
-//  DebugViewController.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-04-02.
-//
-
 #if DEBUG && canImport(UIKit)
 import UIKit
 

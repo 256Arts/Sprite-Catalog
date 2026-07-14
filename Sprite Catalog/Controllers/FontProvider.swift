@@ -1,10 +1,3 @@
-//
-//  FontProvider.swift
-//  Sprite Fonts
-//
-//  Created by 256 Arts Developer on 2021-02-16.
-//
-
 import UIKit
 #if canImport(NotificationCenter)
 import NotificationCenter

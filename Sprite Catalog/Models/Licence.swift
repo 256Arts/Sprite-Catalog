@@ -1,10 +1,3 @@
-//
-//  Licence.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-03-27.
-//
-
 import Foundation
 
 enum Licence: String, CaseIterable, Identifiable, Codable {

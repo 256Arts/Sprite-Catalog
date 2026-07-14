@@ -1,10 +1,3 @@
-//
-//  Artist.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-04-06.
-//
-
 import Foundation
 
 struct Artist: Identifiable, Hashable, Codable {

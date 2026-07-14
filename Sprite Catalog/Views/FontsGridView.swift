@@ -1,10 +1,3 @@
-//
-//  FontsGridView.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2023-05-26.
-//
-
 import SwiftUI
 
 struct FontsGridView: View {

@@ -1,10 +1,3 @@
-//
-//  ImportedCollectionSpritesGridView.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2022-04-26.
-//
-
 import SwiftUI
 
 struct ImportedCollectionSpritesGridView: View {

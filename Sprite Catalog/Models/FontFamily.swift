@@ -1,10 +1,3 @@
-//
-//  FontItem.swift
-//  Sprite Fonts
-//
-//  Created by 256 Arts Developer on 2021-02-15.
-//
-
 import SwiftUI
 import CoreGraphics
 

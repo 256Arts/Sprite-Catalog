@@ -1,10 +1,3 @@
-//
-//  MessagesViewController.swift
-//  Sprite Catalog Messages MessagesExtension
-//
-//  Created by 256 Arts Developer on 2021-08-09.
-//
-
 import UIKit
 import Messages
 

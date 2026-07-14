@@ -1,10 +1,3 @@
-//
-//  CutSprites.swift
-//  Sprite Cutter
-//
-//  Created by Jayden Irwin on 2023-10-08.
-//
-
 import UIKit
 import UniformTypeIdentifiers
 import AppIntents

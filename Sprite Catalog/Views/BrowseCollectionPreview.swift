@@ -1,10 +1,3 @@
-//
-//  BrowseCollectionPreview.swift
-//  Sprite Catalog
-//
-//  Created by 256 Arts Developer on 2021-07-05.
-//
-
 import SwiftUI
 
 struct BrowseCollectionPreview: View {
