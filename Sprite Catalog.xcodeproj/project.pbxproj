@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1BBD1C7926C1CBA200BB544E /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBD1C5326C1865900BB544E /* Messages.framework */; };
 		1BBD1C8526C1CBA300BB544E /* Messages Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1BBD1C7826C1CBA200BB544E /* Messages Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5F00000000000000000000D2 /* PaletteKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5F00000000000000000000D1 /* PaletteKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		1B88D641260BA4320098366A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				5F00000000000000000000D2 /* PaletteKit in Frameworks */,
 			);
 		};
 		1BBD1C7526C1CBA200BB544E /* Frameworks */ = {
@@ -145,6 +147,9 @@
 				1B7DF63C2E2409E60071B353 /* Shared */,
 			);
 			name = "Sprite Catalog";
+			packageProductDependencies = (
+				5F00000000000000000000D1 /* PaletteKit */,
+			);
 			productName = "Sprite Catalog";
 			productReference = 1B88D644260BA4320098366A /* Sprite Catalog.app */;
 			productType = "com.apple.product-type.application";
@@ -195,6 +200,7 @@
 			);
 			mainGroup = 1B88D63B260BA4320098366A;
 			packageReferences = (
+				5F00000000000000000000D0 /* XCLocalSwiftPackageReference "PaletteKit" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 1B88D645260BA4320098366A /* Products */;
@@ -512,6 +518,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		5F00000000000000000000D0 /* XCLocalSwiftPackageReference "PaletteKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../../../../../Volumes/Kingston/GitHub/PaletteKit";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5F00000000000000000000D1 /* PaletteKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PaletteKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1B88D63C260BA4320098366A /* Project object */;
 }

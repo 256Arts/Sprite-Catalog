@@ -51,6 +51,14 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
+                NavigationLink(value: MainScreen.palettes) {
+                    Label {
+                        Text("Palettes")
+                    } icon: {
+                        Image("ax4huo") // Paint Palette
+                            .sidebarIcon()
+                    }
+                }
             }
             
             Section("Library") {
