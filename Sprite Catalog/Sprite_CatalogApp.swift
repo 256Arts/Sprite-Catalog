@@ -28,6 +28,8 @@ struct Sprite_CatalogApp: App {
                             FontsGridView()
                         case .palettes:
                             PalettesView()
+                        case .myPalettes:
+                            MyPalettesView()
                         case .imports:
                             if let collection = cloudController.spriteCollection {
                                 ImportedCollectionSpritesGridView(userCollection: collection)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum MainScreen: Hashable, Identifiable {
-    case browse, fonts, palettes, imports, category(SpriteSet.Tag), collection(SpriteCollection)
+    case browse, fonts, palettes, myPalettes, imports, category(SpriteSet.Tag), collection(SpriteCollection)
 
     var id: String {
         switch self {
@@ -11,6 +11,8 @@ enum MainScreen: Hashable, Identifiable {
             "fonts"
         case .palettes:
             "palettes"
+        case .myPalettes:
+            "myPalettes"
         case .imports:
             "imports"
         case .category(let tag):

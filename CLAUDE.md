@@ -8,7 +8,9 @@ Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art spri
 
 ## Build & Run
 
-This is an Xcode project (`Sprite Catalog.xcodeproj`) with no external package dependencies. Build and run from Xcode, or use `xcodebuild` with the scheme. There is no test target.
+This is an Xcode project (`Sprite Catalog.xcodeproj`). Build and run from Xcode, or use `xcodebuild` with the scheme. There is no test target.
+
+It depends on one Swift package, **PaletteKit** (`/Volumes/Kingston/GitHub/PaletteKit`, referenced by local path — see the workspace `CLAUDE.md`). The external volume must be mounted or the project won't resolve.
 
 ## Targets
 
@@ -34,6 +36,8 @@ This is an Xcode project (`Sprite Catalog.xcodeproj`) with no external package d
 **Stickers / iMessage extension.** `SpriteCollection.saveStickers()` writes selected sprite PNGs into the app group container `group.com.jaydenirwin.spritecatalog.messages`; the extension's `StickerBrowserViewController` reads that container and rescales each sprite to a sticker (nearest-neighbor, no interpolation, to keep pixels crisp). The shared app group ID lives in `Shared/MessagesAppGroupID.swift`.
 
 **Fonts.** `FontProvider.shared` tracks registered pixel-font families; `FontFamily` (`Models/FontFamily.swift`) models bundled fonts with licence/tag metadata.
+
+**Palettes come from PaletteKit.** The app owns no color code and no palette UI. `PalettesView` browses the package's premade catalog (`PaletteBrowser`); `MyPalettesView` lists the user's saved palettes and presents the package's `NewPaletteView` to create one (generated preset, imported .gpl/.clr/palette-image file, or from scratch). `PaletteLibrary` (`Models/PaletteLibrary.swift`) is the only app-side piece: an `@Observable` singleton persisting `[PaletteKit.Palette]` as `Palettes.json` in the documents directory — the same Codable-JSON-in-Documents storage `SpriteCollection` uses. Unlike imported sprites, saved palettes are **not** iCloud-synced.
 
 **Spritesheet cutting.** `Cutter` (`Models/Cutter.swift`) slices an image into a grid of sprites given a pixel size and spacing. It is exposed to Shortcuts via the `CutSprites` App Intent (`App Intent/CutSprites.swift`).
 

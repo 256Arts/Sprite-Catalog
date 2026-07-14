@@ -70,6 +70,14 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
+                NavigationLink(value: MainScreen.myPalettes) {
+                    Label {
+                        Text("My Palettes")
+                    } icon: {
+                        Image("hpjwkm") // Paint Brush
+                            .sidebarIcon()
+                    }
+                }
                 #if !os(visionOS)
                 NavigationLink(value: MainScreen.collection(.stickersCollection)) {
                     Label {
