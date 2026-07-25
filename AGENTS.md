@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -10,7 +10,7 @@ Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art spri
 
 This is an Xcode project (`Sprite Catalog.xcodeproj`). Build and run from Xcode, or use `xcodebuild` with the scheme. There is no test target.
 
-It depends on one Swift package, **PaletteKit** (`/Volumes/Kingston/GitHub/PaletteKit`, referenced by local path — see the workspace `CLAUDE.md`). The external volume must be mounted or the project won't resolve.
+It depends on one Swift package, **PaletteKit** (`/Volumes/Kingston/GitHub/PaletteKit`, referenced by local path — see the workspace `AGENTS.md`). The external volume must be mounted or the project won't resolve.
 
 ## Targets
 
