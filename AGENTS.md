@@ -1,7 +1,5 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Overview
 
 Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art sprites and pixel fonts, lets users import their own sprites (synced via iCloud), cut spritesheets into individual sprites, and export sprites as iMessage stickers. It targets iOS/iPadOS, Mac Catalyst, and visionOS.
@@ -38,6 +36,8 @@ It depends on one Swift package, **PaletteKit** (`/Volumes/Kingston/GitHub/Palet
 **Fonts.** `FontProvider.shared` tracks registered pixel-font families; `FontFamily` (`Models/FontFamily.swift`) models bundled fonts with licence/tag metadata.
 
 **Palettes come from PaletteKit.** The app owns no color code and no palette UI. `PalettesView` browses the package's premade catalog (`PaletteBrowser`); `MyPalettesView` lists the user's saved palettes and presents the package's `NewPaletteView` to create one (generated preset, imported .gpl/.clr/palette-image file, or from scratch). `PaletteLibrary` (`Models/PaletteLibrary.swift`) is the only app-side piece: an `@Observable` singleton persisting `[PaletteKit.Palette]` as `Palettes.json` in the documents directory — the same Codable-JSON-in-Documents storage `SpriteCollection` uses. Unlike imported sprites, saved palettes are **not** iCloud-synced.
+
+**Website generation.** `Scripts/GenerateWebsite.swift` builds the public website's category pages from `ZCatalog.json` without running the app: `swift Scripts/GenerateWebsite.swift [output dir] [--no-images]`. Default output is `Website/` (gitignored) — `<slug>/index.html` per category plus `sprite/<imageName>.png` copied out of the asset catalog. The script re-declares a minimal `CatalogSprite` because `SpriteSet` pulls in UIKit/SwiftUI/`CloudController`; if the catalog JSON schema changes, update both.
 
 **Spritesheet cutting.** `Cutter` (`Models/Cutter.swift`) slices an image into a grid of sprites given a pixel size and spacing. It is exposed to Shortcuts via the `CutSprites` App Intent (`App Intent/CutSprites.swift`).
 

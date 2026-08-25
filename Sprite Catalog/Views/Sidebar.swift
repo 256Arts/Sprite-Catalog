@@ -12,7 +12,6 @@ struct Sidebar: View {
     
     #if DEBUG
     @State var showingDebugImportSprites = false
-    @State var showingDebugCreateHTML = false
     @State var showingDebugPromoGrid = false
     #endif
     
@@ -134,9 +133,6 @@ struct Sidebar: View {
                                 scene.windows.first?.rootViewController?.present(navVC, animated: true)
                             }
                         }
-                        Button("Create HTML Pages", systemImage: "chevron.left.forwardslash.chevron.right") {
-                            showingDebugCreateHTML = true
-                        }
                         Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
                             showingDebugPromoGrid = true
                         }
@@ -169,9 +165,6 @@ struct Sidebar: View {
         #if DEBUG
         .sheet(isPresented: $showingDebugImportSprites) {
             ImportSpritesView(importer: .init(debugMode: true))
-        }
-        .sheet(isPresented: $showingDebugCreateHTML) {
-            DebugCreateHTMLView()
         }
         .sheet(isPresented: $showingDebugPromoGrid) {
             DebugPromoGridView()
