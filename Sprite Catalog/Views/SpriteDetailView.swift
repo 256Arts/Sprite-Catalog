@@ -38,6 +38,23 @@ struct SpriteDetailView: View {
         return Image(uiImage: filteredImage)
     }
 
+    #if DEBUG
+    private var copyIDButton: some View {
+        Button("Copy ID", systemImage: "number.square") {
+            UIPasteboard.general.string = sprite.id
+        }
+    }
+    #endif
+
+    /// Pinning a toolbar item beside the title arrived in OS 27; before that it just trails.
+    private var addToCollectionPlacement: ToolbarItemPlacement {
+        if #available(iOS 27.0, visionOS 27.0, *) {
+            .topBarPinnedTrailing
+        } else {
+            .topBarTrailing
+        }
+    }
+
     private var addToCollectionMenu: some View {
         Menu("Add to...", systemImage: "folder.badge.plus") {
             Button {
@@ -236,9 +253,13 @@ struct SpriteDetailView: View {
         }
         .toolbar {
             #if DEBUG
-            ToolbarOverflowMenu {
-                Button("Copy ID", systemImage: "number.square") {
-                    UIPasteboard.general.string = sprite.id
+            if #available(iOS 27.0, visionOS 27.0, *) {
+                ToolbarOverflowMenu {
+                    copyIDButton
+                }
+            } else {
+                ToolbarItem(placement: .secondaryAction) {
+                    copyIDButton
                 }
             }
             #endif
@@ -247,7 +268,7 @@ struct SpriteDetailView: View {
                 saveAndShareButton()
             }
             #endif
-            ToolbarItem(placement: .topBarPinnedTrailing) {
+            ToolbarItem(placement: addToCollectionPlacement) {
                 addToCollectionMenu
             }
             #if targetEnvironment(macCatalyst)
@@ -257,10 +278,16 @@ struct SpriteDetailView: View {
                 recolorButton
             }
             #else
-            ToolbarItem(placement: .topBarTrailing) {
-                recolorButton
+            if #available(iOS 27.0, *) {
+                ToolbarItem(placement: .topBarTrailing) {
+                    recolorButton
+                }
+                .visibilityPriority(.low)
+            } else {
+                ToolbarItem(placement: .topBarTrailing) {
+                    recolorButton
+                }
             }
-            .visibilityPriority(.low)
             #endif
         }
         .fullScreenCover(isPresented: $showingFullscreen) {

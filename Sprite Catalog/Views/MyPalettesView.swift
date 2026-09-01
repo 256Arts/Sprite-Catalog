@@ -32,7 +32,7 @@ struct MyPalettesView: View {
                     }
                 }
             }
-            .swipeActionsContainer()
+            .swipeActionsContainerIfAvailable()
             .padding()
         }
         .overlay {
@@ -63,6 +63,21 @@ struct MyPalettesView: View {
             }
         }
     }
+}
+
+private extension View {
+
+    /// `swipeActions` outside a `List` need the container to opt in, which is iOS 27 and up.
+    /// Below that the rows' context menus are the way to delete.
+    @ViewBuilder
+    func swipeActionsContainerIfAvailable() -> some View {
+        if #available(iOS 27.0, visionOS 27.0, *) {
+            swipeActionsContainer()
+        } else {
+            self
+        }
+    }
+
 }
 
 #Preview {
