@@ -114,7 +114,8 @@ struct Sidebar: View {
                     Button {
                         showingCutter = true
                     } label: {
-                        Image(systemName: "scissors")
+                        Label("Cut Sprites", systemImage: "scissors")
+                            .labelStyle(.iconOnly)
                     }
                     .buttonBorderShape(.circle)
                 }

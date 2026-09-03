@@ -10,7 +10,7 @@ struct CutterView: View, DropDelegate {
     
     @Environment(\.dismiss) private var dismiss
     
-    @State var cutter = Cutter()
+    @State var cutter = Cutter(image: ScreenshotMode.demoSpritesheet)
     
     @State var showingImport = false
     @State var showingImportError = false

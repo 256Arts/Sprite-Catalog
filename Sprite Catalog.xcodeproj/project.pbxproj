@@ -20,6 +20,13 @@
 			remoteGlobalIDString = 1BBD1C7726C1CBA200BB544E;
 			remoteInfo = Messages;
 		};
+		5F00000000000000000000EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B88D63C260BA4320098366A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1B88D643260BA4320098366A;
+			remoteInfo = "Sprite Catalog";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +45,7 @@
 		1B88D644260BA4320098366A /* Sprite Catalog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sprite Catalog.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BBD1C5326C1865900BB544E /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		1BBD1C7826C1CBA200BB544E /* Messages Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Messages Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F00000000000000000000E6 /* Sprite CatalogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Sprite CatalogUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,6 +62,13 @@
 				Info.plist,
 			);
 			target = 1BBD1C7726C1CBA200BB544E /* Messages Extension */;
+		};
+		5F00000000000000000000E1 /* Exceptions for "Sprite CatalogUITests" folder in "Sprite CatalogUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				UITests.entitlements,
+			);
+			target = 5F00000000000000000000E2 /* Sprite CatalogUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -79,6 +94,14 @@
 			path = Messages;
 			sourceTree = "<group>";
 		};
+		5F00000000000000000000E0 /* Sprite CatalogUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5F00000000000000000000E1 /* Exceptions for "Sprite CatalogUITests" folder in "Sprite CatalogUITests" target */,
+			);
+			path = "Sprite CatalogUITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +117,11 @@
 				1BBD1C7926C1CBA200BB544E /* Messages.framework in Frameworks */,
 			);
 		};
+		5F00000000000000000000E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -103,6 +131,7 @@
 				1B7DF63C2E2409E60071B353 /* Shared */,
 				1B7DF5C22E2409DA0071B353 /* Sprite Catalog */,
 				1B7DF6452E240A5D0071B353 /* Messages */,
+				5F00000000000000000000E0 /* Sprite CatalogUITests */,
 				1BBD1C5226C1865900BB544E /* Frameworks */,
 				1B88D645260BA4320098366A /* Products */,
 			);
@@ -113,6 +142,7 @@
 			children = (
 				1B88D644260BA4320098366A /* Sprite Catalog.app */,
 				1BBD1C7826C1CBA200BB544E /* Messages Extension.appex */,
+				5F00000000000000000000E6 /* Sprite CatalogUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -173,6 +203,27 @@
 			productReference = 1BBD1C7826C1CBA200BB544E /* Messages Extension.appex */;
 			productType = "com.apple.product-type.app-extension.messages";
 		};
+		5F00000000000000000000E2 /* Sprite CatalogUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F00000000000000000000E7 /* Build configuration list for PBXNativeTarget "Sprite CatalogUITests" */;
+			buildPhases = (
+				5F00000000000000000000E3 /* Sources */,
+				5F00000000000000000000E4 /* Frameworks */,
+				5F00000000000000000000E5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5F00000000000000000000EA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5F00000000000000000000E0 /* Sprite CatalogUITests */,
+			);
+			name = "Sprite CatalogUITests";
+			productName = "Sprite CatalogUITests";
+			productReference = 5F00000000000000000000E6 /* Sprite CatalogUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,6 +239,10 @@
 					};
 					1BBD1C7726C1CBA200BB544E = {
 						CreatedOnToolsVersion = 12.5.1;
+					};
+					5F00000000000000000000E2 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 1B88D643260BA4320098366A;
 					};
 				};
 			};
@@ -209,6 +264,7 @@
 			targets = (
 				1B88D643260BA4320098366A /* Sprite Catalog */,
 				1BBD1C7726C1CBA200BB544E /* Messages Extension */,
+				5F00000000000000000000E2 /* Sprite CatalogUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -220,6 +276,11 @@
 			);
 		};
 		1BBD1C7626C1CBA200BB544E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		5F00000000000000000000E5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -237,6 +298,11 @@
 			files = (
 			);
 		};
+		5F00000000000000000000E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -245,6 +311,11 @@
 			platformFilter = ios;
 			target = 1BBD1C7726C1CBA200BB544E /* Messages Extension */;
 			targetProxy = 1BBD1C8326C1CBA300BB544E /* PBXContainerItemProxy */;
+		};
+		5F00000000000000000000EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1B88D643260BA4320098366A /* Sprite Catalog */;
+			targetProxy = 5F00000000000000000000EB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -490,6 +561,54 @@
 			};
 			name = Release;
 		};
+		5F00000000000000000000E8 /* Debug configuration for PBXNativeTarget "Sprite CatalogUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Sprite CatalogUITests/UITests.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,6,7";
+				TEST_TARGET_NAME = "Sprite Catalog";
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		5F00000000000000000000E9 /* Release configuration for PBXNativeTarget "Sprite CatalogUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Sprite CatalogUITests/UITests.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,6,7";
+				TEST_TARGET_NAME = "Sprite Catalog";
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -514,6 +633,14 @@
 			buildConfigurations = (
 				1BBD1C8726C1CBA300BB544E /* Debug configuration for PBXNativeTarget "Messages Extension" */,
 				1BBD1C8826C1CBA300BB544E /* Release configuration for PBXNativeTarget "Messages Extension" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		5F00000000000000000000E7 /* Build configuration list for PBXNativeTarget "Sprite CatalogUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F00000000000000000000E8 /* Debug configuration for PBXNativeTarget "Sprite CatalogUITests" */,
+				5F00000000000000000000E9 /* Release configuration for PBXNativeTarget "Sprite CatalogUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};

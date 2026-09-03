@@ -16,8 +16,14 @@ final class PaletteLibrary {
 
     private(set) var palettes: [Palette]
 
+    /// A screenshot run gets a fresh library that never reaches the file, so the seeded palettes are
+    /// the only ones shown and the real ones on the machine are neither photographed nor overwritten.
+    private let isEphemeral = ScreenshotMode.isActive
+
     private init() {
-        palettes = (try? JSONDecoder().decode([Palette].self, from: Data(contentsOf: Self.fileURL))) ?? []
+        palettes = isEphemeral
+            ? []
+            : (try? JSONDecoder().decode([Palette].self, from: Data(contentsOf: Self.fileURL))) ?? []
     }
 
     /// Saves a palette, uniquifying its name ("My Palette 2") so two same-named saves stay tellable
@@ -35,6 +41,7 @@ final class PaletteLibrary {
     }
 
     private func save() {
+        guard !isEphemeral else { return }
         do {
             try JSONEncoder().encode(palettes).write(to: Self.fileURL, options: .atomic)
         } catch {

@@ -19,6 +19,8 @@ struct SpritesGridView: View {
                         NavigationLink(value: sprite.id) {
                             ArtworkTileThumbnail(tile: sprite.tiles[0])
                         }
+                        .accessibilityLabel(sprite.name)
+                        .accessibilityIdentifier("Sprite.\(sprite.id)")
                         #if os(visionOS) || targetEnvironment(macCatalyst)
                         .buttonBorderShape(.roundedRectangle)
                         .buttonStyle(.plain)
@@ -32,6 +34,8 @@ struct SpritesGridView: View {
                         NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles[0])
                         }
+                        .accessibilityLabel(sprite.name)
+                        .accessibilityIdentifier("Sprite.\(sprite.id)")
                         #if os(visionOS) || targetEnvironment(macCatalyst)
                         .buttonBorderShape(.roundedRectangle)
                         .buttonStyle(.plain)
@@ -75,7 +79,8 @@ struct SpritesGridView: View {
                 Toggle("Animated", isOn: $filterSettings.animatedOnly)
                     .menuActionDismissBehavior(.disabled)
             } label: {
-                Image(systemName: "line.horizontal.3.decrease")
+                Label("Filter", systemImage: "line.horizontal.3.decrease")
+                    .labelStyle(.iconOnly)
             }
         }
         .onAppear {

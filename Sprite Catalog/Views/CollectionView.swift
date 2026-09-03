@@ -21,6 +21,8 @@ struct CollectionView: View {
                     NavigationLink(value: sprite.id) {
                         TileThumbnail(tile: sprite.tiles[0])
                     }
+                    .accessibilityLabel(sprite.name)
+                    .accessibilityIdentifier("Sprite.\(sprite.id)")
                     #if os(visionOS) || targetEnvironment(macCatalyst)
                     .buttonBorderShape(.roundedRectangle)
                     .buttonStyle(.plain)

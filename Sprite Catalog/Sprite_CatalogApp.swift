@@ -18,6 +18,7 @@ struct Sprite_CatalogApp: App {
         WindowGroup {
             NavigationSplitView {
                 Sidebar(selectedScreen: $selectedScreen)
+                    .screenshotModeSidebarWidth()
             } detail: {
                 NavigationStack {
                     Group {
@@ -65,6 +66,9 @@ struct Sprite_CatalogApp: App {
             } message: {
                 Text("Now you can celebrate by tapping the sprite collection from the \"Browse\" tab, and trying out the new features!")
             }
+            .onAppear {
+                ScreenshotMode.pinWindowLayout()   // no-op unless launched with -screenshotMode
+            }
             .onOpenURL { url in
                 if url.path().contains("spritecatalog/appstoreevent") {
                     showingEvent = true
@@ -82,6 +86,7 @@ struct Sprite_CatalogApp: App {
     
     init() {
         UserDefaults.standard.register()
+        ScreenshotMode.activate()   // no-op unless launched with -screenshotMode
         
         let appGroupDefaults = UserDefaults(suiteName: Sprite_CatalogApp.spritePencilAppGroupID)
         appGroupDefaults?.set(true, forKey: "ownsSpriteCatalog")

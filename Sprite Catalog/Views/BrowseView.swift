@@ -2,7 +2,9 @@ import SwiftUI
 
 struct BrowseView: View {
     
-    static let featuredArtists: [Artist] = {
+    /// A random six of the artists with 20+ sprites. A `var` so `ScreenshotMode` can pin them —
+    /// shuffled picks would otherwise make every screenshot run a different Browse screen.
+    static var featuredArtists: [Artist] = {
         let allArtists = SpriteSet.allSprites.map({ $0.artist }).filter { $0.name != "Anonymous" }
         // Count number of occurrances of each artist
         let counts = allArtists.reduce(into: [:]) { counts, artist in counts[artist, default: 0] += 1 }
