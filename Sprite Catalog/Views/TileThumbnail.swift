@@ -7,7 +7,7 @@ struct TileThumbnail: View {
     
     var body: some View {
         #if os(visionOS)
-        Image(uiImage: tile.variants[0].frameImage())
+        Image(sprite: tile.variants[0].frameImage())
             .resizable()
             .interpolation(.none)
             .scaledToFit()
@@ -20,7 +20,7 @@ struct TileThumbnail: View {
             .aspectRatio(1, contentMode: .fit)
             .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
             .overlay {
-                Image(uiImage: tile.variants[0].frameImage())
+                Image(sprite: tile.variants[0].frameImage())
                     .resizable()
                     .interpolation(.none)
                     .scaledToFit()
@@ -37,7 +37,7 @@ struct PlainTileThumbnail: View {
     @State var tile: SpriteSet.Tile
     
     var body: some View {
-        Image(uiImage: tile.variants[0].frameImage())
+        Image(sprite: tile.variants[0].frameImage())
             .resizable()
             .interpolation(.none)
             .aspectRatio(contentMode: .fit)
@@ -54,7 +54,7 @@ struct ArtworkTileThumbnail: View {
         Rectangle()
             .foregroundColor(.clear)
             .background(
-                Image(uiImage: tile.variants[0].frameImage())
+                Image(sprite: tile.variants[0].frameImage())
                     .resizable()
                     .interpolation(.none)
                     .scaledToFill()

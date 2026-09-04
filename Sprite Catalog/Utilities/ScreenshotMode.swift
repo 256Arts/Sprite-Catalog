@@ -1,6 +1,8 @@
 import PaletteKit
 import SwiftUI
+#if targetEnvironment(macCatalyst)
 import UIKit
+#endif
 
 /// Deterministic demo state for App Store screenshots, switched on by the `-screenshotMode` launch
 /// argument the UI test passes.
@@ -110,7 +112,7 @@ enum ScreenshotMode {
     ///
     /// Built by drawing catalog sprites into a grid rather than shipping a fixture image: the cutter
     /// is for sheets exactly like this, and the sprites are already in the bundle.
-    static var demoSpritesheet: UIImage? {
+    static var demoSpritesheet: CGImage? {
         guard isActive else { return nil }
 
         let tile = 16
@@ -121,26 +123,23 @@ enum ScreenshotMode {
         let sprites = SpriteSet.allSprites
             .filter { sprite in
                 sprite.tags.contains(.peopleAnimal)
-                && sprite.tiles[0].variants[0].frameImage().size == CGSize(width: tile, height: tile)
+                && sprite.tiles[0].variants[0].frameImage().pixelSize == CGSize(width: tile, height: tile)
                 && names.insert(sprite.name).inserted
             }
             .prefix(columns * columns)
         guard !sprites.isEmpty else { return nil }
 
+        // Drawn in pixels, because the sheet is measured in pixels and the cutter cuts it in pixels.
         let rows = (sprites.count + columns - 1) / columns
-        let format = UIGraphicsImageRendererFormat.default()
-        format.scale = 1   // the sheet is measured in pixels, and the cutter cuts it in pixels
-        format.opaque = false
-        let size = CGSize(width: columns * tile, height: rows * tile)
+        guard let context = CGContext(data: nil, width: columns * tile, height: rows * tile, bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        context.interpolationQuality = .none
 
-        return UIGraphicsImageRenderer(size: size, format: format).image { context in
-            context.cgContext.interpolationQuality = .none
-            for (index, sprite) in sprites.enumerated() {
-                let origin = CGPoint(x: (index % columns) * tile, y: (index / columns) * tile)
-                sprite.tiles[0].variants[0].frameImage()
-                    .draw(in: CGRect(origin: origin, size: CGSize(width: tile, height: tile)))
-            }
+        for (index, sprite) in sprites.enumerated() {
+            // A bitmap context's origin is bottom-left, so the grid's first row draws at the top.
+            let origin = CGPoint(x: (index % columns) * tile, y: (rows - 1 - index / columns) * tile)
+            context.draw(sprite.tiles[0].variants[0].frameImage(), in: CGRect(origin: origin, size: CGSize(width: tile, height: tile)))
         }
+        return context.makeImage()
     }
 }
 

@@ -5,7 +5,6 @@ struct SpriteDetailView: View {
     
     enum OpenSpritePencilError: Error {
         case failedToGetSharedContainer
-        case failedToRotateHueOrCreateImageData
     }
     
     let timer = Timer.publish(every: 0.3, on: .main, in: .default).autoconnect()
@@ -32,16 +31,16 @@ struct SpriteDetailView: View {
     @State var showingHueRotationRow = false
     
     var transferableImage: Image? {
-        let original = sprite.states[stateIndex].variants[0].uiImage
-        guard let filteredImage = try? original.hueRotate(angle: hueRotationDegrees) else { return nil }
+        let original = sprite.states[stateIndex].variants[0].cgImage
+        guard let filteredImage = try? original.hueRotated(angle: hueRotationDegrees) else { return nil }
 
-        return Image(uiImage: filteredImage)
+        return Image(sprite: filteredImage)
     }
 
     #if DEBUG
     private var copyIDButton: some View {
         Button("Copy ID", systemImage: "number.square") {
-            UIPasteboard.general.string = sprite.id
+            Clipboard.copy(sprite.id)
         }
     }
     #endif
@@ -107,7 +106,7 @@ struct SpriteDetailView: View {
     
     var body: some View {
         ScrollView {
-            Image(uiImage: sprite.states[stateIndex].variants[0].frameImages()[frame])
+            Image(sprite: sprite.states[stateIndex].variants[0].frameImages()[frame])
                 .resizable()
                 .interpolation(.none)
                 .hueRotation(Angle.degrees(hueRotationDegrees))
@@ -130,7 +129,7 @@ struct SpriteDetailView: View {
                     #endif
                 }
                 .onDrag {
-                    NSItemProvider(object: sprite.states[stateIndex].variants[0].uiImage)
+                    NSItemProvider(object: PlatformImage.sprite(sprite.states[stateIndex].variants[0].cgImage))
                 }
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
@@ -354,18 +353,14 @@ struct SpriteDetailView: View {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Sprite_CatalogApp.spritePencilAppGroupID) else {
             throw OpenSpritePencilError.failedToGetSharedContainer
         }
-        guard let data = try sprite.states[stateIndex].variants[0].uiImage.hueRotate(angle: hueRotationDegrees).pngData() else {
-            throw OpenSpritePencilError.failedToRotateHueOrCreateImageData
-        }
+        let data = try sprite.states[stateIndex].variants[0].cgImage.hueRotated(angle: hueRotationDegrees).pngData()
         try data.write(to: containerURL.appendingPathComponent("Import").appendingPathExtension("png"))
         let appGroupDefaults = UserDefaults(suiteName: Sprite_CatalogApp.spritePencilAppGroupID)
         appGroupDefaults?.set(sprite.name, forKey: "importSpriteName")
         openURL(URL(string: "https://www.256arts.com/spritepencil/importfromapp/")!)
         spritesEdited += 1
         if spritesEdited == 5 || spritesEdited == 30 {
-            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                AppStore.requestReview(in: scene)
-            }
+            requestReview()
         }
     }
     

@@ -124,7 +124,7 @@ struct SpritesGridView: View {
         }
         if filterSettings.sizeFilter != nil {
             filteredSprites = filteredSprites.filter({
-                let size = $0.tiles[0].variants[0].frameImage().size
+                let size = $0.tiles[0].variants[0].frameImage().pixelSize
                 if size == CGSize(width: 16, height: 16) {
                     return (filterSettings.sizeFilter == .equal16)
                 } else if 16 < size.width || 16 < size.height {

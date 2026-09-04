@@ -26,6 +26,11 @@ final class SpriteImporter {
         debugMode ? fileManager.temporaryDirectory : CloudController.shared.userSpritesDirectoryURL
     }
     
+    /// The files the last debug `save()` wrote, for `ImportSpritesDetailsView` to hand to a file
+    /// mover. A debug import writes into the temporary directory, so the files only become useful
+    /// once they are moved out of the app's container and into the catalog's source.
+    var debugExportURLs: [URL] = []
+
     var artistName = ""
     var artistWebsite = ""
     var licence: Licence = .none
@@ -113,12 +118,7 @@ final class SpriteImporter {
         try data.write(to: jsonURL)
         
         // Export UI
-        if debugMode {
-            let exportVC = UIDocumentPickerViewController(forExporting: [jsonURL] + spriteURLs)
-            if let rootVC = UIApplication.shared.windows.first?.rootViewController?.presentedViewController {
-                rootVC.present(exportVC, animated: true, completion: nil)
-            }
-        }
+        debugExportURLs = debugMode ? [jsonURL] + spriteURLs : []
     }
     
     func createTemplateSprite(config: SpriteSetConfiguration) -> SpriteSet {

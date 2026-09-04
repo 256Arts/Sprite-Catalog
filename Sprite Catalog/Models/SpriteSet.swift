@@ -88,37 +88,35 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 }
             }
 
-            /// The variant's full image. Falls back to an empty image rather than crashing when a bundle resource is missing or a `c-` file hasn't finished downloading from iCloud.
-            var uiImage: UIImage {
+            /// The variant's full image, in pixels. Falls back to a blank image rather than crashing when a bundle resource is missing or a `c-` file hasn't finished downloading from iCloud.
+            var cgImage: CGImage {
                 if imageName.starts(with: "c-") {
-                    return UIImage(contentsOfFile: url.path) ?? UIImage()
-                } else if let image = UIImage(named: imageName) {
+                    return CGImage.loading(contentsOf: url) ?? .blank
+                } else if let image = CGImage.named(imageName) {
                     return image
                 } else {
                     // A non-empty name with no matching asset means a stale catalog entry — surface it in development, degrade to blank in production. An empty name is an intentional placeholder.
                     assert(imageName.isEmpty, "Missing bundled sprite image: \(imageName)")
-                    return UIImage()
+                    return .blank
                 }
             }
 
-            func frameImage(frame: Int = 0) -> UIImage {
-                let image = uiImage
-                guard let frameCount, frameCount > 0, let cgImage = image.cgImage else { return image }
-                let frameWidth = cgImage.width / frameCount
-                let frameSize = CGSize(width: frameWidth, height: cgImage.height)
-                let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
-                guard frameWidth > 0, let slice = cgImage.cropping(to: frameRect) else { return image }
-                return UIImage(cgImage: slice)
+            func frameImage(frame: Int = 0) -> CGImage {
+                let image = cgImage
+                guard let frameCount, frameCount > 0 else { return image }
+                let frameWidth = image.width / frameCount
+                let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: CGSize(width: frameWidth, height: image.height))
+                guard frameWidth > 0, let slice = image.cropping(to: frameRect) else { return image }
+                return slice
             }
-            func frameImages() -> [UIImage] {
-                let image = uiImage
-                guard let frameCount, frameCount > 0, let cgImage = image.cgImage else { return [image] }
-                let frameWidth = cgImage.width / frameCount
+            func frameImages() -> [CGImage] {
+                let image = cgImage
+                guard let frameCount, frameCount > 0 else { return [image] }
+                let frameWidth = image.width / frameCount
                 guard frameWidth > 0 else { return [image] }
-                let frameSize = CGSize(width: frameWidth, height: cgImage.height)
                 return (0..<frameCount).compactMap { frame in
-                    let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: frameSize)
-                    return cgImage.cropping(to: frameRect).map(UIImage.init(cgImage:))
+                    let frameRect = CGRect(origin: CGPoint(x: frameWidth * frame, y: 0), size: CGSize(width: frameWidth, height: image.height))
+                    return image.cropping(to: frameRect)
                 }
             }
             
@@ -235,7 +233,7 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 let variantSuffix = tile.variants.count == 1 ? "" : " \(vIndex+1)"
                 let filename = name + tileSuffix + variantSuffix
                 
-                documents.append(ImageDocument(image: variant.uiImage, filename: filename))
+                documents.append(ImageDocument(image: variant.cgImage, filename: filename))
             }
         }
         return documents

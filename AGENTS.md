@@ -8,7 +8,7 @@ Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art spri
 
 This is an Xcode project (`Sprite Catalog.xcodeproj`). Build and run from Xcode, or use `xcodebuild` with the scheme. The only tests are the App Store screenshot walk (`Sprite CatalogUITests`, run by the `Screenshots` scheme); there are no unit tests.
 
-It depends on one Swift package, **PaletteKit** (`/Volumes/Kingston/GitHub/PaletteKit`, referenced by local path — see the workspace `AGENTS.md`). The external volume must be mounted or the project won't resolve.
+It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/PaletteKit`, a remote package reference).
 
 ## Targets
 

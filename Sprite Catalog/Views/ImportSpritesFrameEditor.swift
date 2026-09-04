@@ -14,9 +14,9 @@ struct ImportSpritesFrameEditor: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            if let uiImage = UIImage(contentsOfFile: config.importedFileURLs[0].path) {
+            if let cgImage = CGImage.loading(contentsOf: config.importedFileURLs[0]) {
                 ZStack {
-                    Image(uiImage: uiImage)
+                    Image(sprite: cgImage)
                         .resizable()
                         .interpolation(.none)
                         .aspectRatio(contentMode: .fit)

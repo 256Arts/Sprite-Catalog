@@ -1,4 +1,4 @@
-import UIKit
+import CoreGraphics
 import UniformTypeIdentifiers
 import AppIntents
 
@@ -49,11 +49,11 @@ struct CutSprites: AppIntent, CustomIntentMigratedAppIntent, PredictableIntent {
     }
 
     func perform() async throws -> some IntentResult & ReturnsValue<[IntentFile]> {
-        guard let data = image?.data, let image = UIImage(data: data) else {
+        guard let data = image?.data, let image = CGImage.loading(data: data) else {
             throw CutError.failedToLoadImage
         }
         let maxImageSize = 512
-        guard Int(image.size.width) <= maxImageSize, Int(image.size.height) <= maxImageSize else {
+        guard image.width <= maxImageSize, image.height <= maxImageSize else {
             throw CutError.imageTooLarge
         }
         guard let width = spriteWidth, let height = spriteHeight else {
@@ -67,7 +67,7 @@ struct CutSprites: AppIntent, CustomIntentMigratedAppIntent, PredictableIntent {
         }
         var files: [IntentFile] = []
         for sprite in sprites {
-            if let spriteData = sprite.pngData() {
+            if let spriteData = try? sprite.pngData() {
                 files.append(IntentFile(data: spriteData, filename: "Sprite", type: UTType.png))
             }
         }

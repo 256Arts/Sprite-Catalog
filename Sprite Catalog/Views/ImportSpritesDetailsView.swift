@@ -7,14 +7,15 @@ struct ImportSpritesDetailsView: View {
     @State var frameEditorConfig: SpriteImporter.SpriteSetConfiguration?
     #if DEBUG
     @State var showingTutorial = false
+    @State private var showingDebugExport = false
     #endif
     
     var body: some View {
         List {
             ForEach($importer.spriteConfigs) { $config in
                 HStack {
-                    if let uiImage = UIImage(contentsOfFile: config.importedFileURLs[0].path) {
-                        Image(uiImage: uiImage)
+                    if let cgImage = CGImage.loading(contentsOf: config.importedFileURLs[0]) {
+                        Image(sprite: cgImage)
                             .resizable()
                             .interpolation(.none)
                             .aspectRatio(contentMode: .fit)
@@ -74,6 +75,9 @@ struct ImportSpritesDetailsView: View {
                 Button("Save") {
                     do {
                         try importer.save()
+                        #if DEBUG
+                        showingDebugExport = !importer.debugExportURLs.isEmpty
+                        #endif
                     } catch {
                         print(error)
                     }
@@ -90,6 +94,9 @@ struct ImportSpritesDetailsView: View {
         .sheet(isPresented: $showingTutorial) {
             DebugImportSpritesTutorial()
         }
+        // A debug import writes to the temporary directory; moving the files out is how they reach
+        // the catalog's source.
+        .fileMover(isPresented: $showingDebugExport, files: importer.debugExportURLs) { _ in }
         #endif
     }
     

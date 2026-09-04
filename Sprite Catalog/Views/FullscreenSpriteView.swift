@@ -12,12 +12,12 @@ struct FullscreenSpriteView: View {
     var body: some View {
         TabView {
             ForEach(sprite.states) { tile in
-                Image(uiImage: tile.variants[0].frameImages()[frame])
+                Image(sprite: tile.variants[0].frameImages()[frame])
                     .resizable()
                     .interpolation(.none)
                     .aspectRatio(contentMode: .fit)
                     .onDrag {
-                        NSItemProvider(object: tile.variants[0].uiImage)
+                        NSItemProvider(object: PlatformImage.sprite(tile.variants[0].cgImage))
                     }
             }
         }

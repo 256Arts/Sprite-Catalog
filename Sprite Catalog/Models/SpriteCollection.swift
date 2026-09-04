@@ -1,15 +1,10 @@
-#if canImport(UIKit)
-import UIKit
-#else
-import AppKit
-#endif
+import Foundation
 
 @Observable
 class SpriteCollection: Identifiable, Hashable, Codable {
     
     enum SaveStickersError: Error {
         case failedToGetSharedContainer
-        case failedToCreateImageData
     }
     
     static let valentines = SpriteCollection(title: "Valentines", spriteIDs: [
@@ -126,15 +121,7 @@ class SpriteCollection: Identifiable, Hashable, Codable {
         
         // Save all new files
         for sprite in sprites {
-            #if canImport(UIKit)
-            guard let data = sprite.tiles[0].variants[0].uiImage.pngData() else {
-                throw SaveStickersError.failedToCreateImageData
-            }
-            #else
-            guard let data = NSImage(named: sprite.tiles[0].variants[0].imageName)?.pngData() else {
-                throw SaveStickersError.failedToCreateImageData
-            }
-            #endif
+            let data = try sprite.tiles[0].variants[0].cgImage.pngData()
             try data.write(to: containerURL.appendingPathComponent(sprite.id).appendingPathExtension("png"))
         }
     }

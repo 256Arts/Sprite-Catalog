@@ -23,7 +23,7 @@ struct CutterView: View, DropDelegate {
                 Rectangle()
                     .foregroundColor(.clear)
                 if let image = cutter.image {
-                    Image(uiImage: image)
+                    Image(sprite: image)
                         .resizable()
                         .interpolation(.none)
                         .aspectRatio(contentMode: .fit)
@@ -120,7 +120,7 @@ struct CutterView: View, DropDelegate {
             }
         }
         .fileImporter(isPresented: $showingImport, allowedContentTypes: [.image], onCompletion: { result in
-            guard let url = try? result.get(), url.startAccessingSecurityScopedResource(), let image = UIImage(contentsOfFile: url.path) else {
+            guard let url = try? result.get(), url.startAccessingSecurityScopedResource(), let image = CGImage.loading(contentsOf: url) else {
                 showingImportError = true
                 return
             }
@@ -149,9 +149,10 @@ struct CutterView: View, DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         let items = info.itemProviders(for: [.image])
         for item in items {
-            item.loadObject(ofClass: UIImage.self) { (image, error) in
+            item.loadObject(ofClass: PlatformImage.self) { (image, error) in
+                let cgImage = (image as? PlatformImage)?.cgImage
                 DispatchQueue.main.async {
-                    self.cutter.image = image as? UIImage
+                    self.cutter.image = cgImage
                 }
             }
         }

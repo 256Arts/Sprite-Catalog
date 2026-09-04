@@ -126,6 +126,9 @@ struct Sidebar: View {
                         Button("Import Sprites", systemImage: "plus.square") {
                             showingDebugImportSprites = true
                         }
+                        #if canImport(UIKit)
+                        // The reorder screen is a UIKit collection view controller, so it stays behind
+                        // a UIKit check until it is rebuilt in SwiftUI.
                         Button("Reorder", systemImage: "square.grid.2x2") {
                             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                                 let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
@@ -134,6 +137,7 @@ struct Sidebar: View {
                                 scene.windows.first?.rootViewController?.present(navVC, animated: true)
                             }
                         }
+                        #endif
                         Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
                             showingDebugPromoGrid = true
                         }
