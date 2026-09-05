@@ -37,10 +37,7 @@ struct BrowseView: View {
                                 NavigationLink(value: collection) {
                                     BrowseCollectionPreview(collection: collection, isLarge: false)
                                 }
-                                #if os(visionOS) || targetEnvironment(macCatalyst)
-                                .buttonBorderShape(.roundedRectangle)
-                                .buttonStyle(.plain)
-                                #endif
+                                .cellButtonStyle()
                             }
                             Spacer()
                         }
@@ -63,10 +60,7 @@ struct BrowseView: View {
                                 NavigationLink(value: collection) {
                                     BrowseCollectionPreview(collection: collection, isLarge: true)
                                 }
-                                #if os(visionOS) || targetEnvironment(macCatalyst)
-                                .buttonBorderShape(.roundedRectangle)
-                                .buttonStyle(.plain)
-                                #endif
+                                .cellButtonStyle()
                             }
                             Spacer()
                         }
@@ -89,10 +83,7 @@ struct BrowseView: View {
                                 NavigationLink(value: artist) {
                                     BrowseCollectionPreview(collection: SpriteCollection(artist: artist), isLarge: false)
                                 }
-                                #if os(visionOS) || targetEnvironment(macCatalyst)
-                                .buttonBorderShape(.roundedRectangle)
-                                .buttonStyle(.plain)
-                                #endif
+                                .cellButtonStyle()
                             }
                             Spacer()
                         }
@@ -117,10 +108,7 @@ struct BrowseView: View {
                                 NavigationLink(value: sprite.id) {
                                     TileThumbnail(tile: sprite.tiles[0])
                                 }
-                                #if os(visionOS) || targetEnvironment(macCatalyst)
-                                .buttonBorderShape(.roundedRectangle)
-                                .buttonStyle(.plain)
-                                #endif
+                                .cellButtonStyle()
                             }
                             Spacer()
                         }
@@ -134,7 +122,7 @@ struct BrowseView: View {
                     .frame(height: 20)
             }
         }
-        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
+        .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .navigationTitle("Browse")
     }
 }

@@ -33,7 +33,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 **Stickers / iMessage extension.** `SpriteCollection.saveStickers()` writes selected sprite PNGs into the app group container `group.com.jaydenirwin.spritecatalog.messages`; the extension's `StickerBrowserViewController` reads that container and rescales each sprite to a sticker (nearest-neighbor, no interpolation, to keep pixels crisp). The shared app group ID lives in `Shared/MessagesAppGroupID.swift`.
 
-**Fonts.** `FontProvider.shared` tracks registered pixel-font families; `FontFamily` (`Models/FontFamily.swift`) models bundled fonts with licence/tag metadata.
+**Fonts.** `FontProvider.shared` (`Controllers/FontProvider.swift`) installs pixel-font families and tracks which are installed; `FontFamily` (`Models/FontFamily.swift`) models the bundled fonts with licence/tag metadata and reads each face's PostScript name out of its file. Installing means a persistent `CTFontManager` registration, but the platforms differ: iOS registers the bundle's own files and lists them back with `CTFontManagerCopyRegisteredFontDescriptors`, which does not exist on macOS — so macOS registers copies it keeps in Application Support and reads the state back per file with `CTFontManagerGetScopeForURL`. The bundled fonts themselves are declared twice in `Info.plist`: `UIAppFonts` for iOS, `ATSApplicationFontsPath` for macOS.
 
 **Palettes come from PaletteKit.** The app owns no color code and no palette UI. `PalettesView` browses the package's premade catalog (`PaletteBrowser`); `MyPalettesView` lists the user's saved palettes and presents the package's `NewPaletteView` to create one (generated preset, imported .gpl/.clr/palette-image file, or from scratch). `PaletteLibrary` (`Models/PaletteLibrary.swift`) is the only app-side piece: an `@Observable` singleton persisting `[PaletteKit.Palette]` as `Palettes.json` in the documents directory — the same Codable-JSON-in-Documents storage `SpriteCollection` uses. Unlike imported sprites, saved palettes are **not** iCloud-synced.
 
@@ -45,6 +45,6 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 ## Conventions
 
-- Cross-platform image code branches on `#if canImport(UIKit)` vs AppKit; Mac Catalyst-specific workarounds use `#if targetEnvironment(macCatalyst)` (see `CloudController.fetchUserSprites`).
+- Cross-platform image code branches on `#if canImport(UIKit)` vs AppKit. Desktop-vs-touch differences branch on `#if os(macOS) || targetEnvironment(macCatalyst)`, and the styling both Macs share lives in `Utilities/PlatformStyle.swift` (`cellButtonStyle()`, `navigationTitleDisplayMode(_:)`, `keepsMenuOpen()`, `Color.groupedBackground` and friends). A bare `#if targetEnvironment(macCatalyst)` now means Catalyst-only behaviour, such as the `CloudController.fetchUserSprites` workaround.
 - Pixel art must render with nearest-neighbor scaling — set `interpolationQuality = .none` when drawing sprites.
 - `Debug/` contains developer-only views (catalog HTML generation, promo grids, reorder tooling) not shipped to users.

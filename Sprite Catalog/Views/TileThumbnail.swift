@@ -16,7 +16,7 @@ struct TileThumbnail: View {
             .draggable(tile.variants[0])
         #else
         RoundedRectangle(cornerRadius: 16)
-            .foregroundStyle(Color(UIColor.secondarySystemGroupedBackground))
+            .foregroundStyle(Color.groupedCellBackground)
             .aspectRatio(1, contentMode: .fit)
             .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
             .overlay {

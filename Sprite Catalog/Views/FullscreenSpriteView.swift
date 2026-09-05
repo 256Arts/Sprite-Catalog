@@ -10,19 +10,8 @@ struct FullscreenSpriteView: View {
     @State var frame: Int = 0
     
     var body: some View {
-        TabView {
-            ForEach(sprite.states) { tile in
-                Image(sprite: tile.variants[0].frameImages()[frame])
-                    .resizable()
-                    .interpolation(.none)
-                    .aspectRatio(contentMode: .fit)
-                    .onDrag {
-                        NSItemProvider(object: PlatformImage.sprite(tile.variants[0].cgImage))
-                    }
-            }
-        }
-        .tabViewStyle(.page)
-        #if !targetEnvironment(macCatalyst)
+        states
+        #if !os(macOS) && !targetEnvironment(macCatalyst)
         .overlay(alignment: .topLeading) {
             Button("Close", systemImage: "xmark") {
                 dismiss()
@@ -38,6 +27,41 @@ struct FullscreenSpriteView: View {
                 frame += 1
             }
         }
+    }
+    
+    /// The sprite's states, one screenful at a time. macOS has no paged `TabView`, so it pages a
+    /// scroll view instead.
+    @ViewBuilder
+    private var states: some View {
+        #if os(macOS)
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: 0) {
+                ForEach(sprite.states) { tile in
+                    stateImage(tile)
+                        .containerRelativeFrame(.horizontal)
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.paging)
+        #else
+        TabView {
+            ForEach(sprite.states) { tile in
+                stateImage(tile)
+            }
+        }
+        .tabViewStyle(.page)
+        #endif
+    }
+    
+    private func stateImage(_ tile: SpriteSet.Tile) -> some View {
+        Image(sprite: tile.variants[0].frameImages()[frame])
+            .resizable()
+            .interpolation(.none)
+            .aspectRatio(contentMode: .fit)
+            .onDrag {
+                NSItemProvider(object: PlatformImage.sprite(tile.variants[0].cgImage))
+            }
     }
 }
 

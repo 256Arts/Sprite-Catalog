@@ -12,18 +12,15 @@ struct FontsGridView: View {
                     NavigationLink(value: family) {
                         FontThumbnail(family: family)
                     }
-                    #if os(visionOS) || targetEnvironment(macCatalyst)
-                    .buttonBorderShape(.roundedRectangle)
-                    .buttonStyle(.plain)
-                    #endif
+                    .cellButtonStyle()
                 }
             }
             .padding()
         }
-        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
+        .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .searchable(text: $searchText)
         .navigationTitle("Fonts")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitleDisplayMode(.inline)
         .onChange(of: searchText) { _, newValue in
             if newValue.isEmpty {
                 filteredFamilies = FontFamily.allFamilies
@@ -44,17 +41,17 @@ struct FontThumbnail: View {
         Color.clear
         .overlay {
             Text("Aa")
-                .font(.custom(family.fontNames.first ?? "", size: family.displaySize * 2.5))
+                .font(family.previewFont(scale: 2.5))
                 .foregroundColor(.primary)
                 .fixedSize(horizontal: true, vertical: true)
         }
         .aspectRatio(1, contentMode: .fit)
         .draggable(family.fonts[0])
         #else
-        Color(uiColor: .secondarySystemGroupedBackground)
+        Color.groupedCellBackground
         .overlay {
             Text("Aa")
-                .font(.custom(family.fontNames.first ?? "", size: family.displaySize * 2.5))
+                .font(family.previewFont(scale: 2.5))
                 .foregroundColor(.primary)
                 .fixedSize(horizontal: true, vertical: true)
         }

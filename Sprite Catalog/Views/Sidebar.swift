@@ -199,7 +199,7 @@ struct CategoryLink: View {
 extension Image {
     func sidebarIcon() -> some View {
         var sidebarIconSize: CGSize {
-            #if targetEnvironment(macCatalyst)
+            #if os(macOS) || targetEnvironment(macCatalyst)
             CGSize(width: 24, height: 24)
             #else
             CGSize(width: 32, height: 32)

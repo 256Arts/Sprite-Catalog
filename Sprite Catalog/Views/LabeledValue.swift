@@ -16,7 +16,7 @@ struct LabeledValue: View {
             } else {
                 Text(value)
                     .font(Font.callout)
-                    .foregroundColor(Color(UIColor.secondaryLabel))
+                    .foregroundColor(.secondary)
             }
         }
     }

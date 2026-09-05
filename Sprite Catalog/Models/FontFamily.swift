@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreGraphics
+import CoreText
 
 enum FontLicence: String, CaseIterable, Identifiable {
     case publicDomain = "Public Domain"
@@ -26,10 +27,16 @@ struct FontFamily: Hashable, Identifiable {
         
         let style: String
         let fileURL: URL
+        /// The name `SwiftUI.Font.custom(_:size:)` resolves. Read from the file, so previewing a
+        /// family never depends on the order the system happens to list its faces in.
+        let postScriptName: String?
         
         init(style: String, fileName: String, fileType: FileType) {
+            let fileURL = Bundle.main.url(forResource: fileName, withExtension: fileType.rawValue)!
             self.style = style
-            self.fileURL = Bundle.main.url(forResource: fileName, withExtension: fileType.rawValue)!
+            self.fileURL = fileURL
+            let descriptor = (CTFontManagerCreateFontDescriptorsFromURL(fileURL as CFURL) as? [CTFontDescriptor])?.first
+            self.postScriptName = descriptor.flatMap { CTFontDescriptorCopyAttribute($0, kCTFontNameAttribute) as? String }
         }
     }
     
@@ -75,9 +82,6 @@ struct FontFamily: Hashable, Identifiable {
         }
     }
     
-    var fontNames: [String] {
-        UIFont.fontNames(forFamilyName: name)
-    }
     var isRegistered: Bool {
         FontProvider.shared.registeredFamilies.contains(name)
     }
@@ -98,6 +102,11 @@ struct FontFamily: Hashable, Identifiable {
     
     static func == (lhs: FontFamily, rhs: FontFamily) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    /// The face shown in previews, sized off the family's own `displaySize`.
+    func previewFont(scale: CGFloat) -> SwiftUI.Font {
+        .custom(fonts.first?.postScriptName ?? "", size: displaySize * scale)
     }
     
     func exportFontDocuments() -> [FontDocument] {

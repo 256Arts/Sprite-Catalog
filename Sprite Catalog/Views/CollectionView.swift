@@ -23,17 +23,14 @@ struct CollectionView: View {
                     }
                     .accessibilityLabel(sprite.name)
                     .accessibilityIdentifier("Sprite.\(sprite.id)")
-                    #if os(visionOS) || targetEnvironment(macCatalyst)
-                    .buttonBorderShape(.roundedRectangle)
-                    .buttonStyle(.plain)
-                    #endif
+                    .cellButtonStyle()
                 }
             }
             .padding()
         }
-        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
+        .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .navigationTitle(collection.title)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitleDisplayMode(.large)
     }
 }
 

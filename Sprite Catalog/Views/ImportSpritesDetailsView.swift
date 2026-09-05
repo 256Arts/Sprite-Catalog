@@ -25,7 +25,9 @@ struct ImportSpritesDetailsView: View {
                         config.name = config.name.trimmingCharacters(in: .whitespacesAndNewlines)
 //                        importer.objectWillChange.send()
                     })
+                        #if !os(macOS)
                         .textInputAutocapitalization(.words)
+                        #endif
                     if 1 < config.importedFileURLs.count {
                         Text("\(config.importedFileURLs.count) States")
                     }
@@ -63,7 +65,7 @@ struct ImportSpritesDetailsView: View {
         .navigationTitle("Import Sprites")
         .toolbar {
             #if DEBUG
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .barTrailing) {
                 Button {
                     showingTutorial = true
                 } label: {

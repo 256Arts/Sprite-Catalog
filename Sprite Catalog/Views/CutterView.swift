@@ -2,10 +2,12 @@ import SwiftUI
 
 struct CutterView: View, DropDelegate {
     
-    #if targetEnvironment(macCatalyst)
-    let isCatalyst = true
+    /// Desktop lays the cutter's controls out as a compact inspector rather than as the large
+    /// touch controls an iPhone needs.
+    #if os(macOS) || targetEnvironment(macCatalyst)
+    let isDesktop = true
     #else
-    let isCatalyst = false
+    let isDesktop = false
     #endif
     
     @Environment(\.dismiss) private var dismiss
@@ -35,7 +37,7 @@ struct CutterView: View, DropDelegate {
                         Text("Drop spritesheet here")
                             .bold()
                     }
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                         .frame(idealWidth: .infinity, maxWidth: .infinity, idealHeight: .infinity, maxHeight: .infinity)
                 }
             }
@@ -43,36 +45,36 @@ struct CutterView: View, DropDelegate {
                 showingImport = true
             }
             .onDrop(of: [.image], delegate: self)
-            #if targetEnvironment(macCatalyst)
+            #if os(macOS) || targetEnvironment(macCatalyst)
             Divider()
             #endif
             VStack {
                 HStack {
                     Text("Sprite Size:")
-                        .font(Font.system(size: isCatalyst ? 13 : 18, weight: isCatalyst ? .regular : .bold))
-                        .foregroundColor(Color(isCatalyst ? UIColor.secondaryLabel : UIColor.label))
+                        .font(Font.system(size: isDesktop ? 13 : 18, weight: isDesktop ? .regular : .bold))
+                        .foregroundColor(isDesktop ? Color.secondary : Color.primary)
                     Spacer()
                     IntField(title: "Width", value: $cutter.spriteSize.width)
                     Text("x")
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                     IntField(title: "Height", value: $cutter.spriteSize.height)
                 }
                 HStack {
                     Text("Number of Sprites:")
-                        .font(Font.system(size: isCatalyst ? 13 : 18, weight: isCatalyst ? .regular : .bold))
-                        .foregroundColor(Color(isCatalyst ? UIColor.secondaryLabel : UIColor.label))
+                        .font(Font.system(size: isDesktop ? 13 : 18, weight: isDesktop ? .regular : .bold))
+                        .foregroundColor(isDesktop ? Color.secondary : Color.primary)
                     Spacer()
                     IntField(title: "Columns", value: $cutter.spriteCounts.x)
                     Text("x")
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                     IntField(title: "Rows", value: $cutter.spriteCounts.y)
                 }
                 HStack {
                     Text("Spacing:")
-                        .font(Font.system(size: isCatalyst ? 13 : 18, weight: isCatalyst ? .regular : .bold))
-                        .foregroundColor(Color(isCatalyst ? UIColor.secondaryLabel : UIColor.label))
+                        .font(Font.system(size: isDesktop ? 13 : 18, weight: isDesktop ? .regular : .bold))
+                        .foregroundColor(isDesktop ? Color.secondary : Color.primary)
                     Spacer()
-                    #if targetEnvironment(macCatalyst)
+                    #if os(macOS) || targetEnvironment(macCatalyst)
                     IntField(title: "Spacing", value: $cutter.spacing)
                     #else
                     Text("\(cutter.spacing)")
@@ -82,7 +84,7 @@ struct CutterView: View, DropDelegate {
                 }
             }
             .padding()
-            #if targetEnvironment(macCatalyst)
+            #if os(macOS) || targetEnvironment(macCatalyst)
             Divider()
             HStack {
                 Spacer()

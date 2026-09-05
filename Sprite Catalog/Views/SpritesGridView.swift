@@ -21,10 +21,7 @@ struct SpritesGridView: View {
                         }
                         .accessibilityLabel(sprite.name)
                         .accessibilityIdentifier("Sprite.\(sprite.id)")
-                        #if os(visionOS) || targetEnvironment(macCatalyst)
-                        .buttonBorderShape(.roundedRectangle)
-                        .buttonStyle(.plain)
-                        #endif
+                        .cellButtonStyle()
                     }
                 }
                 .padding()
@@ -36,23 +33,20 @@ struct SpritesGridView: View {
                         }
                         .accessibilityLabel(sprite.name)
                         .accessibilityIdentifier("Sprite.\(sprite.id)")
-                        #if os(visionOS) || targetEnvironment(macCatalyst)
-                        .buttonBorderShape(.roundedRectangle)
-                        .buttonStyle(.plain)
-                        #endif
+                        .cellButtonStyle()
                     }
                 }
                 .padding()
             }
         }
-        .background(Color(UIColor.systemGroupedBackground), ignoresSafeAreaEdges: .all)
+        .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .searchable(text: $searchText)
         .searchScopes($searchAll, scopes: {
             Text("Search \(title)").tag(false)
             Text("Search All").tag(true)
         })
         .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitleDisplayMode(.inline)
         .toolbar {
             Menu {
                 Picker("Size", selection: $filterSettings.sizeFilter) {
@@ -63,7 +57,7 @@ struct SpritesGridView: View {
                             .tag(sizeCategory as FilterSettings.SizeCategory?)
                     }
                 }
-                .menuActionDismissBehavior(.disabled)
+                .keepsMenuOpen()
                 
                 Toggle("Black Outline", isOn: Binding(get: {
                     filterSettings.tagFilters.contains(.blackOutline)
@@ -74,10 +68,10 @@ struct SpritesGridView: View {
                         filterSettings.tagFilters.remove(.blackOutline)
                     }
                 }))
-                .menuActionDismissBehavior(.disabled)
+                .keepsMenuOpen()
                 
                 Toggle("Animated", isOn: $filterSettings.animatedOnly)
-                    .menuActionDismissBehavior(.disabled)
+                    .keepsMenuOpen()
             } label: {
                 Label("Filter", systemImage: "line.horizontal.3.decrease")
                     .labelStyle(.iconOnly)

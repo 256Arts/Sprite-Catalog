@@ -6,8 +6,6 @@ struct FamilyDetailView: View {
         case sample, custom
     }
     
-    @Bindable var provider = FontProvider.shared
-    
     @Binding var previewMode: PreviewMode
     @Binding var customString: String
     @State var showingExport = false
@@ -28,20 +26,20 @@ struct FamilyDetailView: View {
                 if previewMode == .sample {
                     Text("ABCDEFGHIJKLM\nNOPQRSTUVWXYZ\nabcdefghijklm\nnopqrstuvwxyz\n1234567890")
                         .multilineTextAlignment(.center)
-                        .font(Font.custom(family.fontNames.first ?? "", size: family.displaySize * 2.0))
+                        .font(family.previewFont(scale: 2.0))
                         .padding(.vertical)
                         .frame(maxWidth: .infinity, minHeight: 400)
                 } else {
                     #if targetEnvironment(macCatalyst) // Workaround for catalyst bug that screws up line height in TextEditor view.
                     Text("The quick brown fox jumps over the lazy dog and runs away.")
                         .multilineTextAlignment(.center)
-                        .font(Font.custom(family.fontNames.first ?? "", size: family.displaySize * 2.0))
+                        .font(family.previewFont(scale: 2.0))
                         .padding(.vertical)
                         .frame(maxWidth: .infinity, minHeight: 400)
                     #else
                     TextEditor(text: $customString)
                         .multilineTextAlignment(.center)
-                        .font(Font.custom(family.fontNames.first ?? "", size: family.displaySize * 2.0))
+                        .font(family.previewFont(scale: 2.0))
                         .padding(.vertical)
                         .frame(maxWidth: .infinity, minHeight: 400)
                     #endif
@@ -51,13 +49,9 @@ struct FamilyDetailView: View {
                 HStack(spacing: 8) {
                     Button {
                         if family.isRegistered {
-                            CTFontManagerUnregisterFontURLs(family.fonts.map({ $0.fileURL }) as CFArray, .persistent) { (errors, done) -> Bool in
-                                return true
-                            }
+                            FontProvider.shared.uninstall(family)
                         } else {
-                            CTFontManagerRegisterFontURLs(family.fonts.map({ $0.fileURL }) as CFArray, .persistent, true) { (errors, done) -> Bool in
-                                return true
-                            }
+                            FontProvider.shared.install(family)
                         }
                     } label: {
                         if family.isRegistered {
@@ -85,7 +79,7 @@ struct FamilyDetailView: View {
             .padding()
         }
         .navigationTitle(family.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitleDisplayMode(.inline)
         .toolbar {
             #if targetEnvironment(macCatalyst)
             saveAndShareButton()

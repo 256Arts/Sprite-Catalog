@@ -45,13 +45,18 @@ struct SpriteDetailView: View {
     }
     #endif
 
-    /// Pinning a toolbar item beside the title arrived in OS 27; before that it just trails.
+    /// Pinning a toolbar item beside the title arrived in OS 27; before that it just trails. macOS
+    /// has no top bar at all, so it takes the window toolbar's leading action slot.
     private var addToCollectionPlacement: ToolbarItemPlacement {
+        #if os(macOS)
+        .primaryAction
+        #else
         if #available(iOS 27.0, visionOS 27.0, *) {
             .topBarPinnedTrailing
         } else {
             .topBarTrailing
         }
+        #endif
     }
 
     private var addToCollectionMenu: some View {
@@ -122,7 +127,7 @@ struct SpriteDetailView: View {
                     .padding()
                 }
                 .onTapGesture {
-                    #if targetEnvironment(macCatalyst)
+                    #if os(macOS) || targetEnvironment(macCatalyst)
                     openWindow(value: sprite.id)
                     #else
                     showingFullscreen = true
@@ -167,10 +172,7 @@ struct SpriteDetailView: View {
                                 } label: {
                                     TileThumbnail(tile: sprite.states[stateIndex])
                                 }
-                                #if os(visionOS) || targetEnvironment(macCatalyst)
-                                .buttonBorderShape(.roundedRectangle)
-                                .buttonStyle(.plain)
-                                #endif
+                                .cellButtonStyle()
                             }
                         }
                         .padding()
@@ -194,20 +196,20 @@ struct SpriteDetailView: View {
                                 Image(systemName: "arrow.\(direction.rawValue).square.fill")
                             }
                         }
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                     }
                 }
                 
                 if sprite.tiles.contains(where: { $0.connectedEdges != nil }) {
                     Label("Connected Tileset", systemImage: "square.grid.3x3.middle.fill")
                         .font(Font.system(size: 17))
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                 }
                 
                 if sprite.states.first?.variants.count != 1 {
                     Label("Multiple Random Variants", systemImage: "square.fill.on.square.fill")
                         .font(Font.system(size: 17))
-                        .foregroundColor(Color(UIColor.secondaryLabel))
+                        .foregroundColor(.secondary)
                 }
                 
                 VStack(alignment: .leading) {
@@ -229,29 +231,31 @@ struct SpriteDetailView: View {
                         NavigationLink(value: sprite.id) {
                             TileThumbnail(tile: sprite.tiles[0])
                         }
-                        #if os(visionOS) || targetEnvironment(macCatalyst)
-                        .buttonBorderShape(.roundedRectangle)
-                        .buttonStyle(.plain)
-                        #endif
+                        .cellButtonStyle()
                     }
                 }
             }
             .padding()
             .frame(idealWidth: .infinity, maxWidth: .infinity)
             .background {
-                Color(UIColor.secondarySystemBackground)
+                Color.secondaryBackground
                     .padding(.bottom, -32)
                     .backgroundExtensionEffect()
             }
         }
         .navigationTitle(sprite.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitleDisplayMode(.inline)
         .task(id: sprite.id) {
             relatedSprites = Array(sprite.relatedSprites().prefix(10)) // Instant heuristic
             relatedSprites = await sprite.suggestedRelatedSprites()    // Refined by Apple Intelligence when available
         }
         .toolbar {
             #if DEBUG
+            #if os(macOS)
+            ToolbarItem(placement: .secondaryAction) {
+                copyIDButton
+            }
+            #else
             if #available(iOS 27.0, visionOS 27.0, *) {
                 ToolbarOverflowMenu {
                     copyIDButton
@@ -261,6 +265,7 @@ struct SpriteDetailView: View {
                     copyIDButton
                 }
             }
+            #endif
             #endif
             #if targetEnvironment(macCatalyst)
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -272,6 +277,10 @@ struct SpriteDetailView: View {
             }
             #if targetEnvironment(macCatalyst)
             // Recolor is unavailable on Mac Catalyst.
+            #elseif os(macOS)
+            ToolbarItem(placement: .automatic) {
+                recolorButton
+            }
             #elseif os(visionOS)
             ToolbarItem(placement: .topBarTrailing) {
                 recolorButton
@@ -289,9 +298,12 @@ struct SpriteDetailView: View {
             }
             #endif
         }
+        #if !os(macOS)
+        // A Mac opens the sprite in its own window instead, from the tap above.
         .fullScreenCover(isPresented: $showingFullscreen) {
             FullscreenSpriteView(sprite: sprite)
         }
+        #endif
         .fileExporter(isPresented: $showingExport, documents: sprite.exportImageDocuments(), contentType: .png) { result in
             //
         }
@@ -300,8 +312,11 @@ struct SpriteDetailView: View {
             activity.persistentIdentifier = sprite.id
             activity.webpageURL = URL(string: "https://www.spritecatalog.com/#\(sprite.id)")
             activity.isEligibleForSearch = true
-            activity.isEligibleForPrediction = true
             activity.isEligibleForPublicIndexing = true
+            #if !os(macOS)
+            // Siri only predicts activities on the platforms that suggest them.
+            activity.isEligibleForPrediction = true
+            #endif
         })
         .onAppear {
             UserDefaults.standard.addSuggestion(basedOn: sprite)
