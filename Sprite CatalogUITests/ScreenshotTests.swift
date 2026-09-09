@@ -61,6 +61,10 @@ final class ScreenshotTests: XCTestCase {
         // regular-width layout a later sidebar tap would swap the screen behind it rather than
         // replacing it.
         #if !targetEnvironment(macCatalyst)
+        // Back to a screen that actually shows the sprite: the walk has moved on to My Palettes,
+        // which has no grid to push from. People & Animals leads with the genie, so it is on screen
+        // without scrolling — its grid is lazy, and a row below the fold is not built to be tapped.
+        open("People & Animals")
         // 32x32, so it holds up blown up.
         activate(control("Sprite.0zbdd3"), "the genie sprite")
         settle()
