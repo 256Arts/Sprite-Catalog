@@ -59,9 +59,7 @@ struct FullscreenSpriteView: View {
             .resizable()
             .interpolation(.none)
             .aspectRatio(contentMode: .fit)
-            .onDrag {
-                NSItemProvider(object: PlatformImage.sprite(tile.variants[0].cgImage))
-            }
+            .draggable(sprite.transfer(of: tile))
     }
 }
 

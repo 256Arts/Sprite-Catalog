@@ -14,6 +14,8 @@ struct BrowseView: View {
         return Array(validArtists.shuffled().prefix(6))
     }()
     
+    @State private var exporting: [SpriteSet] = []
+    
     var suggestions: [SpriteSet] {
         guard let ids = UserDefaults.standard.stringArray(forKey: UserDefaults.Key.suggestions) else { return [] }
         return SpriteSet.allSprites.filter({ ids.contains($0.id) })
@@ -105,10 +107,7 @@ struct BrowseView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(suggestions) { sprite in
-                                NavigationLink(value: sprite.id) {
-                                    TileThumbnail(tile: sprite.tiles[0])
-                                }
-                                .cellButtonStyle()
+                                SpriteGridCell(sprite: sprite) { exporting = $0 }
                             }
                             Spacer()
                         }
@@ -124,6 +123,7 @@ struct BrowseView: View {
         }
         .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .navigationTitle("Browse")
+        .spriteExporter($exporting)
     }
 }
 

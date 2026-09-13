@@ -145,15 +145,18 @@ enum ScreenshotMode {
 
 extension View {
 
-    /// Pins the sidebar width during a screenshot run, for the same reason as `pinWindowLayout()`:
-    /// a dragged sidebar is user state the runner cannot reach, and it would otherwise decide how
-    /// much of every Mac and iPad shot the sidebar takes up.
+    /// Sizes the sidebar column.
+    ///
+    /// Normally it is a range, so a Mac user can drag the split to taste. A screenshot run pins it
+    /// instead, for the same reason as `pinWindowLayout()`: a dragged sidebar is user state the
+    /// runner cannot reach, and it would otherwise decide how much of every Mac and iPad shot the
+    /// sidebar takes up. This is the only forced-width path.
     @ViewBuilder
-    func screenshotModeSidebarWidth() -> some View {
+    func sidebarColumnWidth() -> some View {
         if ScreenshotMode.isActive {
             navigationSplitViewColumnWidth(260)
         } else {
-            self
+            navigationSplitViewColumnWidth(min: 220, ideal: 260, max: 340)
         }
     }
 }

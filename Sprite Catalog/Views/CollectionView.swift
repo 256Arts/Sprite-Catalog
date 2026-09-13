@@ -4,6 +4,8 @@ struct CollectionView: View {
     
     @State var collection: SpriteCollection
     @State var webpageURL: URL?
+    @State private var selection = SpriteSelection()
+    @State private var exporting: [SpriteSet] = []
     
     var body: some View {
         ScrollView {
@@ -18,12 +20,7 @@ struct CollectionView: View {
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                 ForEach(collection.sprites) { sprite in
-                    NavigationLink(value: sprite.id) {
-                        TileThumbnail(tile: sprite.tiles[0])
-                    }
-                    .accessibilityLabel(sprite.name)
-                    .accessibilityIdentifier("Sprite.\(sprite.id)")
-                    .cellButtonStyle()
+                    SpriteGridCell(sprite: sprite, selection: selection) { exporting = $0 }
                 }
             }
             .padding()
@@ -31,6 +28,7 @@ struct CollectionView: View {
         .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .navigationTitle(collection.title)
         .navigationTitleDisplayMode(.large)
+        .spriteSelectionToolbar(selection, exporting: $exporting)
     }
 }
 

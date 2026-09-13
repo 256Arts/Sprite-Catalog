@@ -10,34 +10,21 @@ struct SpritesGridView: View {
     @State var filteredSprites: [SpriteSet] = []
     @State var searchText = ""
     @State var searchAll = false
+    @State private var selection = SpriteSelection()
+    @State private var exporting: [SpriteSet] = []
+    
+    private var isArtwork: Bool {
+        title == "Artwork"
+    }
     
     var body: some View {
         ScrollView {
-            if title == "Artwork" {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))]) {
-                    ForEach(filteredSprites) { sprite in
-                        NavigationLink(value: sprite.id) {
-                            ArtworkTileThumbnail(tile: sprite.tiles[0])
-                        }
-                        .accessibilityLabel(sprite.name)
-                        .accessibilityIdentifier("Sprite.\(sprite.id)")
-                        .cellButtonStyle()
-                    }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: isArtwork ? 140 : 64))]) {
+                ForEach(filteredSprites) { sprite in
+                    SpriteGridCell(sprite: sprite, isArtwork: isArtwork, selection: selection) { exporting = $0 }
                 }
-                .padding()
-            } else {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
-                    ForEach(filteredSprites) { sprite in
-                        NavigationLink(value: sprite.id) {
-                            TileThumbnail(tile: sprite.tiles[0])
-                        }
-                        .accessibilityLabel(sprite.name)
-                        .accessibilityIdentifier("Sprite.\(sprite.id)")
-                        .cellButtonStyle()
-                    }
-                }
-                .padding()
             }
+            .padding()
         }
         .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .searchable(text: $searchText)
@@ -47,6 +34,7 @@ struct SpritesGridView: View {
         })
         .navigationTitle(title)
         .navigationTitleDisplayMode(.inline)
+        .spriteSelectionToolbar(selection, exporting: $exporting)
         .toolbar {
             Menu {
                 Picker("Size", selection: $filterSettings.sizeFilter) {

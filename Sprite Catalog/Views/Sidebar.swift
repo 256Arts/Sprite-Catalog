@@ -3,16 +3,40 @@ import SwiftUI
 struct Sidebar: View {
     
     @Environment(\.accessibilityAssistiveAccessEnabled) private var isAssistiveAccessEnabled
+    /// The window's sheets, so a toolbar button here and the matching menu bar item flip the same
+    /// flag. Optional because a preview has no window around it.
+    @Environment(MainWindowState.self) private var window: MainWindowState?
 
     @Bindable var cloudController: CloudController = .shared
     
     @Binding var selectedScreen: MainScreen?
     
-    @State var showingCutter = false
-    
     #if DEBUG
     @State var showingDebugImportSprites = false
     @State var showingDebugPromoGrid = false
+    
+    private var debugMenu: some View {
+        Menu("Debug", systemImage: "ant") {
+            Button("Import Sprites", systemImage: "plus.square") {
+                showingDebugImportSprites = true
+            }
+            #if canImport(UIKit)
+            // The reorder screen is a UIKit collection view controller, so it stays behind
+            // a UIKit check until it is rebuilt in SwiftUI.
+            Button("Reorder", systemImage: "square.grid.2x2") {
+                if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                    let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
+                    let navVC = UINavigationController(rootViewController: debugVC)
+                    navVC.modalPresentationStyle = .fullScreen
+                    scene.windows.first?.rootViewController?.present(navVC, animated: true)
+                }
+            }
+            #endif
+            Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
+                showingDebugPromoGrid = true
+            }
+        }
+    }
     #endif
     
     var body: some View {
@@ -95,6 +119,11 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
+                .contextMenu {
+                    Button("Import Sprites…", systemImage: "plus") {
+                        window?.showingImport = true
+                    }
+                }
             }
         }
         .listStyle(.sidebar)
@@ -103,7 +132,7 @@ struct Sidebar: View {
             #if os(visionOS)
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    showingCutter = true
+                    window?.showingCutter = true
                 } label: {
                     Label("Cut Sprites", systemImage: "scissors")
                 }
@@ -112,7 +141,7 @@ struct Sidebar: View {
             if !isAssistiveAccessEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showingCutter = true
+                        window?.showingCutter = true
                     } label: {
                         Label("Cut Sprites", systemImage: "scissors")
                             .labelStyle(.iconOnly)
@@ -120,52 +149,28 @@ struct Sidebar: View {
                     .buttonBorderShape(.circle)
                 }
                 
+                #if os(macOS) || targetEnvironment(macCatalyst)
+                // Desktop lists the app's links in the menu bar's Help menu, where a Mac user looks
+                // for them, so the overflow carries only the developer tools — and in a release
+                // build, nothing at all.
+                #if DEBUG
+                ToolbarItemGroup(placement: .secondaryAction) {
+                    debugMenu
+                }
+                #endif
+                #else
                 ToolbarItemGroup(placement: .secondaryAction) {
                     #if DEBUG
-                    Menu("Debug", systemImage: "ant") {
-                        Button("Import Sprites", systemImage: "plus.square") {
-                            showingDebugImportSprites = true
-                        }
-                        #if canImport(UIKit)
-                        // The reorder screen is a UIKit collection view controller, so it stays behind
-                        // a UIKit check until it is rebuilt in SwiftUI.
-                        Button("Reorder", systemImage: "square.grid.2x2") {
-                            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                                let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
-                                let navVC = UINavigationController(rootViewController: debugVC)
-                                navVC.modalPresentationStyle = .fullScreen
-                                scene.windows.first?.rootViewController?.present(navVC, animated: true)
-                            }
-                        }
-                        #endif
-                        Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
-                            showingDebugPromoGrid = true
-                        }
-                    }
+                    debugMenu
                     #endif
                     
                     Section {
-                        Link(destination: URL(string: "https://www.256arts.com/")!) {
-                            Label("Developer Website", systemImage: "safari")
-                        }
-                        Link(destination: URL(string: "https://www.256arts.com/joincommunity/")!) {
-                            Label("Join Community", systemImage: "bubble.left.and.bubble.right")
-                        }
-                        Link(destination: URL(string: "https://form.jotform.com/211994359527266")!) {
-                            Label("Submit Your Sprites", systemImage: "paperplane")
-                        }
-                        Link(destination: URL(string: "https://github.com/256Arts/Sprite-Catalog")!) {
-                            Label("Contribute on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
-                        }
+                        HelpLinks()
                     }
                 }
+                #endif
             }
             #endif
-        }
-        .sheet(isPresented: $showingCutter) {
-            NavigationStack {
-                CutterView()
-            }
         }
         #if DEBUG
         .sheet(isPresented: $showingDebugImportSprites) {

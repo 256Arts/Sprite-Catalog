@@ -67,31 +67,25 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 self
             }
         }
-        struct RandomVariant: Codable, Transferable {
-            
-            static var transferRepresentation: some TransferRepresentation {
-                FileRepresentation(exportedContentType: .png) {
-                    SentTransferredFile($0.url)
-                }
-            }
+        struct RandomVariant: Codable {
             
             let weight: Int?
             let frameCount: Int?
             let reverses: Bool?
             let imageName: String
-            var url: URL {
-                if imageName.starts(with: "c-") {
-                    // User-imported sprites are stored as "<imageName>.png" (the "c-" prefix is part of the filename, see SpriteImporter.save()).
-                    return CloudController.shared.userSpritesDirectoryURL.appendingPathComponent(imageName, isDirectory: false).appendingPathExtension("png")
-                } else {
-                    return Bundle.main.url(forResource: imageName, withExtension: "png")!
-                }
+
+            /// The file a user-imported sprite lives in, or `nil` for a built-in one — those are
+            /// compiled into the asset catalog and have no file of their own to point at.
+            var fileURL: URL? {
+                // User-imported sprites are stored as "<imageName>.png" (the "c-" prefix is part of the filename, see SpriteImporter.save()).
+                guard imageName.starts(with: "c-") else { return nil }
+                return CloudController.shared.userSpritesDirectoryURL.appendingPathComponent(imageName, isDirectory: false).appendingPathExtension("png")
             }
 
             /// The variant's full image, in pixels. Falls back to a blank image rather than crashing when a bundle resource is missing or a `c-` file hasn't finished downloading from iCloud.
             var cgImage: CGImage {
-                if imageName.starts(with: "c-") {
-                    return CGImage.loading(contentsOf: url) ?? .blank
+                if let fileURL {
+                    return CGImage.loading(contentsOf: fileURL) ?? .blank
                 } else if let image = CGImage.named(imageName) {
                     return image
                 } else {
@@ -173,9 +167,15 @@ struct SpriteSet: Equatable, Identifiable, Codable {
         }
     }()
 
+    /// The built-in catalog keyed by `id`. It is a fixed three thousand entries, so the lookups that
+    /// used to scan it — every navigation, and a multi-selection resolving itself on each pass of a
+    /// grid's `body` — cost a hash instead. User sprites are not in here: they come and go as iCloud
+    /// syncs, and there are few enough to scan.
+    private static let spritesByID: [String: SpriteSet] = Dictionary(allSprites.map({ ($0.id, $0) }), uniquingKeysWith: { first, _ in first })
+
     /// Resolves a sprite by `id`, searching the built-in catalog first, then user-imported (`c-`) sprites.
     static func withID(_ id: String) -> SpriteSet? {
-        allSprites.first(where: { $0.id == id }) ?? CloudController.shared.userSprites.first(where: { $0.id == id })
+        spritesByID[id] ?? CloudController.shared.userSprites.first(where: { $0.id == id })
     }
 
     var id: String

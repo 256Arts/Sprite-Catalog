@@ -7,80 +7,26 @@ struct Sprite_CatalogApp: App {
     static let appWhatsNewVersion = 1
     static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
     
-    @Bindable var cloudController: CloudController = .shared
-    
-    @State var selectedScreen: MainScreen? = .browse
-    @State var fontPreviewMode: FamilyDetailView.PreviewMode = .sample
-    @State var fontTestString = Self.defaultFontTestString
-    @State var showingEvent = false
-    
     var body: some Scene {
         WindowGroup {
-            NavigationSplitView {
-                Sidebar(selectedScreen: $selectedScreen)
-                    .screenshotModeSidebarWidth()
-            } detail: {
-                NavigationStack {
-                    Group {
-                        switch selectedScreen {
-                        case .browse:
-                            BrowseView()
-                        case .fonts:
-                            FontsGridView()
-                        case .palettes:
-                            PalettesView()
-                        case .myPalettes:
-                            MyPalettesView()
-                        case .imports:
-                            if let collection = cloudController.spriteCollection {
-                                ImportedCollectionSpritesGridView(userCollection: collection)
-                            } else {
-                                ProgressView()
-                            }
-                        case .category(let tag):
-                            SpritesGridView(title: tag.rawValue, sprites: SpriteSet.allSprites.filter({ $0.tags.contains(tag) }))
-                        case .collection(let collection):
-                            UserCollectionSpritesGridView(userCollection: collection)
-                        case nil:
-                            EmptyView()
-                        }
-                    }
-                    .navigationDestination(for: String.self) { spriteID in
-                        if let sprite = SpriteSet.withID(spriteID) {
-                            SpriteDetailView(sprite: sprite)
-                        }
-                    }
-                    .navigationDestination(for: SpriteCollection.self) { collection in
-                        CollectionView(collection: collection, webpageURL: nil)
-                    }
-                    .navigationDestination(for: Artist.self) { artist in
-                        CollectionView(collection: SpriteCollection(artist: artist), webpageURL: artist.url)
-                    }
-                    .navigationDestination(for: FontFamily.self) { family in
-                        FamilyDetailView(previewMode: $fontPreviewMode, customString: $fontTestString, family: family)
-                    }
-                }
-            }
-            .alert("Event Intro", isPresented: $showingEvent) {
-                Button("OK", role: .close) { }
-            } message: {
-                Text("Now you can celebrate by tapping the sprite collection from the \"Browse\" tab, and trying out the new features!")
-            }
-            .onAppear {
-                ScreenshotMode.pinWindowLayout()   // no-op unless launched with -screenshotMode
-            }
-            .onOpenURL { url in
-                if url.path().contains("spritecatalog/appstoreevent") {
-                    showingEvent = true
-                }
-            }
+            MainWindow()
         }
+        // A catalog is a browsing window, so it opens roomy and stays freely resizable — no
+        // `.windowResizability(.contentSize)`, which would pin it to whichever grid is on screen.
+        .defaultSize(width: 1100, height: 720)
+        .commands {
+            SpriteCatalogCommands()
+        }
+        // No `Settings` scene, deliberately: everything `UserDefaults.register()` holds is
+        // bookkeeping the app writes for itself — sprites viewed, sprites edited, and the sprite IDs
+        // behind Browse's recent-activity row. There is not one user-facing preference to put in it.
         
         WindowGroup("Fullscreen Sprite", for: String.self) { $id in
             if let id, let sprite = SpriteSet.withID(id) {
                 FullscreenSpriteView(sprite: sprite)
             }
         }
+        .defaultSize(width: 640, height: 640)
         .commandsRemoved()
     }
     

@@ -102,6 +102,39 @@ class SpriteCollection: Identifiable, Hashable, Codable {
         let data = try JSONEncoder().encode(self)
         try data.write(to: url, options: .atomic)
     }
+
+    /// Whether every one of `ids` is already in the collection.
+    func contains(_ ids: Set<String>) -> Bool {
+        !ids.isEmpty && ids.isSubset(of: spriteIDs)
+    }
+
+    /// Adds `ids`, or removes them when the collection already holds them all, and saves.
+    ///
+    /// One call behind every way the user edits a collection — the detail screen's Add to… menu, a
+    /// grid cell's context menu, and a whole multi-selection at once — so a partly-added selection
+    /// completes rather than emptying, the way the Finder treats a mixed selection.
+    func toggle(_ ids: Set<String>) {
+        if contains(ids) {
+            spriteIDs.subtract(ids)
+        } else {
+            spriteIDs.formUnion(ids)
+        }
+        try? saveEdits()
+    }
+
+    /// Writes the collection back the way its kind needs.
+    ///
+    /// Only the two the user edits have a file; the featured, gaming and artist collections are
+    /// built in code and have nothing to persist. The stickers one also rewrites the Messages app
+    /// group, which is what the extension reads.
+    func saveEdits() throws {
+        if self === Self.myCollection {
+            try save(to: Self.myCollectionFileURL)
+        } else if self === Self.stickersCollection {
+            try save(to: Self.stickersCollectionFileURL)
+            try saveStickers()
+        }
+    }
     
     func saveStickers() throws {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: messagesAppGroupID) else {

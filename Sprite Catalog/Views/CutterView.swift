@@ -44,7 +44,6 @@ struct CutterView: View, DropDelegate {
             .onTapGesture {
                 showingImport = true
             }
-            .onDrop(of: [.image], delegate: self)
             #if os(macOS) || targetEnvironment(macCatalyst)
             Divider()
             #endif
@@ -114,6 +113,9 @@ struct CutterView: View, DropDelegate {
             .padding()
             #endif
         }
+        // The whole sheet takes the drop, not just the preview: a spritesheet dragged out of the
+        // Finder lands wherever it is let go, which is how every other Mac window behaves.
+        .onDrop(of: [.image], delegate: self)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel", systemImage: "xmark") {

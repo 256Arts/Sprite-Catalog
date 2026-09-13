@@ -13,7 +13,6 @@ struct TileThumbnail: View {
             .scaledToFit()
             .padding(6)
             .frame(minWidth: 64, idealWidth: 64, minHeight: 64, idealHeight: 64)
-            .draggable(tile.variants[0])
         #else
         RoundedRectangle(cornerRadius: 16)
             .foregroundStyle(Color.groupedCellBackground)
@@ -26,7 +25,6 @@ struct TileThumbnail: View {
                     .scaledToFit()
                     .padding(6)
             }
-            .draggable(tile.variants[0])
         #endif
     }
 }
@@ -41,7 +39,6 @@ struct PlainTileThumbnail: View {
             .resizable()
             .interpolation(.none)
             .aspectRatio(contentMode: .fit)
-            .draggable(tile.variants[0])
     }
 }
 
@@ -61,7 +58,6 @@ struct ArtworkTileThumbnail: View {
             )
             .aspectRatio(1, contentMode: .fit)
             .cornerRadius(16)
-            .draggable(tile.variants[0])
     }
 }
 

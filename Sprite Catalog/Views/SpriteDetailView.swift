@@ -17,16 +17,13 @@ struct SpriteDetailView: View {
     @Environment(\.openWindow) var openWindow
     @Environment(\.requestReview) private var requestReview
     
-    @Bindable var myCollection = SpriteCollection.myCollection
-    @Bindable var stickersCollection = SpriteCollection.stickersCollection
-    
     @State var sprite: SpriteSet
     @State private var relatedSprites: [SpriteSet] = []
     @State var stateIndex: Int = 0
     @State var frame: Int = 0
     @State var hueRotationDegrees = 0.0
     @State var showingFullscreen = false
-    @State var showingExport = false
+    @State private var exporting: [SpriteSet] = []
     @State var showingHueRotationPopover = false
     @State var showingHueRotationRow = false
     
@@ -61,39 +58,7 @@ struct SpriteDetailView: View {
 
     private var addToCollectionMenu: some View {
         Menu("Add to...", systemImage: "folder.badge.plus") {
-            Button {
-                if myCollection.spriteIDs.contains(sprite.id) {
-                    myCollection.spriteIDs.remove(sprite.id)
-                } else {
-                    myCollection.spriteIDs.insert(sprite.id)
-                }
-                do {
-                    try myCollection.save(to: SpriteCollection.myCollectionFileURL)
-                } catch { }
-            } label: {
-                if myCollection.spriteIDs.contains(sprite.id) {
-                    Label("My Collection", systemImage: "checkmark")
-                } else {
-                    Text("My Collection")
-                }
-            }
-            Button {
-                if stickersCollection.spriteIDs.contains(sprite.id) {
-                    stickersCollection.spriteIDs.remove(sprite.id)
-                } else {
-                    stickersCollection.spriteIDs.insert(sprite.id)
-                }
-                do {
-                    try stickersCollection.save(to: SpriteCollection.stickersCollectionFileURL)
-                    try stickersCollection.saveStickers()
-                } catch { }
-            } label: {
-                if stickersCollection.spriteIDs.contains(sprite.id) {
-                    Label("Stickers", systemImage: "checkmark")
-                } else {
-                    Text("Stickers")
-                }
-            }
+            SpriteCollectionButtons(sprites: [sprite])
         }
     }
 
@@ -133,9 +98,7 @@ struct SpriteDetailView: View {
                     showingFullscreen = true
                     #endif
                 }
-                .onDrag {
-                    NSItemProvider(object: PlatformImage.sprite(sprite.states[stateIndex].variants[0].cgImage))
-                }
+                .draggable(sprite.transfer(of: sprite.states[stateIndex], hueRotationDegrees: hueRotationDegrees))
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
                     Button {
@@ -173,6 +136,7 @@ struct SpriteDetailView: View {
                                     TileThumbnail(tile: sprite.states[stateIndex])
                                 }
                                 .cellButtonStyle()
+                                .draggable(sprite.transfer(of: sprite.states[stateIndex]))
                             }
                         }
                         .padding()
@@ -228,10 +192,7 @@ struct SpriteDetailView: View {
                     .font(.headline)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
                     ForEach(relatedSprites) { sprite in
-                        NavigationLink(value: sprite.id) {
-                            TileThumbnail(tile: sprite.tiles[0])
-                        }
-                        .cellButtonStyle()
+                        SpriteGridCell(sprite: sprite) { exporting = $0 }
                     }
                 }
             }
@@ -245,6 +206,8 @@ struct SpriteDetailView: View {
         }
         .navigationTitle(sprite.name)
         .navigationTitleDisplayMode(.inline)
+        // Tells the menu bar which sprite its Sprite menu acts on.
+        .focusedSceneValue(\.spriteID, sprite.id)
         .task(id: sprite.id) {
             relatedSprites = Array(sprite.relatedSprites().prefix(10)) // Instant heuristic
             relatedSprites = await sprite.suggestedRelatedSprites()    // Refined by Apple Intelligence when available
@@ -304,9 +267,7 @@ struct SpriteDetailView: View {
             FullscreenSpriteView(sprite: sprite)
         }
         #endif
-        .fileExporter(isPresented: $showingExport, documents: sprite.exportImageDocuments(), contentType: .png) { result in
-            //
-        }
+        .spriteExporter($exporting)
         .userActivity(NSUserActivity.viewSprite, { activity in
             activity.title = sprite.name
             activity.persistentIdentifier = sprite.id
@@ -342,7 +303,7 @@ struct SpriteDetailView: View {
     private func saveAndShareButton() -> some View {
         Group {
             Button {
-                showingExport = true
+                exporting = [sprite]
             } label: {
                 Image(systemName: "square.and.arrow.down")
                     #if !targetEnvironment(macCatalyst)
