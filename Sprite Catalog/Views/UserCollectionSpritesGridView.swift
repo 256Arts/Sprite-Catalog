@@ -9,7 +9,7 @@ struct UserCollectionSpritesGridView: View {
     var body: some View {
         SpritesGridView(title: userCollection.title, sprites: userCollection.sprites)
             .toolbar {
-                if userCollection.title == SpriteCollection.stickersCollection.title {
+                if SpriteCollection.stickersAreAvailable, userCollection.title == SpriteCollection.stickersCollection.title {
                     Button("Help", systemImage: "questionmark.circle") {
                         showingHelp = true
                     }

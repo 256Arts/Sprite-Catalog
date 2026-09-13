@@ -101,16 +101,16 @@ struct Sidebar: View {
                             .sidebarIcon()
                     }
                 }
-                #if !os(visionOS)
-                NavigationLink(value: MainScreen.collection(.stickersCollection)) {
-                    Label {
-                        Text("iMessage Stickers")
-                    } icon: {
-                        Image("Stickers Folder")
-                            .sidebarIcon()
+                if SpriteCollection.stickersAreAvailable {
+                    NavigationLink(value: MainScreen.collection(.stickersCollection)) {
+                        Label {
+                            Text("iMessage Stickers")
+                        } icon: {
+                            Image("Stickers Folder")
+                                .sidebarIcon()
+                        }
                     }
                 }
-                #endif
                 NavigationLink(value: MainScreen.imports) {
                     Label {
                         Text("Imports")

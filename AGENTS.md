@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art sprites and pixel fonts, lets users import their own sprites (synced via iCloud), cut spritesheets into individual sprites, and export sprites as iMessage stickers. It targets iOS/iPadOS, Mac Catalyst, and visionOS.
+Sprite Catalog is a SwiftUI app that browses a curated catalog of pixel-art sprites and pixel fonts, lets users import their own sprites (synced via iCloud), cut spritesheets into individual sprites, and export sprites as iMessage stickers. It targets iOS/iPadOS, macOS, and visionOS. The Mac build is a native macOS app, not Mac Catalyst.
 
 ## Build & Run
 
@@ -13,7 +13,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 ## Targets
 
 - **Sprite Catalog** — main app (SwiftUI). Entry point: `Sprite Catalog/Sprite_CatalogApp.swift`.
-- **Sprite Catalog Messages MessagesExtension** — iMessage sticker browser (`Messages/`).
+- **Sprite Catalog Messages MessagesExtension** — iMessage sticker browser (`Messages/`). iOS and iPadOS only: a Messages extension ships on the Mac only inside a Catalyst app, so both the target dependency and the embed phase carry `platformFilter = ios` and the native Mac build has no `PlugIns` at all.
 
 `Shared/` holds code compiled into multiple targets (e.g. `MessagesAppGroupID.swift`).
 
@@ -33,7 +33,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 **Menu bar.** `SpriteCatalogCommands` (`Views/SpriteCatalogCommands.swift`) is the app's `.commands`. A `Commands` builder cannot reach a view's `@State`, so it reads two focused scene values instead of owning any action of its own: `\.mainWindow`, a per-window `MainWindowState` holding the cutter and import sheet flags plus the detail stack's path (the same flags the toolbar buttons flip — both sheets are presented by `MainWindow`, so a menu item works from any screen; views inside the window reach the same object through the environment rather than the focus value), and `\.spriteID`, published by `SpriteDetailView`. Both are references or plain data, never closures, so SwiftUI can compare them. There is deliberately no `Settings` scene — nothing in `UserDefaults.register()` is a user-facing preference. `Views/HelpLinks.swift` holds the outbound links, shown in the Mac Help menu and in the sidebar's overflow menu everywhere else.
 
-**Stickers / iMessage extension.** `SpriteCollection.saveStickers()` writes selected sprite PNGs into the app group container `group.com.jaydenirwin.spritecatalog.messages`; the extension's `StickerBrowserViewController` reads that container and rescales each sprite to a sticker (nearest-neighbor, no interpolation, to keep pixels crisp). The shared app group ID lives in `Shared/MessagesAppGroupID.swift`.
+**Stickers / iMessage extension.** `SpriteCollection.saveStickers()` writes selected sprite PNGs into the app group container `group.com.jaydenirwin.spritecatalog.messages`; the extension's `StickerBrowserViewController` reads that container and rescales each sprite to a sticker (nearest-neighbor, no interpolation, to keep pixels crisp). The shared app group ID lives in `Shared/MessagesAppGroupID.swift`. `SpriteCollection.stickersAreAvailable` is the one place that says which platforms have the feature — false on macOS and visionOS, where there is no extension to feed and no Messages app to send from. The sidebar row, the Add to… button and the Help sheet all ask it, and `saveEdits()` skips the app-group write when it is false, so the collection keeps persisting but writes nothing to a bundle that isn't there. A sticker set is built on iPhone or iPad and reaches Mac Messages through iCloud.
 
 **Fonts.** `FontProvider.shared` (`Controllers/FontProvider.swift`) installs pixel-font families and tracks which are installed; `FontFamily` (`Models/FontFamily.swift`) models the bundled fonts with licence/tag metadata and reads each face's PostScript name out of its file. Installing means a persistent `CTFontManager` registration, but the platforms differ: iOS registers the bundle's own files and lists them back with `CTFontManagerCopyRegisteredFontDescriptors`, which does not exist on macOS — so macOS registers copies it keeps in Application Support and reads the state back per file with `CTFontManagerGetScopeForURL`. The bundled fonts themselves are declared twice in `Info.plist`: `UIAppFonts` for iOS, `ATSApplicationFontsPath` for macOS.
 
@@ -51,6 +51,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 ## Conventions
 
-- Cross-platform image code branches on `#if canImport(UIKit)` vs AppKit. Desktop-vs-touch differences branch on `#if os(macOS) || targetEnvironment(macCatalyst)`, and the styling both Macs share lives in `Utilities/PlatformStyle.swift` (`cellButtonStyle()`, `navigationTitleDisplayMode(_:)`, `keepsMenuOpen()`, `Color.groupedBackground` and friends). A bare `#if targetEnvironment(macCatalyst)` now means Catalyst-only behaviour, such as the `CloudController.fetchUserSprites` workaround.
+- Cross-platform image code branches on `#if canImport(UIKit)` vs AppKit. Desktop-vs-touch differences branch on `#if os(macOS) || targetEnvironment(macCatalyst)`, and the styling both Macs share lives in `Utilities/PlatformStyle.swift` (`cellButtonStyle()`, `navigationTitleDisplayMode(_:)`, `keepsMenuOpen()`, `Color.groupedBackground` and friends). The app target's `SUPPORTS_MACCATALYST` is now `NO`, so every remaining `#if targetEnvironment(macCatalyst)` branch is dead and awaiting a sweep — read those as "the old Mac build did this", not as live behaviour.
+- **Two entitlements files.** `Sprite Catalog/Sprite Catalog.entitlements` is the shared one; `CODE_SIGN_ENTITLEMENTS[sdk=macosx*]` points the Mac at `Sprite Catalog macOS.entitlements`. That condition only became safe to add once Catalyst was off, because Catalyst also builds against the macosx SDK. The Mac file drops `com.apple.developer.user-fonts` (iOS-only; Catalyst was the only Mac build that used it) and the `.messages` app group, and declares the Sprite Pencil group in both the bare and team-prefixed forms — `Sprite_CatalogApp.spritePencilAppGroupID` picks whichever resolves, preferring the bare one because Sprite Pencil is still a Catalyst app on the Mac and meets us in that container. Keep any new key in both files unless it is deliberately platform-specific.
 - Pixel art must render with nearest-neighbor scaling — set `interpolationQuality = .none` when drawing sprites.
 - `Debug/` contains developer-only views (catalog HTML generation, promo grids, reorder tooling) not shipped to users.

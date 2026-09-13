@@ -86,10 +86,9 @@ struct SpriteCollectionButtons: View {
 
     var body: some View {
         button(for: myCollection, title: "My Collection")
-        #if !os(visionOS)
-        // No Messages app to send them from, which is why the sidebar hides stickers there too.
-        button(for: stickersCollection, title: "Stickers")
-        #endif
+        if SpriteCollection.stickersAreAvailable {
+            button(for: stickersCollection, title: "Stickers")
+        }
     }
 
     private func button(for collection: SpriteCollection, title: LocalizedStringKey) -> some View {

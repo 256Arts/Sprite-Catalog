@@ -73,7 +73,21 @@ class SpriteCollection: Identifiable, Hashable, Codable {
     static var stickersCollection: SpriteCollection = {
         (try? JSONDecoder().decode(SpriteCollection.self, from: Data(contentsOf: SpriteCollection.stickersCollectionFileURL))) ?? SpriteCollection(title: "iMessage Stickers", spriteIDs: [])
     }()
-    
+
+    /// Whether this platform can send the stickers the collection feeds.
+    ///
+    /// A Messages app extension only ships inside an iOS app or a Mac Catalyst one, so the native
+    /// Mac build has no extension to write to, and visionOS has no Messages app to send from. Every
+    /// entry point asks here, and ``saveEdits()`` skips the app-group write where the answer is no —
+    /// a sticker set is still built on iPhone or iPad and reaches Messages everywhere through iCloud.
+    static var stickersAreAvailable: Bool {
+        #if os(macOS) || os(visionOS)
+        false
+        #else
+        true
+        #endif
+    }
+
     static func == (lhs: SpriteCollection, rhs: SpriteCollection) -> Bool {
         lhs.title == rhs.title && lhs.spriteIDs == rhs.spriteIDs
     }
@@ -126,13 +140,15 @@ class SpriteCollection: Identifiable, Hashable, Codable {
     ///
     /// Only the two the user edits have a file; the featured, gaming and artist collections are
     /// built in code and have nothing to persist. The stickers one also rewrites the Messages app
-    /// group, which is what the extension reads.
+    /// group, which is what the extension reads — on the platforms that ship the extension.
     func saveEdits() throws {
         if self === Self.myCollection {
             try save(to: Self.myCollectionFileURL)
         } else if self === Self.stickersCollection {
             try save(to: Self.stickersCollectionFileURL)
-            try saveStickers()
+            if Self.stickersAreAvailable {
+                try saveStickers()
+            }
         }
     }
     
