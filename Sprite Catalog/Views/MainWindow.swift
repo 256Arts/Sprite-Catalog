@@ -110,9 +110,6 @@ struct MainWindow: View {
             // The sidebar picked a new root, so whatever was pushed on the old one is stale.
             state.path = NavigationPath()
         }
-        .onAppear {
-            ScreenshotMode.pinWindowLayout()   // no-op unless launched with -screenshotMode
-        }
         .onOpenURL { url in
             if url.path().contains("spritecatalog/appstoreevent") {
                 showingEvent = true

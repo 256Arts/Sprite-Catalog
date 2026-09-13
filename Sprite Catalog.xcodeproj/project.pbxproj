@@ -465,7 +465,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -500,7 +500,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -529,7 +529,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.messages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -554,7 +554,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.messages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -573,7 +573,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
@@ -597,7 +597,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.12;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaydenirwin.spritecatalog.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;

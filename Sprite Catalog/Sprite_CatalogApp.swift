@@ -25,10 +25,20 @@ struct Sprite_CatalogApp: App {
     var body: some Scene {
         WindowGroup {
             MainWindow()
+                .screenshotWindowSize()   // a no-op unless launched with -screenshotMode
         }
-        // A catalog is a browsing window, so it opens roomy and stays freely resizable — no
-        // `.windowResizability(.contentSize)`, which would pin it to whichever grid is on screen.
+        // A catalog is a browsing window, so it opens roomy and stays freely resizable.
         .defaultSize(width: 1100, height: 720)
+        #if os(macOS)
+        // `.contentSize` only for a screenshot run, where `screenshotWindowSize()` has fixed the
+        // content and the window has to take it. Outside one it would pin the window to whichever
+        // grid is on screen.
+        .windowResizability(ScreenshotMode.isActive ? .contentSize : .automatic)
+        // A screenshot run also opts out of state restoration, so it starts from the same window
+        // every time: restoring would otherwise reopen whichever Fullscreen Sprite windows happened
+        // to be open when the app was last quit, and the walk would photograph those.
+        .restorationBehavior(ScreenshotMode.isActive ? .disabled : .automatic)
+        #endif
         .commands {
             SpriteCatalogCommands()
         }

@@ -5,12 +5,12 @@ import XCTest
 ///
 /// One test rather than one per screen: the shots are a walk through a single launch, and splitting
 /// them would pay the launch — and the reseed — every time.
-/// Two of the eight screens are missing from the Mac set: the sprite detail and the cutter sheet.
-/// Both are reached by clicking, and on Mac Catalyst a synthesized click is inert — the pointer
-/// moves onto the row, the click is delivered, and nothing happens, however many times it is
-/// repeated and whichever of the element, its cell, or its coordinate it is aimed at. The sidebar
-/// is steered with the arrow keys instead, which do work, and the two screens with no keyboard
-/// route are left out of that platform's set rather than faked.
+///
+/// Every platform now walks the same eight screens. It did not always: on Mac Catalyst a
+/// synthesized click was inert — the pointer moved onto the row, the click was delivered, and
+/// nothing happened — so that build steered the sidebar with the arrow keys and skipped the two
+/// screens with no keyboard route. The Mac build is native now and clicks land, so the keyboard
+/// walk and the skipped shots are both gone.
 @MainActor
 final class ScreenshotTests: XCTestCase {
 
@@ -47,97 +47,54 @@ final class ScreenshotTests: XCTestCase {
         capture("05-my-palettes")
 
         // The cutter is a sheet off the sidebar's toolbar, not a screen the sidebar selects.
-        #if !targetEnvironment(macCatalyst)
         showSidebar()
         activate(control("Cut Sprites"), "the cut sprites button",
                  until: { self.control("Cancel").exists })
         settle()
         capture("06-cutter")
-        activate(control("Cancel"), "the cutter's cancel button")
+        activate(control("Cancel"), "the cutter's cancel button",
+                 until: { !self.control("Cancel").exists })
         settle()
-        #endif
 
         // Last on purpose: pushing a sprite detail leaves it on top of the detail stack, and on a
         // regular-width layout a later sidebar tap would swap the screen behind it rather than
         // replacing it.
-        #if !targetEnvironment(macCatalyst)
+        //
         // Back to a screen that actually shows the sprite: the walk has moved on to My Palettes,
         // which has no grid to push from. People & Animals leads with the genie, so it is on screen
         // without scrolling — its grid is lazy, and a row below the fold is not built to be tapped.
         open("People & Animals")
         // 32x32, so it holds up blown up.
-        activate(control("Sprite.0zbdd3"), "the genie sprite")
+        activate(control("Sprite.0zbdd3"), "the genie sprite",
+                 until: { self.windowTitle() != "People & Animals" })
         settle()
         capture("08-sprite")
-        #endif
     }
 
     // MARK: - Driving
 
     /// Selects a screen from the sidebar and waits for it to settle.
     ///
-    /// The screen is open once the window says so: a Catalyst window takes its title from the
-    /// detail's navigation title, which is the row's own name.
+    /// The screen is open once the window says so: a Mac window takes its title from the detail's
+    /// navigation title, which is the row's own name. Off the Mac there is no window title to read
+    /// and nothing swallows a tap, so the tap is taken at its word.
     private func open(_ row: String) {
-        #if targetEnvironment(macCatalyst)
-        selectWithKeyboard(row)
-        settle()
-        return
-        #else
         showSidebar()
         activate(sidebarRow(row), "the \(row) row",
                  alternates: [enclosingCell(labelled: row)],
                  until: { self.windowTitle() == row })
         settle()
-        #endif
     }
 
-    #if targetEnvironment(macCatalyst)
-    /// The sidebar's rows, top to bottom, so a keyboard walk knows which way to go.
-    private static let sidebarOrder = [
-        "Browse", "People & Animals", "Food", "Weapons & Tools", "Clothing", "Treasure",
-        "Misc. Items", "Nature", "Objects", "Effects", "Interface", "Tiles", "Artwork",
-        "Fonts", "Palettes", "My Collection", "My Palettes", "iMessage Stickers", "Imports",
-    ]
-
-    /// Walks the sidebar's selection to `row` with the arrow keys.
+    /// The Mac window's title. `nil` anywhere else — `XCUIElement.title` is macOS-only.
     ///
-    /// Clicks are inert here: the pointer moves onto the row, the click is delivered, and the
-    /// selection does not move — six in a row change nothing. The sidebar is keyboard focused from
-    /// launch, though, and arrow keys drive its selection, so the walk steers with those and reads
-    /// the window title back to know where it landed.
-    ///
-    /// It steps toward the target rather than scanning: overshooting reaches Imports, which sits on
-    /// a spinner forever (iCloud's metadata query is stubbed out on Catalyst) and has no title to
-    /// steer back from.
-    private func selectWithKeyboard(_ row: String) {
-        guard let target = Self.sidebarOrder.firstIndex(of: row) else {
-            return XCTFail("\(row) is not a sidebar row")
-        }
-        for _ in 0 ..< 30 {
-            guard let title = windowTitle(), let current = Self.sidebarOrder.firstIndex(of: title) else {
-                return XCTFail("the sidebar is showing \(windowTitle() ?? "nothing"), which is not a row")
-            }
-            if current == target { return }
-            let key: XCUIKeyboardKey = current < target ? .downArrow : .upArrow
-            app.typeText(key.rawValue)
-            Thread.sleep(forTimeInterval: 0.4)
-        }
-        XCTFail("could not steer the sidebar to \(row); it is showing \(windowTitle() ?? "nothing")")
-    }
-    #endif
-
-    /// The Mac window's title, read out of the element tree — `XCUIElement.title` is macOS-only, and
-    /// a Catalyst test compiles against the iOS SDK. `nil` anywhere else.
+    /// Read from the first window rather than a named one: the app has a single titled window open
+    /// for the whole walk, and its title is the detail column's navigation title.
     private func windowTitle() -> String? {
-        #if targetEnvironment(macCatalyst)
-        guard let line = app.debugDescription
-            .split(separator: "\n")
-            .first(where: { $0.contains("identifier: 'SceneWindow'") }),
-              let range = line.range(of: "title: '") else { return nil }
-        let rest = line[range.upperBound...]
-        guard let end = rest.firstIndex(of: "'") else { return nil }
-        return String(rest[..<end])
+        #if os(macOS)
+        let window = app.windows.element(boundBy: 0)
+        guard window.exists else { return nil }
+        return window.title
         #else
         return nil
         #endif
@@ -171,7 +128,11 @@ final class ScreenshotTests: XCTestCase {
         if row.exists { return row }
 
         var sidebar = app.collectionViews["Sidebar"]
-        if !sidebar.exists { sidebar = app.collectionViews.element(boundBy: 0) }
+        // A `List` is a collection view on iOS and an outline on the Mac.
+        for candidate in [app.outlines.element(boundBy: 0), app.tables.element(boundBy: 0),
+                          app.collectionViews.element(boundBy: 0)] where !sidebar.exists {
+            sidebar = candidate
+        }
         guard sidebar.exists else { return row }
 
         for _ in 0 ..< 6 { sidebar.swipeDown() }
@@ -193,9 +154,8 @@ final class ScreenshotTests: XCTestCase {
     /// false` for a query that plainly matches.
     private func control(_ name: String) -> XCUIElement {
         let predicate = NSPredicate(format: "identifier == %@ OR label == %@", name, name)
-        // Buttons first: a `List` row surfaces as a cell *containing* a button, and on Mac Catalyst
-        // the cell carries the row's label too — but clicking the cell does not select the row, so a
-        // cell match would silently do nothing.
+        // Buttons first: a `List` row surfaces as a cell *containing* a button, and the cell often
+        // carries the row's label too — clicking the button is the more reliable of the two.
         for query in [app.buttons, app.cells, app.radioButtons, app.descendants(matching: .tab)] {
             let matches = query.matching(predicate)
             if matches.count > 0 { return matches.element(boundBy: 0) }
@@ -203,53 +163,42 @@ final class ScreenshotTests: XCTestCase {
         return app.cells[name]   // nothing matched; let the caller's assertion name the miss
     }
 
-    /// Clicks or taps an element, retrying on the Mac until it has visibly taken effect.
-    ///
-    /// A click on a Catalyst window that is not key is spent activating the window rather than
-    /// hitting what is under the pointer, so the first one routinely does nothing — XCTest says as
-    /// much when it fails ("a retry-loop around the event may resolve the issue"). `until` is how
-    /// this can tell the difference between a click that landed and one that was swallowed.
-    /// The `List` cell wrapping a row, which on Mac Catalyst is what a click has to land on — the
-    /// button inside it takes the click and does nothing with it.
+    /// The `List` cell wrapping a row, for when the button inside it is not what a click has to land
+    /// on.
     private func enclosingCell(labelled label: String) -> XCUIElement {
         app.cells.containing(NSPredicate(format: "label == %@ OR identifier == %@", label, label))
             .element(boundBy: 0)
     }
 
+    /// Clicks or taps an element, retrying on the Mac until it has visibly taken effect.
+    ///
+    /// A click on a Mac window that is not key is spent activating the window rather than hitting
+    /// what is under the pointer, so the first one can do nothing — XCTest says as much when it
+    /// fails ("a retry-loop around the event may resolve the issue"). `until` is how this can tell
+    /// the difference between a click that landed and one that was swallowed.
     private func activate(_ element: XCUIElement, _ description: String,
                           alternates: [XCUIElement] = [], until succeeded: (() -> Bool)? = nil) {
         XCTAssertTrue(element.waitForExistence(timeout: 15), "never found \(description)\n\(app.debugDescription)")
         bringToFront()
 
-        #if targetEnvironment(macCatalyst)
+        #if os(macOS)
         if let succeeded {
-            // Alternating between the row's button and its cell: which of the two a Catalyst click
-            // has to hit is not something the tree tells you, so try both rather than guess.
-            let elements = ([element] + alternates).filter(\.exists)
-            // Both spellings of a click, because on this SDK the plain one is often inert: a hit on
-            // the element, and a hit on the point it occupies.
-            let candidates: [() -> Void] = elements.flatMap { element in
-                [{ element.tap() },
-                 { element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap() }]
-            }
-            for attempt in 1 ... 6 {
-                candidates[(attempt - 1) % candidates.count]()
-                for _ in 0 ..< 10 {
+            // The row's own element first, then the cell wrapping it: which of the two a click has
+            // to hit is not something the tree tells you, so try both rather than guess.
+            var candidates = ([element] + alternates).filter(\.exists)
+            if candidates.isEmpty { candidates = [element] }
+            for attempt in 1 ... 4 {
+                candidates[(attempt - 1) % candidates.count].click()
+                for _ in 0 ..< 15 {
                     Thread.sleep(forTimeInterval: 0.2)
                     if succeeded() { return }
                 }
-                if attempt == 6 {
-                    XCTFail("clicked \(description) six times and nothing happened\n\(app.debugDescription)")
-                }
             }
+            XCTFail("clicked \(description) four times and nothing happened\n\(app.debugDescription)")
             return
         }
-        #endif
-        #if os(macOS)
         element.click()
         #else
-        // Mac Catalyst builds against the iOS SDK, where `click()` does not exist — `tap()` is the
-        // Catalyst spelling of the same thing.
         element.tap()
         #endif
     }
@@ -281,7 +230,7 @@ final class ScreenshotTests: XCTestCase {
         // a machine-wide lock so that cannot happen; this is the check that it held.
         XCTAssertEqual(app.state, .runningForeground,
                        "\(name): the app under test was not frontmost — another app has this device")
-        #if os(macOS) || targetEnvironment(macCatalyst) || os(visionOS)
+        #if os(macOS) || os(visionOS)
         // Both of these are photographed from outside the test: the Mac because only the shell has
         // Screen Recording, visionOS because it has no screen for `XCUIScreen` to return (the call
         // comes back 1x1) and its window alone is neither the store's size nor its framing.
@@ -302,7 +251,7 @@ final class ScreenshotTests: XCTestCase {
         add(attachment)
     }
 
-    #if os(macOS) || targetEnvironment(macCatalyst) || os(visionOS)
+    #if os(macOS) || os(visionOS)
 
     /// Asks the shell running the tests to take the picture, and waits for it.
     ///

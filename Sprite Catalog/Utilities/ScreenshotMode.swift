@@ -1,8 +1,5 @@
 import PaletteKit
 import SwiftUI
-#if targetEnvironment(macCatalyst)
-import UIKit
-#endif
 
 /// Deterministic demo state for App Store screenshots, switched on by the `-screenshotMode` launch
 /// argument the UI test passes.
@@ -90,22 +87,11 @@ enum ScreenshotMode {
         }
     }
 
-    /// Pins the window to a fixed size on the Mac.
+    /// The Mac window's size in a screenshot run: 16:10, the shot's own aspect.
     ///
-    /// The runner clears the app's saved `NSWindow Frame` defaults before a Mac run, but `defaults`
-    /// resolves a sandboxed app's domain to its container, and this app is sandboxed — so it finds
-    /// nothing to clear and macOS restores whatever size the window was last dragged to. Requesting
-    /// the geometry from inside the app is then the only deterministic option.
-    @MainActor
-    static func pinWindowLayout() {
-        guard isActive else { return }
-        #if targetEnvironment(macCatalyst)
-        let frame = CGRect(x: 0, y: 0, width: 1440, height: 900)   // 16:10, the shot's own aspect
-        for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
-            scene.requestGeometryUpdate(.Mac(systemFrame: frame))
-        }
-        #endif
-    }
+    /// Applied by `screenshotWindowSize()` below rather than by `.defaultSize`, which decides only
+    /// the size of a window macOS has no remembered frame for.
+    static let macWindowSize = CGSize(width: 1440, height: 900)
 
     /// A spritesheet for the cutter to arrive holding, so its screenshot shows the feature working
     /// instead of its "Drop spritesheet here" empty state. `nil` outside a screenshot run.
@@ -145,12 +131,44 @@ enum ScreenshotMode {
 
 extension View {
 
+    /// Pins the Mac window to a fixed size during a screenshot run.
+    ///
+    /// The runner cannot clear the app's remembered window frame: `defaults` resolves a sandboxed
+    /// app's domain to its container, and this app is sandboxed — so it finds nothing to clear and
+    /// macOS restores whatever size the window was last dragged to, in preference to
+    /// `.defaultSize`. Fixing the *content's* size leaves the window nothing to restore to, as long
+    /// as the scene also takes `.windowResizability(.contentSize)`, which `Sprite_CatalogApp` gives
+    /// it for a screenshot run only.
+    ///
+    /// Deliberately not a hand-written `NSWindow.setFrame` from `onAppear`: that races SwiftUI's
+    /// own first layout of the window and loses about as often as it wins, leaving the window at
+    /// its minimum size.
+    ///
+    /// The one thing a Mac run does disturb is that remembered frame — the window comes back at the
+    /// shot's size next launch, rather than the one the user had arranged. It is not kept where the
+    /// runner looks for it, and neither clearing the `NSWindow` autosave name nor
+    /// `.restorationBehavior(.disabled)` stops it being written. A window size is also the only
+    /// thing in this whole file a run does leave behind, which is why it is documented rather than
+    /// fought.
+    @ViewBuilder
+    func screenshotWindowSize() -> some View {
+        #if os(macOS)
+        if ScreenshotMode.isActive {
+            frame(width: ScreenshotMode.macWindowSize.width, height: ScreenshotMode.macWindowSize.height)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
+
     /// Sizes the sidebar column.
     ///
     /// Normally it is a range, so a Mac user can drag the split to taste. A screenshot run pins it
-    /// instead, for the same reason as `pinWindowLayout()`: a dragged sidebar is user state the
-    /// runner cannot reach, and it would otherwise decide how much of every Mac and iPad shot the
-    /// sidebar takes up. This is the only forced-width path.
+    /// instead, for the same reason as `screenshotWindowSize()`: a dragged sidebar is user state
+    /// the runner cannot reach, and it would otherwise decide how much of every Mac and iPad shot
+    /// the sidebar takes up.
     @ViewBuilder
     func sidebarColumnWidth() -> some View {
         if ScreenshotMode.isActive {
