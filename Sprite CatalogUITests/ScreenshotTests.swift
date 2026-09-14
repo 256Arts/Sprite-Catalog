@@ -6,11 +6,15 @@ import XCTest
 /// One test rather than one per screen: the shots are a walk through a single launch, and splitting
 /// them would pay the launch — and the reseed — every time.
 ///
-/// Every platform now walks the same eight screens. It did not always: on Mac Catalyst a
+/// Every platform now walks the same seven screens. It did not always: on Mac Catalyst a
 /// synthesized click was inert — the pointer moved onto the row, the click was delivered, and
 /// nothing happened — so that build steered the sidebar with the arrow keys and skipped the two
 /// screens with no keyboard route. The Mac build is native now and clicks land, so the keyboard
 /// walk and the skipped shots are both gone.
+///
+/// The shots are named in the order the store lists them, which is the order they are taken in.
+/// Two screens the walk passes through are deliberately not photographed: Browse, whose value is
+/// hard to read at thumbnail size, and the fonts grid, which the font *detail* sells better.
 @MainActor
 final class ScreenshotTests: XCTestCase {
 
@@ -22,31 +26,42 @@ final class ScreenshotTests: XCTestCase {
         app.launchArguments = ["-screenshotMode"]
         app.launch()
 
-        // The app opens on Browse — the sidebar selects it by default, and a compact width has
-        // already pushed it — so the first shot needs no tap. Wait on "Sci-Fi": Featured leads with
-        // a seasonal collection until the seed removes it, so its presence means seeding is done.
+        // The app opens on Browse, which is no longer a shot but is still where seeding shows. Wait
+        // on "Sci-Fi": Featured leads with a seasonal collection until the seed removes it, so its
+        // presence means the demo state is in place and the walk can start.
         bringToFront()
         let featured = control("Sci-Fi")
         XCTAssertTrue(featured.waitForExistence(timeout: 60), "seeded content never appeared\n\(app.debugDescription)")
         settle()
-        capture("01-browse")
 
-        open("People & Animals")
-        capture("02-category")
+        open("Food")
+        capture("01-food")
 
+        open("Tiles")
+        capture("02-tiles")
+
+        // The font detail rather than the grid: a family blown up to its whole alphabet is what
+        // sells the fonts, where the grid is sixty tiles all reading "Aa". Alkhemikal is third in
+        // that grid, so it is on screen without scrolling — the grid is lazy, and a cell below the
+        // fold is not built to be tapped.
         open("Fonts")
-        capture("03-fonts")
+        activate(control("Font.Alkhemikal"), "the Alkhemikal font",
+                 until: { self.windowTitle() != "Fonts" })
+        settle()
+        capture("03-font")
 
         open("Palettes")
         capture("04-palettes")
 
         open("My Collection")
-        capture("07-my-collection")
+        capture("05-my-collection")
 
-        open("My Palettes")
-        capture("05-my-palettes")
-
-        // The cutter is a sheet off the sidebar's toolbar, not a screen the sidebar selects.
+        // The cutter is a sheet off the sidebar's toolbar, not a screen the sidebar selects, so
+        // what sits behind it is whatever the walk last opened. Artwork, because its cells are the
+        // catalog's large pieces and read as artwork even in the strip a sheet leaves showing. On a
+        // compact width the sidebar has to come back to reach the button, so the iPhone shot has
+        // the sidebar behind it instead.
+        open("Artwork")
         showSidebar()
         activate(control("Cut Sprites"), "the cut sprites button",
                  until: { self.control("Cancel").exists })
@@ -60,15 +75,14 @@ final class ScreenshotTests: XCTestCase {
         // regular-width layout a later sidebar tap would swap the screen behind it rather than
         // replacing it.
         //
-        // Back to a screen that actually shows the sprite: the walk has moved on to My Palettes,
-        // which has no grid to push from. People & Animals leads with the genie, so it is on screen
-        // without scrolling — its grid is lazy, and a row below the fold is not built to be tapped.
-        open("People & Animals")
-        // 32x32, so it holds up blown up.
-        activate(control("Sprite.0zbdd3"), "the genie sprite",
-                 until: { self.windowTitle() != "People & Animals" })
+        // Treasure, not the Artwork the cutter was over: the shot is of hippo's diamond, which is
+        // thirteenth in that grid and so on screen without scrolling — the grid is lazy, and a row
+        // below the fold is not built to be tapped.
+        open("Treasure")
+        activate(control("Sprite.7qop1k"), "hippo's diamond sprite",
+                 until: { self.windowTitle() != "Treasure" })
         settle()
-        capture("08-sprite")
+        capture("07-sprite")
     }
 
     // MARK: - Driving

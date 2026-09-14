@@ -12,6 +12,9 @@ struct FontsGridView: View {
                     NavigationLink(value: family) {
                         FontThumbnail(family: family)
                     }
+                    // Every thumbnail draws the same "Aa", so without this they are all one label.
+                    .accessibilityLabel(family.name)
+                    .accessibilityIdentifier("Font.\(family.name)")
                     .cellButtonStyle()
                 }
             }

@@ -83,19 +83,10 @@ struct CutterView: View, DropDelegate {
                 }
             }
             .padding()
-            #if os(macOS) || targetEnvironment(macCatalyst)
-            Divider()
-            HStack {
-                Spacer()
-                Button("Cut", systemImage: "scissors") {
-                    showingExport = true
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .disabled(!cutter.canCut)
-            }
-            .padding()
-            #else
+            // Desktop puts Cut in the sheet's toolbar, opposite Cancel — one row of chrome rather
+            // than a second bar under the controls. Touch keeps the full-width button, which is
+            // both the primary action and a thumb-sized target.
+            #if !os(macOS) && !targetEnvironment(macCatalyst)
             Button {
                 showingExport = true
             } label: {
@@ -122,6 +113,15 @@ struct CutterView: View, DropDelegate {
                     dismiss()
                 }
             }
+            #if os(macOS) || targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Cut", systemImage: "scissors") {
+                    showingExport = true
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(!cutter.canCut)
+            }
+            #endif
         }
         .fileImporter(isPresented: $showingImport, allowedContentTypes: [.image], onCompletion: { result in
             guard let url = try? result.get(), url.startAccessingSecurityScopedResource(), let image = CGImage.loading(contentsOf: url) else {
