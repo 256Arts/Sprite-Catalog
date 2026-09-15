@@ -2,14 +2,22 @@ import SwiftUI
 
 struct BrowseCollectionPreview: View {
     
-    @State var collection: SpriteCollection
-    @State var isLarge: Bool
+    let collection: SpriteCollection
+    let isLarge: Bool
     
     var rows: Int {
         isLarge ? 3 : 2
     }
     var columns: Int {
         isLarge ? 4 : 3
+    }
+    var tileSize: CGFloat {
+        isLarge ? 46 : 40
+    }
+    /// The hero's exact width, so the title below it can be given a real frame. Sizing the title to
+    /// fit instead would let a long collection name stretch the card wider than its artwork.
+    var width: CGFloat {
+        (CGFloat(columns) * tileSize) + (CGFloat(columns - 1) * Self.tileSpacing) + (Self.heroPadding * 2)
     }
     var heroRadius: CGFloat {
         #if os(visionOS)
@@ -19,26 +27,30 @@ struct BrowseCollectionPreview: View {
         #endif
     }
     
+    private static let tileSpacing: CGFloat = 8
+    private static let heroPadding: CGFloat = 16
+    
     var body: some View {
         VStack {
-            Grid {
+            Grid(horizontalSpacing: Self.tileSpacing, verticalSpacing: Self.tileSpacing) {
                 ForEach(0..<rows) { row in
                     GridRow {
                         ForEach(0..<columns) { column in
                             PlainTileThumbnail(tile: tile(row: row, column: column))
-                                .frame(width: isLarge ? 46 : 40, height: isLarge ? 46 : 40)
+                                .frame(width: tileSize, height: tileSize)
                         }
                     }
                 }
             }
-            .padding()
+            .padding(Self.heroPadding)
             .background(LinearGradient(gradient: generateGradient(for: collection.title), startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: heroRadius))
             
             Text(collection.title)
                 .lineLimit(1)
                 .allowsTightening(true)
+                .truncationMode(.tail)
                 .foregroundColor(.primary)
-                .frame(width: 1)
+                .frame(width: width)
         }
         #if os(visionOS)
         .padding(.vertical, 6)
