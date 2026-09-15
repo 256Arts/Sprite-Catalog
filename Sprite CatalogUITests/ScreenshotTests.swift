@@ -30,6 +30,9 @@ final class ScreenshotTests: XCTestCase {
         // on "Sci-Fi": Featured leads with a seasonal collection until the seed removes it, so its
         // presence means the demo state is in place and the walk can start.
         bringToFront()
+        #if os(macOS)
+        openWindowIfNeeded()
+        #endif
         let featured = control("Sci-Fi")
         XCTAssertTrue(featured.waitForExistence(timeout: 60), "seeded content never appeared\n\(app.debugDescription)")
         settle()
@@ -113,6 +116,31 @@ final class ScreenshotTests: XCTestCase {
         return nil
         #endif
     }
+
+    #if os(macOS)
+    /// Opens a window when the launch came up without one.
+    ///
+    /// `XCUIApplication.launch()` launches a Mac app in the *background*, and AppKit gives a
+    /// background launch no window — it holds it until the user arrives. `activate()` is not what
+    /// it waits for: only a reopen, the event a Dock icon click sends, builds the window, and a
+    /// test runner has no way to send one. So the walk asks for the window itself, with the app's
+    /// own New Window.
+    ///
+    /// Whether a launch gets away without this depends on who started the run: LaunchServices
+    /// activates a launched app only while the process that launched it is frontmost, so the same
+    /// walk comes up with a window when it is run by hand from a frontmost Terminal and with
+    /// nothing but a menu bar when an agent runs it in the background.
+    ///
+    /// Waiting first rather than counting windows straight after `launch()`, which returns on idle
+    /// and can beat the window into the accessibility tree — ⌘N would then open a second, empty
+    /// one and the walk would photograph that.
+    private func openWindowIfNeeded() {
+        if app.windows.firstMatch.waitForExistence(timeout: 10) { return }
+        app.typeKey("n", modifierFlags: .command)
+        XCTAssertTrue(app.windows.firstMatch.waitForExistence(timeout: 15),
+                      "the app launched with no window and ⌘N opened none\n\(app.debugDescription)")
+    }
+    #endif
 
     /// Brings the sidebar back on screen by popping whatever is stacked on top of it.
     ///
