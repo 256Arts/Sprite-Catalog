@@ -5,7 +5,8 @@
 #
 #   Scripts/screenshots.sh              # every platform
 #   Scripts/screenshots.sh mac iphone   # only the named ones
-#   Scripts/screenshots.sh --upload     # capture, then send the results to App Store Connect
+#   Scripts/screenshots.sh --upload     # capture, then publish: App Store Connect, and the
+#                                     # app's page on the 256 Arts site if it has one
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
