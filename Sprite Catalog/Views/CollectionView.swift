@@ -28,7 +28,7 @@ struct CollectionView: View {
         .background(Color.groupedBackground, ignoresSafeAreaEdges: .all)
         .navigationTitle(collection.title)
         .navigationTitleDisplayMode(.large)
-        .spriteSelectionToolbar(selection, exporting: $exporting)
+        .spriteSelectionToolbar(selection, displaying: collection.sprites, exporting: $exporting)
     }
 }
 

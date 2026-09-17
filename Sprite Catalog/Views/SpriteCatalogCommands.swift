@@ -6,17 +6,18 @@ import SwiftUI
 /// ``MainWindowState`` for the sheets, the focused sprite's ID for the sprite actions — so a menu
 /// item never carries a second copy of an action. Items dim when nothing is focused to act on.
 ///
-/// The file commands ship on every platform, because iPadOS and Catalyst show a menu bar too; the
+/// The file commands ship on every platform, because iPadOS shows a menu bar too; the
 /// rest is desktop-only, either because the action has no touch equivalent (a sprite has no window
 /// of its own on iPhone) or because the menu it belongs to does not exist there.
 struct SpriteCatalogCommands: Commands {
 
-    #if os(macOS) || targetEnvironment(macCatalyst)
+    #if os(macOS)
     @Environment(\.openWindow) private var openWindow
     #endif
 
     @FocusedValue(\.mainWindow) private var window
     @FocusedValue(\.spriteID) private var spriteID
+    @FocusedValue(\.spriteSelection) private var selection
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
@@ -33,7 +34,27 @@ struct SpriteCatalogCommands: Commands {
             .disabled(window == nil)
         }
 
-        #if os(macOS) || targetEnvironment(macCatalyst)
+        // A grid's selection is its own, not text's, so it gets its own pair rather than taking over
+        // the Edit menu's Select All — which the search field still needs while the grid browses.
+        // The pair exists only while a grid is selecting, and sits ahead of that item so ⌘A reaches
+        // it first.
+        CommandGroup(before: .pasteboard) {
+            if let selection {
+                Section {
+                    Button("Select All Sprites") {
+                        selection.selectAll()
+                    }
+                    .keyboardShortcut("a")
+
+                    Button("Deselect All Sprites") {
+                        selection.deselectAll()
+                    }
+                    .keyboardShortcut("a", modifiers: [.command, .shift])
+                }
+            }
+        }
+
+        #if os(macOS)
         CommandMenu("Sprite") {
             Button("Open in Fullscreen", systemImage: "arrow.up.left.and.arrow.down.right") {
                 if let spriteID {

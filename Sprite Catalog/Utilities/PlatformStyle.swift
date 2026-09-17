@@ -7,7 +7,7 @@ extension View {
     /// iPhone and iPad let a `NavigationLink` draw its own button chrome; every other platform the
     /// app ships on draws hover or focus effects instead, so the link stays plain there.
     func cellButtonStyle() -> some View {
-        #if os(iOS) && !targetEnvironment(macCatalyst)
+        #if os(iOS)
         self
         #else
         self

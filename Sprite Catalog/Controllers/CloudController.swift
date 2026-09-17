@@ -24,6 +24,10 @@ class CloudController {
             selector: #selector(metadataQueryDidFinishGathering),
             name: Notification.Name.NSMetadataQueryDidFinishGathering,
             object: metadataQuery)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(metadataQueryDidUpdate),
+            name: Notification.Name.NSMetadataQueryDidUpdate,
+            object: metadataQuery)
         metadataQuery.start()
     }
 
@@ -43,29 +47,17 @@ class CloudController {
         metadataQuery.enableUpdates()
     }
 
-    func fetchUserSprites() throws -> SpriteCollection? {
-        #if targetEnvironment(macCatalyst)
-        // macOS 12.0 beta 5 bug: Infinate `fetchUserSprites()` loop workaround
-        return nil
-        #else
-        try FileManager.default.startDownloadingUbiquitousItem(at: userSpritesDirectoryURL)
-        do {
-            let attributes = try userSpritesDirectoryURL.resourceValues(forKeys: [URLResourceKey.ubiquitousItemDownloadingStatusKey])
-            if let status: URLUbiquitousItemDownloadingStatus = attributes.allValues[URLResourceKey.ubiquitousItemDownloadingStatusKey] as? URLUbiquitousItemDownloadingStatus {
-                switch status {
-                case .current, .downloaded:
-                    return try loadUserSprites()
-                default:
-                    // Download again
-                    return try fetchUserSprites()
-                }
-            }
-        } catch {
-            print(error)
-        }
+    /// Another device imported a sprite, or a download started by ``fetchUserSprites()`` finished.
+    @objc func metadataQueryDidUpdate(_ notification: Notification) {
+        metadataQuery.disableUpdates()
+        spriteCollection = try? loadUserSprites()
+        metadataQuery.enableUpdates()
+    }
 
+    /// Loads what is on disk now and asks iCloud for the rest; the query's updates reload as it lands.
+    func fetchUserSprites() throws -> SpriteCollection? {
+        try FileManager.default.startDownloadingUbiquitousItem(at: userSpritesDirectoryURL)
         return try loadUserSprites()
-        #endif
     }
 
     func loadUserSprites() throws -> SpriteCollection? {
@@ -77,6 +69,11 @@ class CloudController {
     }
 
     func loadUserSprite(at url: URL) -> SpriteSet? {
+        // iOS lists a sprite that has not downloaded yet as a hidden ".c-XXXXXX.png.icloud" placeholder.
+        var url = url
+        if url.pathExtension == "icloud", url.lastPathComponent.hasPrefix(".") {
+            url = url.deletingLastPathComponent().appendingPathComponent(String(url.deletingPathExtension().lastPathComponent.dropFirst()))
+        }
         guard url.pathExtension.lowercased() == "png" else { return nil }
 
         // The "c-XXXXXX" filename (sans extension) is both the sprite's id and its imageName, matching SpriteImporter's convention.

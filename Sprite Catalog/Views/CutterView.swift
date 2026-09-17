@@ -4,7 +4,7 @@ struct CutterView: View, DropDelegate {
     
     /// Desktop lays the cutter's controls out as a compact inspector rather than as the large
     /// touch controls an iPhone needs.
-    #if os(macOS) || targetEnvironment(macCatalyst)
+    #if os(macOS)
     let isDesktop = true
     #else
     let isDesktop = false
@@ -44,7 +44,7 @@ struct CutterView: View, DropDelegate {
             .onTapGesture {
                 showingImport = true
             }
-            #if os(macOS) || targetEnvironment(macCatalyst)
+            #if os(macOS)
             Divider()
             #endif
             VStack {
@@ -73,7 +73,7 @@ struct CutterView: View, DropDelegate {
                         .font(Font.system(size: isDesktop ? 13 : 18, weight: isDesktop ? .regular : .bold))
                         .foregroundColor(isDesktop ? Color.secondary : Color.primary)
                     Spacer()
-                    #if os(macOS) || targetEnvironment(macCatalyst)
+                    #if os(macOS)
                     IntField(title: "Spacing", value: $cutter.spacing)
                     #else
                     Text("\(cutter.spacing)")
@@ -86,7 +86,7 @@ struct CutterView: View, DropDelegate {
             // Desktop puts Cut in the sheet's toolbar, opposite Cancel — one row of chrome rather
             // than a second bar under the controls. Touch keeps the full-width button, which is
             // both the primary action and a thumb-sized target.
-            #if !os(macOS) && !targetEnvironment(macCatalyst)
+            #if !os(macOS)
             Button {
                 showingExport = true
             } label: {
@@ -113,7 +113,7 @@ struct CutterView: View, DropDelegate {
                     dismiss()
                 }
             }
-            #if os(macOS) || targetEnvironment(macCatalyst)
+            #if os(macOS)
             ToolbarItem(placement: .confirmationAction) {
                 Button("Cut", systemImage: "scissors") {
                     showingExport = true

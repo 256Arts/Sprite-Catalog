@@ -30,22 +30,13 @@ struct FamilyDetailView: View {
                         .padding(.vertical)
                         .frame(maxWidth: .infinity, minHeight: 400)
                 } else {
-                    #if targetEnvironment(macCatalyst) // Workaround for catalyst bug that screws up line height in TextEditor view.
-                    Text("The quick brown fox jumps over the lazy dog and runs away.")
-                        .multilineTextAlignment(.center)
-                        .font(family.previewFont(scale: 2.0))
-                        .padding(.vertical)
-                        .frame(maxWidth: .infinity, minHeight: 400)
-                    #else
                     TextEditor(text: $customString)
                         .multilineTextAlignment(.center)
                         .font(family.previewFont(scale: 2.0))
                         .padding(.vertical)
                         .frame(maxWidth: .infinity, minHeight: 400)
-                    #endif
                 }
                 
-                #if !targetEnvironment(macCatalyst)
                 HStack(spacing: 8) {
                     Button {
                         if family.isRegistered {
@@ -70,7 +61,6 @@ struct FamilyDetailView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
-                #endif
                 
                 LabeledValue(value: family.author.name, label: "Author", url: family.author.url)
                 LabeledValue(value: "\(family.capHeight) px", label: "Cap Height")
@@ -80,11 +70,6 @@ struct FamilyDetailView: View {
         }
         .navigationTitle(family.name)
         .navigationTitleDisplayMode(.inline)
-        .toolbar {
-            #if targetEnvironment(macCatalyst)
-            saveAndShareButton()
-            #endif
-        }
         .fileExporter(isPresented: $showingExport, documents: family.exportFontDocuments(), contentType: .font) { result in
             //
         }

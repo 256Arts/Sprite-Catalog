@@ -8,7 +8,22 @@ import SwiftUI
 @Observable
 final class SpriteSelection {
 
-    var ids: Set<String>?
+    var ids: Set<String>? {
+        didSet {
+            if ids == nil { anchor = nil }
+        }
+    }
+
+    /// The grid's sprites in the order they are shown, which is what Select All takes and what a
+    /// Shift-click's range runs along. Kept by ``View/spriteSelectionToolbar(_:displaying:exporting:)``.
+    @ObservationIgnored var displayedIDs: [String] = []
+    /// Whether Shift is held, so a click selects a run instead of one sprite. Only a Mac reports it.
+    @ObservationIgnored var extendsRange = false
+    /// Whether ⌘ is held, so a click while browsing starts a selection instead of opening the sprite.
+    /// Only a Mac reports it.
+    @ObservationIgnored var addsToSelection = false
+    /// Where a Shift-click's run starts: the last sprite clicked without Shift, as in the Finder.
+    @ObservationIgnored private var anchor: String?
 
     var isActive: Bool {
         ids != nil
@@ -16,11 +31,43 @@ final class SpriteSelection {
     var isEmpty: Bool {
         ids?.isEmpty != false
     }
+    var isAllSelected: Bool {
+        guard let ids else { return false }
+        return displayedIDs.allSatisfy(ids.contains)
+    }
     var sprites: [SpriteSet] {
         (ids ?? []).compactMap(SpriteSet.withID)
     }
 
-    func toggle(_ id: String) {
+    /// A cell was clicked. Returns `false` when the click should open the sprite instead: the grid is
+    /// browsing and neither ⌘ nor Shift is held, which in the Finder would start a selection.
+    func click(_ id: String) -> Bool {
+        guard ids != nil else {
+            guard addsToSelection || extendsRange else { return false }
+            ids = [id]
+            anchor = id
+            return true
+        }
+        if extendsRange, let anchor,
+           let start = displayedIDs.firstIndex(of: anchor),
+           let end = displayedIDs.firstIndex(of: id) {
+            ids?.formUnion(displayedIDs[min(start, end)...max(start, end)])
+        } else {
+            toggle(id)
+            anchor = id
+        }
+        return true
+    }
+
+    func selectAll() {
+        ids = Set(displayedIDs)
+    }
+
+    func deselectAll() {
+        ids = []
+    }
+
+    private func toggle(_ id: String) {
         guard var ids else { return }
         if ids.contains(id) {
             ids.remove(id)
@@ -125,8 +172,12 @@ extension View {
 
     /// The Select / Done pair, and the menu of actions a selection can run, for a screen showing a
     /// grid of sprites. Pairs with ``spriteExporter(_:)``, which it attaches for the same screen.
-    func spriteSelectionToolbar(_ selection: SpriteSelection, exporting: Binding<[SpriteSet]>) -> some View {
-        modifier(SpriteSelectionToolbar(selection: selection, exporting: exporting))
+    ///
+    /// `sprites` is what the grid currently shows, in order: Select All takes it, and a Shift-click
+    /// selects along it. The screen is also the drag container, so dragging a selected cell carries
+    /// the whole selection out rather than that one sprite.
+    func spriteSelectionToolbar(_ selection: SpriteSelection, displaying sprites: [SpriteSet], exporting: Binding<[SpriteSet]>) -> some View {
+        modifier(SpriteSelectionToolbar(selection: selection, sprites: sprites, exporting: exporting))
     }
 
 }
@@ -134,17 +185,41 @@ extension View {
 private struct SpriteSelectionToolbar: ViewModifier {
 
     let selection: SpriteSelection
+    let sprites: [SpriteSet]
     @Binding var exporting: [SpriteSet]
 
     func body(content: Content) -> some View {
         content
+            .dragsSelection(selection)
+            #if os(macOS)
+            .onModifierKeysChanged(mask: [.shift, .command]) { _, keys in
+                selection.extendsRange = keys.contains(.shift)
+                selection.addsToSelection = keys.contains(.command)
+            }
+            #endif
+            .focusedSceneValue(\.spriteSelection, selection.isActive ? selection : nil)
+            .onChange(of: sprites, initial: true) { _, sprites in
+                selection.displayedIDs = sprites.map(\.id)
+            }
             .toolbar {
                 if selection.isActive {
                     ToolbarItem(placement: .primaryAction) {
                         Menu("Selected Sprites", systemImage: "ellipsis.circle") {
+                            Section {
+                                Button("Select All", systemImage: "checkmark.circle") {
+                                    selection.selectAll()
+                                }
+                                .disabled(selection.isAllSelected)
+
+                                Button("Deselect All", systemImage: "circle") {
+                                    selection.deselectAll()
+                                }
+                                .disabled(selection.isEmpty)
+                            }
+
                             SpriteActions(sprites: selection.sprites) { exporting = $0 }
+                                .disabled(selection.isEmpty)
                         }
-                        .disabled(selection.isEmpty)
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
@@ -160,6 +235,36 @@ private struct SpriteSelectionToolbar: ViewModifier {
                 }
             }
             .spriteExporter($exporting)
+    }
+
+}
+
+extension View {
+
+    /// Makes a grid the drag container its selectable cells hand their IDs to, so a drag that starts
+    /// on a selected sprite carries every selected sprite and one on any other carries just itself.
+    /// Before OS 27 there is no container, and each cell drags only its own sprite.
+    @ViewBuilder
+    fileprivate func dragsSelection(_ selection: SpriteSelection) -> some View {
+        if #available(iOS 27, macOS 26, visionOS 27, *) {
+            dragContainer(for: SpriteTransfer.self) { ids in
+                ids.compactMap(SpriteSet.withID).map(\.transfer)
+            }
+            .dragContainerSelection(Array(selection.ids ?? []))
+        } else {
+            self
+        }
+    }
+
+    /// A grid cell's drag: its ID, for the enclosing ``dragsSelection(_:)`` to resolve, when the cell
+    /// is selectable; otherwise its own PNG.
+    @ViewBuilder
+    func draggable(_ sprite: SpriteSet, inContainer: Bool) -> some View {
+        if inContainer, #available(iOS 27, macOS 26, visionOS 27, *) {
+            draggable(containerItemID: sprite.id)
+        } else {
+            draggable(sprite.transfer)
+        }
     }
 
 }

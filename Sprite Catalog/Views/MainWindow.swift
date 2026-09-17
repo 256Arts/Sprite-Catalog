@@ -29,6 +29,11 @@ extension FocusedValues {
     /// Plain data rather than an action, so the focus value compares cleanly.
     @Entry var spriteID: String?
 
+    /// The frontmost grid's selection while it is selecting, for Select All and Deselect All; `nil`
+    /// while it browses. Published only when active because a menu does not observe the object, so
+    /// it is the value turning up that enables the items.
+    @Entry var spriteSelection: SpriteSelection?
+
 }
 
 /// The catalog's main window: a sidebar, the screen it selects, and the sheets its toolbar and the

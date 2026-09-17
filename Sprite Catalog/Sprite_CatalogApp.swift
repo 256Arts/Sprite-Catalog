@@ -19,7 +19,6 @@ struct Sprite_CatalogApp: App {
         #endif
         return bare
     }()
-    static let appWhatsNewVersion = 1
     static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
     
     var body: some Scene {

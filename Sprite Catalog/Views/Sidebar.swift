@@ -14,24 +14,18 @@ struct Sidebar: View {
     #if DEBUG
     @State var showingDebugImportSprites = false
     @State var showingDebugPromoGrid = false
+    @State var showingDebugReorder = false
     
     private var debugMenu: some View {
         Menu("Debug", systemImage: "ant") {
             Button("Import Sprites", systemImage: "plus.square") {
                 showingDebugImportSprites = true
             }
-            #if canImport(UIKit)
-            // The reorder screen is a UIKit collection view controller, so it stays behind
-            // a UIKit check until it is rebuilt in SwiftUI.
-            Button("Reorder", systemImage: "square.grid.2x2") {
-                if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                    let debugVC = DebugReorderViewController(collectionViewLayout: UICollectionViewFlowLayout())
-                    let navVC = UINavigationController(rootViewController: debugVC)
-                    navVC.modalPresentationStyle = .fullScreen
-                    scene.windows.first?.rootViewController?.present(navVC, animated: true)
+            if #available(iOS 27, macOS 27, visionOS 27, *) {
+                Button("Reorder", systemImage: "square.grid.2x2") {
+                    showingDebugReorder = true
                 }
             }
-            #endif
             Button("Create Promo Grid", systemImage: "square.grid.3x3.square") {
                 showingDebugPromoGrid = true
             }
@@ -149,7 +143,7 @@ struct Sidebar: View {
                     .buttonBorderShape(.circle)
                 }
                 
-                #if os(macOS) || targetEnvironment(macCatalyst)
+                #if os(macOS)
                 // Desktop lists the app's links in the menu bar's Help menu, where a Mac user looks
                 // for them, so the overflow carries only the developer tools — and in a release
                 // build, nothing at all.
@@ -179,6 +173,11 @@ struct Sidebar: View {
         .sheet(isPresented: $showingDebugPromoGrid) {
             DebugPromoGridView()
         }
+        .sheet(isPresented: $showingDebugReorder) {
+            if #available(iOS 27, macOS 27, visionOS 27, *) {
+                DebugReorderView()
+            }
+        }
         #endif
     }
 }
@@ -204,7 +203,7 @@ struct CategoryLink: View {
 extension Image {
     func sidebarIcon() -> some View {
         var sidebarIconSize: CGSize {
-            #if os(macOS) || targetEnvironment(macCatalyst)
+            #if os(macOS)
             CGSize(width: 24, height: 24)
             #else
             CGSize(width: 32, height: 32)

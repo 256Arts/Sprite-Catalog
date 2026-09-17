@@ -92,7 +92,7 @@ struct SpriteDetailView: View {
                     .padding()
                 }
                 .onTapGesture {
-                    #if os(macOS) || targetEnvironment(macCatalyst)
+                    #if os(macOS)
                     openWindow(value: sprite.id)
                     #else
                     showingFullscreen = true
@@ -117,9 +117,7 @@ struct SpriteDetailView: View {
                     #else
                     .buttonStyle(.glassProminent)
                     #endif
-                    #if !targetEnvironment(macCatalyst)
                     saveAndShareButton()
-                    #endif
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
@@ -230,17 +228,10 @@ struct SpriteDetailView: View {
             }
             #endif
             #endif
-            #if targetEnvironment(macCatalyst)
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                saveAndShareButton()
-            }
-            #endif
             ToolbarItem(placement: addToCollectionPlacement) {
                 addToCollectionMenu
             }
-            #if targetEnvironment(macCatalyst)
-            // Recolor is unavailable on Mac Catalyst.
-            #elseif os(macOS)
+            #if os(macOS)
             ToolbarItem(placement: .automatic) {
                 recolorButton
             }
@@ -306,19 +297,15 @@ struct SpriteDetailView: View {
                 exporting = [sprite]
             } label: {
                 Image(systemName: "square.and.arrow.down")
-                    #if !targetEnvironment(macCatalyst)
                     .font(Font.system(size: 20, weight: .medium, design: .default))
                     .frame(width: 20, height: 24)
-                    #endif
             }
             
             if let transferableImage {
                 ShareLink(item: transferableImage, subject: Text(sprite.name), message: Text("Found in Sprite Catalog"), preview: .init(sprite.name, icon: transferableImage)) {
                     Image(systemName: "square.and.arrow.up")
-                        #if !targetEnvironment(macCatalyst)
                         .font(Font.system(size: 20, weight: .medium, design: .default))
                         .frame(width: 20, height: 24)
-                        #endif
                 }
             }
         }

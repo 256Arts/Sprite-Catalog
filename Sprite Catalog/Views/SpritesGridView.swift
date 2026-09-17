@@ -34,7 +34,7 @@ struct SpritesGridView: View {
         })
         .navigationTitle(title)
         .navigationTitleDisplayMode(.inline)
-        .spriteSelectionToolbar(selection, exporting: $exporting)
+        .spriteSelectionToolbar(selection, displaying: filteredSprites, exporting: $exporting)
         .toolbar {
             Menu {
                 Picker("Size", selection: $filterSettings.sizeFilter) {

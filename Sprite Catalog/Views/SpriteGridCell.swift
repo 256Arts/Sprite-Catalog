@@ -5,7 +5,8 @@ import SwiftUI
 /// Every grid in the app is built from this, so a sprite behaves the same in all of them: it opens
 /// its detail screen, drags out of the app as a named PNG, and offers the detail screen's actions
 /// on a right-click or a long press. A grid that hands it a ``SpriteSelection`` also gets
-/// multi-select, where the cell toggles its sprite instead of opening it.
+/// multi-select, where the cell toggles its sprite instead of opening it — and on a Mac, a ⌘- or
+/// Shift-click starts selecting, as in the Finder.
 struct SpriteGridCell: View {
 
     let sprite: SpriteSet
@@ -16,6 +17,9 @@ struct SpriteGridCell: View {
     /// Fills the screen's ``spriteExporter(_:)``. The exporter belongs to the screen rather than to
     /// the cell: one sheet per grid, not one behind every thumbnail on it.
     let export: ([SpriteSet]) -> Void
+
+    /// Where a selectable cell pushes its sprite, since it is a button rather than a link.
+    @Environment(MainWindowState.self) private var window: MainWindowState?
 
     private var isSelected: Bool? {
         guard let ids = selection?.ids else { return nil }
@@ -36,8 +40,9 @@ struct SpriteGridCell: View {
         cell
             .accessibilityLabel(sprite.name)
             .accessibilityIdentifier("Sprite.\(sprite.id)")
+            .accessibilityAddTraits(isSelected == true ? .isSelected : [])
             .cellButtonStyle()
-            .draggable(sprite.transfer)
+            .draggable(sprite, inContainer: selection != nil)
             .contextMenu {
                 SpriteActions(sprites: actionSprites, export: export)
             }
@@ -45,14 +50,17 @@ struct SpriteGridCell: View {
 
     @ViewBuilder
     private var cell: some View {
-        if isSelected == nil {
-            NavigationLink(value: sprite.id) {
+        if let selection {
+            // A button, not a link, so a modified click can start a selection instead of opening.
+            Button {
+                if !selection.click(sprite.id) {
+                    window?.path.append(sprite.id)
+                }
+            } label: {
                 thumbnail
             }
         } else {
-            Button {
-                selection?.toggle(sprite.id)
-            } label: {
+            NavigationLink(value: sprite.id) {
                 thumbnail
             }
         }

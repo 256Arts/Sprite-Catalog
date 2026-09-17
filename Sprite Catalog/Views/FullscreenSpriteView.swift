@@ -11,7 +11,7 @@ struct FullscreenSpriteView: View {
     
     var body: some View {
         states
-        #if !os(macOS) && !targetEnvironment(macCatalyst)
+        #if !os(macOS)
         .overlay(alignment: .topLeading) {
             Button("Close", systemImage: "xmark") {
                 dismiss()

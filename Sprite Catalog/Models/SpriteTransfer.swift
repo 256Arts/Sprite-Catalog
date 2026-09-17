@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 /// on one either — the catalog files every sprite under a six-character ID. This encodes the pixels
 /// on demand instead, at their native size with no resampling, and names the result after the
 /// sprite. Dropping one in the Finder therefore writes `Genie.png`, not `0zbdd3.png`.
-struct SpriteTransfer: Transferable {
+struct SpriteTransfer: Transferable, Identifiable {
 
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(exportedContentType: .png) { transfer in
@@ -16,6 +16,8 @@ struct SpriteTransfer: Transferable {
         .suggestedFileName { "\($0.name).png" }
     }
 
+    /// The sprite's ID, which is what a grid's drag container is handed to build the payload from.
+    let id: String
     let variant: SpriteSet.Tile.RandomVariant
     let name: String
     /// Carries Quick Recolor into the drag, so what leaves the app is what is on screen.
@@ -27,12 +29,12 @@ extension SpriteSet {
 
     /// The sprite as a draggable PNG: its first tile, the one every grid shows.
     var transfer: SpriteTransfer {
-        SpriteTransfer(variant: tiles[0].variants[0], name: name)
+        SpriteTransfer(id: id, variant: tiles[0].variants[0], name: name)
     }
 
     /// One of the sprite's other tiles — a state or a direction — as a draggable PNG.
     func transfer(of tile: Tile, hueRotationDegrees: Double = 0) -> SpriteTransfer {
-        SpriteTransfer(variant: tile.variants[0], name: name, hueRotationDegrees: hueRotationDegrees)
+        SpriteTransfer(id: id, variant: tile.variants[0], name: name, hueRotationDegrees: hueRotationDegrees)
     }
 
 }
