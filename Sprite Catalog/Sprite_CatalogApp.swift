@@ -25,6 +25,7 @@ struct Sprite_CatalogApp: App {
         WindowGroup {
             MainWindow()
                 .screenshotWindowSize()   // a no-op unless launched with -screenshotMode
+                .screenshotModeStatus()   // a no-op unless launched with -screenshotMode
         }
         // A catalog is a browsing window, so it opens roomy and stays freely resizable.
         .defaultSize(width: 1100, height: 720)

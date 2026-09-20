@@ -1,4 +1,7 @@
 import XCTest
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Drives the app through the screens that become App Store screenshots and attaches each one to the
 /// result bundle, where the shared `screenshots` runner collects them.
@@ -33,8 +36,8 @@ final class ScreenshotTests: XCTestCase {
         #if os(macOS)
         openWindowIfNeeded()
         #endif
-        let featured = control("Sci-Fi")
-        XCTAssertTrue(featured.waitForExistence(timeout: 60), "seeded content never appeared\n\(app.debugDescription)")
+        checkSeedIsThrowaway()
+        waitFor(control("Sci-Fi"), "the seeded Sci-Fi featured collection", timeout: 60)
         settle()
 
         open("Food")
@@ -88,7 +91,67 @@ final class ScreenshotTests: XCTestCase {
         capture("07-sprite")
     }
 
+    // MARK: - The seed
+
+    /// What the app said it seeded, read out of the accessibility tree.
+    ///
+    /// The app hangs `ScreenshotMode.status` on its root view (`.screenshotModeStatus()`). A walk
+    /// that cannot find it is running against a build that has not adopted that modifier, which is
+    /// worth saying plainly rather than reporting as an empty seed.
+    private var seedStatus: String {
+        let label = app.descendants(matching: .any)["ScreenshotMode.Status"]
+        guard label.waitForExistence(timeout: 30) else {
+            return "no ScreenshotMode.Status element — add .screenshotModeStatus() to the app's root view"
+        }
+        // A SwiftUI `Text` reaches XCUITest as the element's *value* on macOS and as its *label* on
+        // iOS, so take whichever is filled in rather than betting on one.
+        if let value = label.value as? String, !value.isEmpty { return value }
+        return label.label
+    }
+
+    /// Stops the walk when the app did not seed the throwaway state.
+    ///
+    /// `ScreenshotMode.activate` reports what it seeded, or why it refused. Reading that before the
+    /// walk's first wait means a failure to seed shows up as its own reason, rather than as a
+    /// missing "Sci-Fi" row that says nothing about why.
+    private func checkSeedIsThrowaway() {
+        let status = seedStatus
+        print("SCREENSHOT MODE: \(status)")
+        guard status.hasPrefix("ready") else {
+            attach(XCTAttachment(string: app.debugDescription), named: "element-tree")
+            return XCTFail("the app did not seed a throwaway state, so there is nothing to photograph — \(status)")
+        }
+    }
+
+    private static var platform: String {
+        #if os(macOS)
+        "macOS"
+        #elseif os(visionOS)
+        "visionOS"
+        #else
+        UIDevice.current.userInterfaceIdiom == .pad ? "iPadOS" : "iOS"
+        #endif
+    }
+
+    /// Which simulator this was, for a failure read days after the run's own log is gone.
+    private static var device: String {
+        ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "this machine"
+    }
+
     // MARK: - Driving
+
+    /// Waits for `element`, naming the platform, device, and what the seed reported on any miss —
+    /// the three things a bare `waitForExistence` failure leaves you to guess at.
+    @discardableResult
+    private func waitFor(_ element: XCUIElement, _ description: String, timeout: TimeInterval = 15) -> Bool {
+        guard !element.waitForExistence(timeout: timeout) else { return true }
+        attach(XCTAttachment(string: app.debugDescription), named: "element-tree")
+        XCTFail("""
+            never found \(description) in \(Int(timeout))s on \(Self.platform), \(Self.device).
+            The app reported: \(seedStatus)
+            """)
+        return false
+    }
 
     /// Selects a screen from the sidebar and waits for it to settle.
     ///
@@ -137,8 +200,7 @@ final class ScreenshotTests: XCTestCase {
     private func openWindowIfNeeded() {
         if app.windows.firstMatch.waitForExistence(timeout: 10) { return }
         app.typeKey("n", modifierFlags: .command)
-        XCTAssertTrue(app.windows.firstMatch.waitForExistence(timeout: 15),
-                      "the app launched with no window and ⌘N opened none\n\(app.debugDescription)")
+        waitFor(app.windows.firstMatch, "a window after ⌘N — the app launched with none", timeout: 15)
     }
     #endif
 
@@ -220,7 +282,7 @@ final class ScreenshotTests: XCTestCase {
     /// the difference between a click that landed and one that was swallowed.
     private func activate(_ element: XCUIElement, _ description: String,
                           alternates: [XCUIElement] = [], until succeeded: (() -> Bool)? = nil) {
-        XCTAssertTrue(element.waitForExistence(timeout: 15), "never found \(description)\n\(app.debugDescription)")
+        guard waitFor(element, description) else { return }
         bringToFront()
 
         #if os(macOS)
