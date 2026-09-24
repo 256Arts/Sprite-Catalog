@@ -24,7 +24,7 @@ final class StickerBrowserViewController: MSStickerBrowserViewController {
     }
     
     override func stickerBrowserView(_ stickerBrowserView: MSStickerBrowserView, stickerAt index: Int) -> MSSticker {
-        try! MSSticker(contentsOfFileURL: stickerURLs[index], localizedDescription: "Pixel Art Sprite")
+        try! MSSticker(contentsOfFileURL: stickerURLs[index], localizedDescription: String(localized: "Pixel Art Sprite"))
     }
     
     func createStickerImages() {

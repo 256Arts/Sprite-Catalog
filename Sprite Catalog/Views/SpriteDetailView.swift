@@ -181,7 +181,7 @@ struct SpriteDetailView: View {
                         .font(Font.callout)
                 }
                 
-                LabeledValue(value: sprite.licence.name, label: "Licence", url: sprite.licence.url)
+                LabeledValue(value: String(localized: sprite.licence.name), label: "Licence", url: sprite.licence.url)
             }
             .padding()
             

@@ -7,7 +7,7 @@ class FilterSettings {
         case lessThan16, equal16, moreThan16
         
         var id: Self { self }
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .lessThan16:
                 "Small"

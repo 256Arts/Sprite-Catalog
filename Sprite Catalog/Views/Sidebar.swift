@@ -190,7 +190,7 @@ struct CategoryLink: View {
     var body: some View {
         NavigationLink(value: MainScreen.category(tag)) {
             Label {
-                Text(tag.rawValue)
+                Text(tag.title)
             } icon: {
                 Image(iconName)
                     .sidebarIcon()

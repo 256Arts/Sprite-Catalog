@@ -64,7 +64,7 @@ struct FamilyDetailView: View {
                 
                 LabeledValue(value: family.author.name, label: "Author", url: family.author.url)
                 LabeledValue(value: "\(family.capHeight) px", label: "Cap Height")
-                LabeledValue(value: family.licence.rawValue, label: "Licence")
+                LabeledValue(value: String(localized: family.licence.title), label: "Licence")
             }
             .padding()
         }

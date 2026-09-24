@@ -10,7 +10,7 @@ enum Licence: String, CaseIterable, Identifiable, Codable {
     var id: Self {
         self
     }
-    var name: String {
+    var name: LocalizedStringResource {
         switch self {
         case .none:
             "N/A"

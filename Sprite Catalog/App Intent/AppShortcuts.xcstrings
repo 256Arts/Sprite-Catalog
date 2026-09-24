@@ -1,0 +1,65 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Cut sprites with ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "machine_translated",
+            "values" : [
+              "Sprites mit ${applicationName} schneiden",
+              "Spritesheet mit ${applicationName} schneiden"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Cut sprites with ${applicationName}",
+              "Cut spritesheet with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "machine_translated",
+            "values" : [
+              "Cortar sprites con ${applicationName}",
+              "Cortar hoja de sprites con ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "machine_translated",
+            "values" : [
+              "Découper des sprites avec ${applicationName}",
+              "Découper une feuille de sprites avec ${applicationName}"
+            ]
+          }
+        },
+        "ja" : {
+          "stringSet" : {
+            "state" : "machine_translated",
+            "values" : [
+              "${applicationName} でスプライトをカット",
+              "${applicationName} でスプライトシートをカット"
+            ]
+          }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "machine_translated",
+            "values" : [
+              "用 ${applicationName} 裁切精灵",
+              "用 ${applicationName} 裁切精灵图"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

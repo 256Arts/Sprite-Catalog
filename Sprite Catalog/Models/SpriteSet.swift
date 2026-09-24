@@ -36,8 +36,30 @@ struct SpriteSet: Equatable, Identifiable, Codable {
         var id: Self {
             self
         }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .blackOutline: "Black Outline"
+            case .limitedPalette: "Limited Palette"
+            case .topDown: "Top Down"
+            case .sideView: "Side View"
+            case .isometric: "Isometric"
+            case .peopleAnimal: "People & Animals"
+            case .food: "Food"
+            case .treasure: "Treasure"
+            case .weaponTool: "Weapons & Tools"
+            case .clothing: "Clothing"
+            case .miscItem: "Misc. Items"
+            case .nature: "Nature"
+            case .object: "Objects"
+            case .effect: "Effects"
+            case .tile: "Tiles"
+            case .interface: "Interface"
+            case .artwork: "Artwork"
+            }
+        }
     }
-    
+
     struct Tile: Identifiable, Codable {
         
         struct ConnectedEdges: Equatable, Codable {

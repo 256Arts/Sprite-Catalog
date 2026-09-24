@@ -136,7 +136,7 @@ extension URL {
         case "patreon.com":
             "Patreon"
         default:
-            "Website"
+            String(localized: "Website")
         }
     }
     

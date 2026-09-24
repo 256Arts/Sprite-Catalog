@@ -18,7 +18,7 @@ struct ImportSpritesView: View {
                         .disableAutocorrection(true)
                     Picker("Licence", selection: $importer.licence) {
                         ForEach([Licence.cc0, .attribution, .attributionShareAlike, .attributionNonCommercial]) { (licence) in
-                            Text("\(licence.name) (\(licence.rawValue))")
+                            Text("\(String(localized: licence.name)) (\(licence.rawValue))")
                                 .tag(licence)
                         }
                         Divider()
@@ -27,7 +27,7 @@ struct ImportSpritesView: View {
                     }
                     Picker("Category", selection: $importer.defaultCategory) {
                         ForEach(SpriteImporter.categories) { category in
-                            Text(category.rawValue)
+                            Text(category.title)
                                 .tag(category)
                         }
                     }

@@ -3,7 +3,7 @@ import SwiftUI
 struct LabeledValue: View {
     
     @State var value: String
-    @State var label: String
+    @State var label: LocalizedStringKey
     @State var url: URL?
     
     var body: some View {

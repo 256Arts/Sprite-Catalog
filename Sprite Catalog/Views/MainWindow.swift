@@ -71,7 +71,7 @@ struct MainWindow: View {
                             ProgressView()
                         }
                     case .category(let tag):
-                        SpritesGridView(title: tag.rawValue, sprites: SpriteSet.allSprites.filter({ $0.tags.contains(tag) }))
+                        SpritesGridView(title: String(localized: tag.title), sprites: SpriteSet.allSprites.filter({ $0.tags.contains(tag) }))
                     case .collection(let collection):
                         UserCollectionSpritesGridView(userCollection: collection)
                     case nil:

@@ -10,13 +10,13 @@ struct CutSprites: AppIntent, CustomIntentMigratedAppIntent, PredictableIntent {
         var errorDescription: String? {
             switch self {
             case .failedToLoadImage:
-                return "Failed to load image"
+                return String(localized: "Failed to load image")
             case .imageTooLarge:
-                return "Input image too large. (Max: 512px x 512px)"
+                return String(localized: "Input image too large. (Max: 512px x 512px)")
             case .failedToReadSpriteSize:
-                return "Could not read sprite size"
+                return String(localized: "Could not read sprite size")
             case .failedToCut:
-                return "Failed to cut sprites"
+                return String(localized: "Failed to cut sprites")
             }
         }
     }

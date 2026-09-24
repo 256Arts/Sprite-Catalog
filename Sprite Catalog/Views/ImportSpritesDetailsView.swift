@@ -33,7 +33,7 @@ struct ImportSpritesDetailsView: View {
                     }
                     Picker("Category", selection: $config.category) {
                         ForEach(SpriteImporter.categories) { category in
-                            Text(category.rawValue)
+                            Text(category.title)
                                 .tag(category)
                         }
                     }

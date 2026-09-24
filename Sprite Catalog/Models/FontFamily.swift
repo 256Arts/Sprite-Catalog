@@ -9,6 +9,13 @@ enum FontLicence: String, CaseIterable, Identifiable {
     var id: Self {
         self
     }
+    var title: LocalizedStringResource {
+        switch self {
+        case .publicDomain: "Public Domain"
+        case .free: "Free"
+        case .freeForPersonal: "Free for Personal Use"
+        }
+    }
 }
 
 struct FontFamily: Hashable, Identifiable {
