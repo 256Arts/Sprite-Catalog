@@ -119,13 +119,19 @@ struct SpriteActions: View {
 
 }
 
-/// Add-to / remove-from buttons for the two collections the user owns.
+/// Add-to / remove-from buttons for the two collections the user owns, and for a single sprite,
+/// My Palettes — which saves the sprite's colors as a palette rather than the sprite itself.
 struct SpriteCollectionButtons: View {
 
     let sprites: [SpriteSet]
 
     @Bindable private var myCollection = SpriteCollection.myCollection
     @Bindable private var stickersCollection = SpriteCollection.stickersCollection
+    private let paletteLibrary = PaletteLibrary.shared
+
+    init(sprites: [SpriteSet]) {
+        self.sprites = sprites
+    }
 
     private var ids: Set<String> {
         Set(sprites.map(\.id))
@@ -135,6 +141,18 @@ struct SpriteCollectionButtons: View {
         button(for: myCollection, title: "My Collection")
         if SpriteCollection.stickersAreAvailable {
             button(for: stickersCollection, title: "Stickers")
+        }
+        // Artwork has too many colors to be a palette, so it doesn't offer one.
+        if sprites.count == 1, let sprite = sprites.first, paletteLibrary.colors(of: sprite) != nil {
+            Button {
+                paletteLibrary.togglePalette(of: sprite)
+            } label: {
+                if paletteLibrary.palette(of: sprite) != nil {
+                    Label("My Palettes", systemImage: "checkmark")
+                } else {
+                    Text("My Palettes")
+                }
+            }
         }
     }
 

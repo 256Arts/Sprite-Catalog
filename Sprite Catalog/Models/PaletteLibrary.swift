@@ -40,6 +40,36 @@ final class PaletteLibrary {
         save()
     }
 
+    /// A sprite's colors, or `nil` for one with too many to be a palette. Cached, since the
+    /// sprite menus that ask are rebuilt far more often than a sprite's pixels change.
+    func colors(of sprite: SpriteSet) -> [PaletteColor]? {
+        if let cached = spriteColors[sprite.id] { return cached }
+        let colors = sprite.paletteColors()
+        spriteColors[sprite.id] = .some(colors)
+        return colors
+    }
+    @ObservationIgnored private var spriteColors: [String: [PaletteColor]?] = [:]
+
+    /// The saved palette holding exactly this sprite's colors, if there is one — found by its colors
+    /// rather than its name, which the user may have saved over or which ``add(_:)`` uniquified.
+    func palette(of sprite: SpriteSet) -> Palette? {
+        guard let colors = colors(of: sprite) else { return nil }
+        // Compared as 8-bit sRGB, which survives the JSON round trip that a palette's fractions may not.
+        func pixels(_ colors: [PaletteColor]) -> [SRGB8] { colors.map { $0.srgb8(colorSpace: .okLch) } }
+        let target = pixels(colors)
+        return palettes.first { pixels($0.colors) == target }
+    }
+
+    /// Saves the sprite's colors as a palette named after it, or removes that palette if it's saved —
+    /// the same toggle the sprite menus use for collections.
+    func togglePalette(of sprite: SpriteSet) {
+        if let saved = palette(of: sprite) {
+            delete(saved)
+        } else if let colors = colors(of: sprite) {
+            add(Palette(name: sprite.name, colors: colors, source: .imported))
+        }
+    }
+
     private func save() {
         guard !isEphemeral else { return }
         do {
