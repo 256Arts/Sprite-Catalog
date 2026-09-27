@@ -25,4 +25,8 @@ class FilterSettings {
     var animatedOnly = false
     var tagFilters: Set<SpriteSet.Tag> = []
     
+    var isFiltering: Bool {
+        sizeFilter != nil || animatedOnly || !tagFilters.isEmpty
+    }
+    
 }

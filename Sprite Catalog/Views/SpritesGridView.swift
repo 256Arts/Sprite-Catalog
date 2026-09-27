@@ -47,21 +47,13 @@ struct SpritesGridView: View {
                 }
                 .keepsMenuOpen()
                 
-                Toggle("Black Outline", isOn: Binding(get: {
-                    filterSettings.tagFilters.contains(.blackOutline)
-                }, set: { newValue in
-                    if newValue {
-                        filterSettings.tagFilters.insert(.blackOutline)
-                    } else {
-                        filterSettings.tagFilters.remove(.blackOutline)
-                    }
-                }))
-                .keepsMenuOpen()
+                tagToggle(.blackOutline)
+                tagToggle(.limitedPalette)
                 
                 Toggle("Animated", isOn: $filterSettings.animatedOnly)
                     .keepsMenuOpen()
             } label: {
-                Label("Filter", systemImage: "line.horizontal.3.decrease")
+                Label("Filter", systemImage: filterSettings.isFiltering ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease")
                     .labelStyle(.iconOnly)
             }
         }
@@ -86,6 +78,21 @@ struct SpritesGridView: View {
         .onChange(of: filterSettings.tagFilters) {
             refreshFilter()
         }
+    }
+    
+    private func tagToggle(_ tag: SpriteSet.Tag) -> some View {
+        Toggle(isOn: Binding(get: {
+            filterSettings.tagFilters.contains(tag)
+        }, set: { newValue in
+            if newValue {
+                filterSettings.tagFilters.insert(tag)
+            } else {
+                filterSettings.tagFilters.remove(tag)
+            }
+        })) {
+            Text(tag.title)
+        }
+        .keepsMenuOpen()
     }
     
     func refreshFilter(localSprites: [SpriteSet]? = nil) {
