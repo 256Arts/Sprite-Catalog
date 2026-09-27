@@ -33,6 +33,9 @@ struct SpriteSet: Equatable, Identifiable, Codable {
         case interface = "Interface"
         case artwork = "Artwork" // Complete art pieces, comparable to real photos
         
+        /// The camera angle a sprite is drawn from. A sprite has at most one; inventory icons and other flat art have none.
+        static let perspectives: [Tag] = [.topDown, .sideView, .isometric]
+        
         var id: Self {
             self
         }

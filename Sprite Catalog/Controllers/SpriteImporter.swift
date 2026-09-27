@@ -37,6 +37,7 @@ final class SpriteImporter {
     var defaultCategory: SpriteSet.Tag = .miscItem
     var blackOutline = true
     var limitedPalette = true
+    var perspective: SpriteSet.Tag?
     var importFilenames = true
     
     var spriteConfigs: [SpriteSetConfiguration] = []
@@ -144,6 +145,9 @@ final class SpriteImporter {
         }
         if limitedPalette {
             tags.insert(.limitedPalette)
+        }
+        if let perspective {
+            tags.insert(perspective)
         }
         var tiles: [SpriteSet.Tile] = []
         for urlIndex in config.importedFileURLs.indices {

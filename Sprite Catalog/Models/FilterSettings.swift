@@ -25,6 +25,17 @@ class FilterSettings {
     var animatedOnly = false
     var tagFilters: Set<SpriteSet.Tag> = []
     
+    /// The perspective tag in `tagFilters`, if any. Picking one replaces the other perspectives, since a sprite has at most one.
+    var perspective: SpriteSet.Tag? {
+        get { SpriteSet.Tag.perspectives.first(where: tagFilters.contains) }
+        set {
+            tagFilters.subtract(SpriteSet.Tag.perspectives)
+            if let newValue {
+                tagFilters.insert(newValue)
+            }
+        }
+    }
+    
     var isFiltering: Bool {
         sizeFilter != nil || animatedOnly || !tagFilters.isEmpty
     }

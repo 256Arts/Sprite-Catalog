@@ -31,6 +31,14 @@ struct ImportSpritesView: View {
                                 .tag(category)
                         }
                     }
+                    Picker("Perspective", selection: $importer.perspective) {
+                        Text("None")
+                            .tag(nil as SpriteSet.Tag?)
+                        ForEach(SpriteSet.Tag.perspectives) { perspective in
+                            Text(perspective.title)
+                                .tag(perspective as SpriteSet.Tag?)
+                        }
+                    }
                     Toggle("Black Outline", isOn: $importer.blackOutline)
                     Toggle("Limited Palette", isOn: $importer.limitedPalette)
                     Toggle("Import Filenames", isOn: $importer.importFilenames)

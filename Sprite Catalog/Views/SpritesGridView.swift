@@ -12,6 +12,7 @@ struct SpritesGridView: View {
     @State var searchAll = false
     @State private var selection = SpriteSelection()
     @State private var exporting: [SpriteSet] = []
+    @State private var perspectives: [SpriteSet.Tag] = []
     
     private var isArtwork: Bool {
         title == "Artwork"
@@ -46,6 +47,18 @@ struct SpritesGridView: View {
                     }
                 }
                 .keepsMenuOpen()
+                
+                if !perspectives.isEmpty {
+                    Picker("Perspective", selection: $filterSettings.perspective) {
+                        Text("Any Perspective")
+                            .tag(nil as SpriteSet.Tag?)
+                        ForEach(perspectives) { perspective in
+                            Text(perspective.title)
+                                .tag(perspective as SpriteSet.Tag?)
+                        }
+                    }
+                    .keepsMenuOpen()
+                }
                 
                 tagToggle(.blackOutline)
                 tagToggle(.limitedPalette)
@@ -100,6 +113,10 @@ struct SpritesGridView: View {
             filteredSprites = SpriteSet.allSprites
         } else {
             filteredSprites = localSprites ?? sprites
+        }
+        // Only offer perspectives this screen's sprites are drawn in, plus the one already picked so it can be cleared.
+        perspectives = SpriteSet.Tag.perspectives.filter { perspective in
+            perspective == filterSettings.perspective || filteredSprites.contains { $0.tags.contains(perspective) }
         }
         if filterSettings.animatedOnly {
             filteredSprites = filteredSprites.filter({ 1 < $0.tiles[0].variants[0].frameCount ?? 1 })
