@@ -7,8 +7,6 @@ struct SpriteDetailView: View {
         case failedToGetSharedContainer
     }
     
-    let timer = Timer.publish(every: 0.3, on: .main, in: .default).autoconnect()
-    
     @AppStorage(UserDefaults.Key.spritesViewed) var spritesViewed = 0
     @AppStorage(UserDefaults.Key.spritesEdited) var spritesEdited = 0
     
@@ -20,7 +18,6 @@ struct SpriteDetailView: View {
     @State var sprite: SpriteSet
     @State private var relatedSprites: [SpriteSet] = []
     @State var stateIndex: Int = 0
-    @State var frame: Int = 0
     @State var hueRotationDegrees = 0.0
     @State var showingFullscreen = false
     @State private var exporting: [SpriteSet] = []
@@ -76,9 +73,7 @@ struct SpriteDetailView: View {
     
     var body: some View {
         ScrollView {
-            Image(sprite: sprite.states[stateIndex].variants[0].frameImages()[frame])
-                .resizable()
-                .interpolation(.none)
+            AnimatedSpriteImage(variant: sprite.states[stateIndex].variants[0])
                 .hueRotation(Angle.degrees(hueRotationDegrees))
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 300)
@@ -280,14 +275,6 @@ struct SpriteDetailView: View {
         .onChange(of: sizeClass) {
             showingHueRotationPopover = false
             showingHueRotationRow = false
-        }
-        .onReceive(timer) { (_) in
-            guard let frameCount = sprite.states[stateIndex].variants.first?.frameCount, 1 < frameCount else { return }
-            if frame + 1 == frameCount {
-                frame = 0
-            } else {
-                frame += 1
-            }
         }
     }
     

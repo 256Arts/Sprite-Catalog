@@ -2,12 +2,9 @@ import SwiftUI
 
 struct FullscreenSpriteView: View {
     
-    let timer = Timer.publish(every: 0.3, on: .main, in: .default).autoconnect()
-    
     @Environment(\.dismiss) var dismiss
     
     @State var sprite: SpriteSet
-    @State var frame: Int = 0
     
     var body: some View {
         states
@@ -19,14 +16,6 @@ struct FullscreenSpriteView: View {
         }
         #endif
         .scenePadding()
-        .onReceive(timer) { (_) in
-            guard let frameCount = sprite.states[0].variants.first?.frameCount, 1 < frameCount else { return }
-            if frame + 1 == frameCount {
-                frame = 0
-            } else {
-                frame += 1
-            }
-        }
     }
     
     /// The sprite's states, one screenful at a time. macOS has no paged `TabView`, so it pages a
@@ -55,9 +44,7 @@ struct FullscreenSpriteView: View {
     }
     
     private func stateImage(_ tile: SpriteSet.Tile) -> some View {
-        Image(sprite: tile.variants[0].frameImages()[frame])
-            .resizable()
-            .interpolation(.none)
+        AnimatedSpriteImage(variant: tile.variants[0])
             .aspectRatio(contentMode: .fit)
             .draggable(sprite.transfer(of: tile))
     }
