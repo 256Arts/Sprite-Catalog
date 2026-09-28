@@ -110,7 +110,7 @@ enum ScreenshotMode {
     ///
     /// Applied by `screenshotWindowSize()` below rather than by `.defaultSize`, which decides only
     /// the size of a window macOS has no remembered frame for.
-    static let macWindowSize = CGSize(width: 1440, height: 900)
+    static let macWindowSize = CGSize(width: 1200, height: 750)
 
     /// A spritesheet for the cutter to arrive holding, so its screenshot shows the feature working
     /// instead of its "Drop spritesheet here" empty state. `nil` outside a screenshot run.
