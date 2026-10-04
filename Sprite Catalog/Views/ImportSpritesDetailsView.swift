@@ -88,8 +88,11 @@ struct ImportSpritesDetailsView: View {
             }
         }
         .sheet(item: $frameEditorConfig) { config in
-            NavigationStack {
-                ImportSpritesFrameEditor(config: config)
+            // Edit the importer's own config, not the copy the sheet was handed, so the count reaches save().
+            if let index = importer.spriteConfigs.firstIndex(where: { $0.id == config.id }) {
+                NavigationStack {
+                    ImportSpritesFrameEditor(config: $importer.spriteConfigs[index])
+                }
             }
         }
         #if DEBUG

@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ImportSpritesFrameEditor: View {
     
-    @State var config: SpriteImporter.SpriteSetConfiguration
+    @Binding var config: SpriteImporter.SpriteSetConfiguration
+
+    @Environment(\.dismiss) private var dismiss
     
     var dividers: [UUID] {
         var all: [UUID] = []
@@ -39,12 +41,12 @@ struct ImportSpritesFrameEditor: View {
         .padding()
         .toolbar {
             Button("Done") {
-                //
+                dismiss()
             }
         }
     }
 }
 
 #Preview {
-    ImportSpritesFrameEditor(config: .init(importedFileURLs: [], name: "", category: .miscItem))
+    ImportSpritesFrameEditor(config: .constant(.init(importedFileURLs: [], name: "", category: .miscItem)))
 }

@@ -150,9 +150,12 @@ final class SpriteImporter {
             tags.insert(perspective)
         }
         var tiles: [SpriteSet.Tile] = []
+        // Every state of an animated sprite is a strip of the same number of frames.
+        let frameCount = 1 < config.frameCount ? config.frameCount : nil
         for (urlIndex, url) in config.importedFileURLs.enumerated() {
             let imageName = urlIndex == 0 ? newID : "\(newID)-\(urlIndex + 1)"
-            tiles.append(SpriteSet.Tile(variants: [.init(imageName: imageName, size: CGImage.pixelSize(contentsOf: url))]))
+            let frameSize = CGImage.pixelSize(contentsOf: url).map { CGSize(width: $0.width / CGFloat(config.frameCount), height: $0.height) }
+            tiles.append(SpriteSet.Tile(variants: [.init(frameCount: frameCount, imageName: imageName, size: frameSize)]))
         }
         return SpriteSet(id: newID, name: config.name, artist: artist, licence: licence, layer: layer, tags: tags, tiles: tiles)
     }
