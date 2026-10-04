@@ -98,6 +98,9 @@ struct SpriteSet: Equatable, Identifiable, Codable {
             let frameCount: Int?
             let reverses: Bool?
             let imageName: String
+            /// One frame's size in pixels, stored in the catalog so filtering by size never decodes an image.
+            let width: Int?
+            let height: Int?
 
             /// The file a user-imported sprite lives in, or `nil` for a built-in one — those are
             /// compiled into the asset catalog and have no file of their own to point at.
@@ -120,6 +123,15 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 }
             }
 
+            /// One frame's size in pixels. User sprites carry no stored size, so theirs is read from the file's header — still without decoding it.
+            var frameSize: CGSize {
+                if let width, let height {
+                    return CGSize(width: width, height: height)
+                }
+                let size = fileURL.flatMap(CGImage.pixelSize(contentsOf:)) ?? frameImage().pixelSize
+                return CGSize(width: size.width / CGFloat(max(frameCount ?? 1, 1)), height: size.height)
+            }
+
             func frameImage(frame: Int = 0) -> CGImage {
                 let image = cgImage
                 guard let frameCount, frameCount > 0 else { return image }
@@ -139,11 +151,13 @@ struct SpriteSet: Equatable, Identifiable, Codable {
                 }
             }
             
-            init(weight: Int? = nil, frameCount: Int? = nil, reverses: Bool? = nil, imageName: String) {
+            init(weight: Int? = nil, frameCount: Int? = nil, reverses: Bool? = nil, imageName: String, size: CGSize? = nil) {
                 self.weight = weight
                 self.frameCount = frameCount
                 self.reverses = reverses
                 self.imageName = imageName
+                self.width = size.map { Int($0.width) }
+                self.height = size.map { Int($0.height) }
             }
         }
         

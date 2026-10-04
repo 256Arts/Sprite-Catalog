@@ -150,12 +150,9 @@ final class SpriteImporter {
             tags.insert(perspective)
         }
         var tiles: [SpriteSet.Tile] = []
-        for urlIndex in config.importedFileURLs.indices {
-            if urlIndex == 0 {
-                tiles.append(SpriteSet.Tile(variants: [.init(imageName: newID)]))
-            } else {
-                tiles.append(SpriteSet.Tile(variants: [.init(imageName: "\(newID)-\(urlIndex + 1)")]))
-            }
+        for (urlIndex, url) in config.importedFileURLs.enumerated() {
+            let imageName = urlIndex == 0 ? newID : "\(newID)-\(urlIndex + 1)"
+            tiles.append(SpriteSet.Tile(variants: [.init(imageName: imageName, size: CGImage.pixelSize(contentsOf: url))]))
         }
         return SpriteSet(id: newID, name: config.name, artist: artist, licence: licence, layer: layer, tags: tags, tiles: tiles)
     }

@@ -67,6 +67,15 @@ extension CGImage {
         return CGImageSourceCreateImageAtIndex(source, 0, nil)
     }
 
+    /// Reads an image file's size from its header, without decoding its pixels.
+    static func pixelSize(contentsOf url: URL) -> CGSize? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? Int,
+              let height = properties[kCGImagePropertyPixelHeight] as? Int else { return nil }
+        return CGSize(width: width, height: height)
+    }
+
     /// Loads pixels from encoded image data.
     static func loading(data: Data) -> CGImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }

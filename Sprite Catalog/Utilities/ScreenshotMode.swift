@@ -128,7 +128,7 @@ enum ScreenshotMode {
         let sprites = SpriteSet.allSprites
             .filter { sprite in
                 sprite.tags.contains(.peopleAnimal)
-                && sprite.tiles[0].variants[0].frameImage().pixelSize == CGSize(width: tile, height: tile)
+                && sprite.tiles[0].variants[0].frameSize == CGSize(width: tile, height: tile)
                 && names.insert(sprite.name).inserted
             }
             .prefix(columns * columns)

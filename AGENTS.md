@@ -19,7 +19,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 ## Architecture
 
-**Catalog data is JSON-driven.** Every built-in sprite is decoded from the bundled `Sprite Catalog/ZCatalog.json` into `SpriteSet.allSprites` (a static, lazily-loaded array). This array is the single source of truth — views filter it by tag/ID, and lookups happen by matching the sprite's 6-character random `id`. In DEBUG builds, `SpriteSet.allSprites` has a commented-out block for bulk-editing and re-printing the catalog JSON; this is the workflow for mutating the catalog.
+**Catalog data is JSON-driven.** Every built-in sprite is decoded from the bundled `Sprite Catalog/ZCatalog.json` into `SpriteSet.allSprites` (a static, lazily-loaded array). This array is the single source of truth — views filter it by tag/ID, and lookups happen by matching the sprite's 6-character random `id`. In DEBUG builds, `SpriteSet.allSprites` has a commented-out block for bulk-editing and re-printing the catalog JSON; this is the workflow for mutating the catalog. Each variant also stores one frame's `width`/`height`, so the Size filter never decodes an image — a new catalog sprite needs them (the debug importer writes them).
 
 **`SpriteSet` model** (`Models/SpriteSet.swift`) is the core type. A sprite has one or more `Tile`s; each tile has `RandomVariant`s (weighted alternatives, optionally multi-frame animations), `ConnectedEdges` (for autotiling), and a `facing` direction. `Tag` and `Layer` enums drive categorization and rendering order.
 
