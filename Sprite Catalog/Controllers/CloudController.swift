@@ -61,26 +61,35 @@ class CloudController {
     }
 
     func loadUserSprites() throws -> SpriteCollection? {
-        let spriteURLs = try FileManager.default.contentsOfDirectory(at: userSpritesDirectoryURL, includingPropertiesForKeys: nil)
-        userSprites = spriteURLs.compactMap {
-            loadUserSprite(at: $0)
+        let fileURLs = try FileManager.default.contentsOfDirectory(at: userSpritesDirectoryURL, includingPropertiesForKeys: nil).map(Self.resolvingPlaceholder)
+
+        // Each import writes "c-XXXXXX.json" beside its PNGs. A sprite whose JSON is still downloading
+        // is left out until the query's update reloads it, rather than flashing up as bare images.
+        let jsonURLs = fileURLs.filter { $0.pathExtension.lowercased() == "json" }
+        let describedIDs = Set(jsonURLs.map { $0.deletingPathExtension().lastPathComponent })
+        let describedSprites = jsonURLs.compactMap { url in
+            (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode(SpriteSet.self, from: $0) }
         }
+
+        // Sprites imported before the JSON existed are only a PNG each.
+        let bareSprites = fileURLs.compactMap { url -> SpriteSet? in
+            guard url.pathExtension.lowercased() == "png" else { return nil }
+            // A sprite's later states are "c-XXXXXX-2.png" and up; the first eight characters are its id.
+            let name = url.deletingPathExtension().lastPathComponent
+            guard !describedIDs.contains(String(name.prefix(8))) else { return nil }
+            return SpriteSet(id: name, name: name, artist: Artist(name: "User"), licence: .none, layer: .object, tags: [], tiles: [
+                .init(variants: [.init(imageName: name)])
+            ])
+        }
+
+        userSprites = describedSprites + bareSprites
         return SpriteCollection(title: "Imported", spriteIDs: Set(userSprites.map { $0.id }))
     }
 
-    func loadUserSprite(at url: URL) -> SpriteSet? {
-        // iOS lists a sprite that has not downloaded yet as a hidden ".c-XXXXXX.png.icloud" placeholder.
-        var url = url
-        if url.pathExtension == "icloud", url.lastPathComponent.hasPrefix(".") {
-            url = url.deletingLastPathComponent().appendingPathComponent(String(url.deletingPathExtension().lastPathComponent.dropFirst()))
-        }
-        guard url.pathExtension.lowercased() == "png" else { return nil }
-
-        // The "c-XXXXXX" filename (sans extension) is both the sprite's id and its imageName, matching SpriteImporter's convention.
-        let name = url.deletingPathExtension().lastPathComponent
-        return SpriteSet(id: name, name: name, artist: Artist(name: "User"), licence: .none, layer: .object, tags: [], tiles: [
-            .init(variants: [.init(imageName: name)])
-        ])
+    /// iOS lists a file that has not downloaded yet as a hidden ".<name>.icloud" placeholder.
+    private static func resolvingPlaceholder(_ url: URL) -> URL {
+        guard url.pathExtension == "icloud", url.lastPathComponent.hasPrefix(".") else { return url }
+        return url.deletingLastPathComponent().appendingPathComponent(String(url.deletingPathExtension().lastPathComponent.dropFirst()))
     }
 
 }

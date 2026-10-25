@@ -103,7 +103,17 @@ final class SpriteImporter {
             }
         }
         
-        // Encode JSON
+        // A user's sprites are described one file each, beside their PNGs, so imports on two devices never write the same file.
+        guard debugMode else {
+            for sprite in templateSprites {
+                let jsonURL = importedDirectory.appendingPathComponent(sprite.id).appendingPathExtension("json")
+                try JSONEncoder().encode(sprite).write(to: jsonURL)
+            }
+            try CloudController.shared.spriteCollection = CloudController.shared.loadUserSprites()
+            return
+        }
+
+        // A debug import is a fragment to paste into ZCatalog.json
         templateSprites.sort(by: { $0.id.localizedStandardCompare($1.id) == .orderedAscending })
         var data = try JSONEncoder().encode(templateSprites)
         if var jsonString = String(data: data, encoding: .utf8) {
@@ -115,11 +125,11 @@ final class SpriteImporter {
                 data = newData
             }
         }
-        let jsonURL = importedDirectory.appendingPathComponent(debugMode ? "WIP Sprites" : "Collection").appendingPathExtension("json")
+        let jsonURL = importedDirectory.appendingPathComponent("WIP Sprites").appendingPathExtension("json")
         try data.write(to: jsonURL)
         
         // Export UI
-        debugExportURLs = debugMode ? [jsonURL] + spriteURLs : []
+        debugExportURLs = [jsonURL] + spriteURLs
     }
     
     func createTemplateSprite(config: SpriteSetConfiguration) -> SpriteSet {

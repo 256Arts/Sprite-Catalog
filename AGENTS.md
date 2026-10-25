@@ -25,7 +25,7 @@ It depends on one Swift package, **PaletteKit** (`https://github.com/256Arts/Pal
 
 **User-imported sprites use a `c-` ID prefix.** Built-in sprites resolve their PNG from the app bundle; any `imageName` starting with `c-` resolves to a file in the iCloud ubiquity container instead (`RandomVariant.url` / `CloudController.userSpritesDirectoryURL`). This prefix convention is how imported and built-in sprites coexist in the same model and code paths.
 
-**`CloudController.shared`** (`Controllers/CloudController.swift`) syncs user-imported sprites via `NSMetadataQuery` over the iCloud ubiquitous container and exposes them as a `SpriteCollection`. `SpriteImporter` (`Controllers/SpriteImporter.swift`) handles the import-and-tag flow, generating new `c-` IDs and writing PNGs + a `Collection.json`.
+**`CloudController.shared`** (`Controllers/CloudController.swift`) syncs user-imported sprites via `NSMetadataQuery` over the iCloud ubiquitous container and exposes them as a `SpriteCollection`. `SpriteImporter` (`Controllers/SpriteImporter.swift`) handles the import-and-tag flow, generating new `c-` IDs and writing each sprite's PNGs beside a `c-XXXXXX.json` describing it; `CloudController` loads sprites from those files, falling back to a bare PNG for sprites imported before them.
 
 **`SpriteCollection`** (`Models/SpriteCollection.swift`) is a named set of sprite IDs. Featured/seasonal/gaming collections are hardcoded here (seasonal ones are injected by calendar month). `My Collection` and the iMessage stickers collection are persisted as JSON in the documents directory.
 
