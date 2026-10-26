@@ -183,7 +183,7 @@ struct SpriteDetailView: View {
             VStack(alignment: .leading) {
                 Text("Related")
                     .font(.headline)
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
+                LazyVGrid(columns: GridItem.spriteColumns(sizeClass: sizeClass)) {
                     ForEach(relatedSprites) { sprite in
                         SpriteGridCell(sprite: sprite) { exporting = $0 }
                     }

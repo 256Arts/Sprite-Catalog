@@ -13,6 +13,7 @@ struct SpritesGridView: View {
     @State private var selection = SpriteSelection()
     @State private var exporting: [SpriteSet] = []
     @State private var perspectives: [SpriteSet.Tag] = []
+    @Environment(\.horizontalSizeClass) private var sizeClass
     
     private var isArtwork: Bool {
         title == "Artwork"
@@ -20,7 +21,7 @@ struct SpritesGridView: View {
     
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: isArtwork ? 140 : 64))]) {
+            LazyVGrid(columns: GridItem.spriteColumns(isArtwork: isArtwork, sizeClass: sizeClass)) {
                 ForEach(filteredSprites) { sprite in
                     SpriteGridCell(sprite: sprite, isArtwork: isArtwork, selection: selection) { exporting = $0 }
                 }

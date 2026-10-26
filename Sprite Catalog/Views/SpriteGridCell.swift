@@ -10,7 +10,7 @@ import SwiftUI
 struct SpriteGridCell: View {
 
     let sprite: SpriteSet
-    /// Artwork is browsed at a size worth looking at; every other category is a 64pt tile.
+    /// Artwork is browsed at a size worth looking at; every other category is a small tile.
     var isArtwork = false
     /// `nil` on the rows that only ever browse — Related, and Browse's recent activity.
     var selection: SpriteSelection?
@@ -75,6 +75,20 @@ struct SpriteGridCell: View {
             TileThumbnail(tile: sprite.tiles[0])
                 .selectionMark(isSelected)
         }
+    }
+
+}
+
+extension GridItem {
+
+    /// The columns of a grid of ``SpriteGridCell``s.
+    ///
+    /// A compact width takes a smaller minimum so it still fits five across where the system
+    /// narrows the content — the iPhone Duo's outer screen gives a trailing rail to the status bar
+    /// and toolbar, which left 64pt tiles at four columns.
+    static func spriteColumns(isArtwork: Bool = false, sizeClass: UserInterfaceSizeClass?) -> [GridItem] {
+        let minimum: CGFloat = isArtwork ? 140 : sizeClass == .compact ? 56 : 64
+        return [GridItem(.adaptive(minimum: minimum))]
     }
 
 }

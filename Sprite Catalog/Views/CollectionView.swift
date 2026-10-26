@@ -6,6 +6,7 @@ struct CollectionView: View {
     @State var webpageURL: URL?
     @State private var selection = SpriteSelection()
     @State private var exporting: [SpriteSet] = []
+    @Environment(\.horizontalSizeClass) private var sizeClass
     
     var body: some View {
         ScrollView {
@@ -18,7 +19,7 @@ struct CollectionView: View {
                 }
                 .padding(.horizontal)
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64))]) {
+            LazyVGrid(columns: GridItem.spriteColumns(sizeClass: sizeClass)) {
                 ForEach(collection.sprites) { sprite in
                     SpriteGridCell(sprite: sprite, selection: selection) { exporting = $0 }
                 }
