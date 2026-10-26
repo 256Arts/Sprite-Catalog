@@ -232,9 +232,12 @@ final class ScreenshotTests: XCTestCase {
     /// this returns immediately. Deliberately *not* written as "is some sidebar row on screen?":
     /// that question cannot be asked without scrolling to look, and scrolling the sidebar to answer
     /// it is what destroyed the rows the walk was about to tap.
+    ///
+    /// On the iPhone Duo's outer screen the back button sits in a strip outside the navigation bar, so
+    /// it is looked for anywhere rather than only inside one.
     private func showSidebar() {
         for _ in 0 ..< 4 {
-            let backButtons = app.navigationBars.buttons.matching(identifier: "BackButton")
+            let backButtons = app.buttons.matching(identifier: "BackButton")
             guard backButtons.count > 0 else { return }
             let back = backButtons.element(boundBy: 0)
             guard back.isHittable else { return }
