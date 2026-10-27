@@ -27,6 +27,25 @@ extension View {
         #endif
     }
     
+    /// Liquid Glass for a screen's action buttons, tinted for the primary one. visionOS has no
+    /// Liquid Glass buttons, so it keeps the bordered pair its own windows already sit on.
+    @ViewBuilder
+    func glassButtonStyle(prominent: Bool = false) -> some View {
+        #if os(visionOS)
+        if prominent {
+            buttonStyle(.borderedProminent)
+        } else {
+            buttonStyle(.bordered)
+        }
+        #else
+        if prominent {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.glass)
+        }
+        #endif
+    }
+    
     /// States how prominent a screen's title should be.
     ///
     /// `navigationBarTitleDisplayMode` is unavailable on macOS, where a window's title is always

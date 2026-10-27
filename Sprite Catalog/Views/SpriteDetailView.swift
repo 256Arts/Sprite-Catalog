@@ -107,14 +107,10 @@ struct SpriteDetailView: View {
                             .font(Font.system(size: 20, weight: .medium, design: .default))
                             .frame(idealWidth: .infinity, maxWidth: .infinity)
                     }
-                    #if os(visionOS)
-                    .buttonStyle(.borderedProminent)
-                    #else
-                    .buttonStyle(.glassProminent)
-                    #endif
+                    .glassButtonStyle(prominent: true)
                     saveAndShareButton()
                 }
-                .buttonStyle(.bordered)
+                .glassButtonStyle()
                 .controlSize(.large)
                 
                 if 1 < sprite.states.count {

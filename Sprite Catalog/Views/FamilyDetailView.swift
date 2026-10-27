@@ -55,11 +55,12 @@ struct FamilyDetailView: View {
                                 .frame(idealWidth: .infinity, maxWidth: .infinity)
                         }
                     }
-                    .buttonStyle(.borderedProminent)
+                    // Tinted while there is something to do; once installed it steps back to clear glass.
+                    .glassButtonStyle(prominent: !family.isRegistered)
                     
                     saveAndShareButton()
                 }
-                .buttonStyle(.bordered)
+                .glassButtonStyle()
                 .controlSize(.large)
                 
                 LabeledValue(value: family.author.name, label: "Author", url: family.author.url)
@@ -101,6 +102,7 @@ struct FamilyDetailView: View {
 //                }
 //            }
         }
+        .buttonBorderShape(.circle)
     }
 }
 

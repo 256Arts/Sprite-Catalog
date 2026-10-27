@@ -94,11 +94,7 @@ struct CutterView: View, DropDelegate {
                     .font(.headline)
                     .frame(idealWidth: .infinity, maxWidth: .infinity)
             }
-            #if os(visionOS)
-            .buttonStyle(.borderedProminent)
-            #else
-            .buttonStyle(.glassProminent)
-            #endif
+            .glassButtonStyle(prominent: true)
             .controlSize(.large)
             .disabled(!cutter.canCut)
             .padding()
