@@ -22,7 +22,6 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.jaydenirwin.spritepencil</string>
-		<string>VA3SY54YU8.group.com.jaydenirwin.spritepencil</string>
 	</array>
 </dict>
 </plist>

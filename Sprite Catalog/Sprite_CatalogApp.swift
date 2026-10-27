@@ -3,22 +3,10 @@ import SwiftUI
 @main
 struct Sprite_CatalogApp: App {
     
-    /// The container the "Open in Sprite Pencil" handoff writes its PNG into.
-    ///
-    /// Resolved rather than hard-coded, because a native Mac app is normally given the team-prefixed
-    /// form while iOS and Mac Catalyst use the bare one — and Sprite Pencil still ships on the Mac as
-    /// a Catalyst app, so the bare container is the one both apps actually meet in. Both are declared
-    /// in the macOS entitlements and the bare form is preferred; getting this wrong doesn't fail
-    /// loudly, it just drops the sprite into a directory Sprite Pencil never looks at.
-    static let spritePencilAppGroupID: String = {
-        let bare = "group.com.jaydenirwin.spritepencil"
-        #if os(macOS)
-        if FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: bare) == nil {
-            return "VA3SY54YU8." + bare
-        }
-        #endif
-        return bare
-    }()
+    /// The container the "Open in Sprite Pencil" handoff writes its PNG into. The bare form on every
+    /// platform: Sprite Pencil ships on the Mac as a Catalyst app, so that is where both apps meet.
+    /// A team-prefixed form would also need registering on the App ID, which Xcode Cloud can't do.
+    static let spritePencilAppGroupID = "group.com.jaydenirwin.spritepencil"
     static let defaultFontTestString = "The quick brown fox jumps over the lazy dog and runs away."
     
     var body: some Scene {
