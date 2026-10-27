@@ -90,9 +90,9 @@ struct FamilyDetailView: View {
             Button {
                 showingExport = true
             } label: {
-                Image(systemName: "square.and.arrow.down")
+                Label("Save", systemImage: "square.and.arrow.down")
+                    .labelStyle(.iconOnly)
                     .font(Font.system(size: 20, weight: .medium, design: .default))
-                    .frame(width: 20, height: 24)
             }
 //            if let transferableFonts = family.fonts {
 //                ShareLink(items: transferableFonts, subject: Text(family.name), message: Text("Found in Sprite Catalog")) {

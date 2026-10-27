@@ -279,16 +279,16 @@ struct SpriteDetailView: View {
             Button {
                 exporting = [sprite]
             } label: {
-                Image(systemName: "square.and.arrow.down")
+                Label("Save", systemImage: "square.and.arrow.down")
+                    .labelStyle(.iconOnly)
                     .font(Font.system(size: 20, weight: .medium, design: .default))
-                    .frame(width: 20, height: 24)
             }
             
             if let transferableImage {
                 ShareLink(item: transferableImage, subject: Text(sprite.name), message: Text("Found in Sprite Catalog"), preview: .init(sprite.name, icon: transferableImage)) {
-                    Image(systemName: "square.and.arrow.up")
+                    Label("Share", systemImage: "square.and.arrow.up")
+                        .labelStyle(.iconOnly)
                         .font(Font.system(size: 20, weight: .medium, design: .default))
-                        .frame(width: 20, height: 24)
                 }
             }
         }
