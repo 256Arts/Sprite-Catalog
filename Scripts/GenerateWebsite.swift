@@ -5,8 +5,8 @@
 //
 //   swift Scripts/GenerateWebsite.swift [output directory] [--no-images]
 //
-// Writes <output>/<slug>/index.html for every category, plus <output>/sprite/<name>.png
-// pulled from the asset catalog (skip with --no-images).
+// Writes <output>/<slug>/index.html for every category, plus <output>/sprite/<name>.jxl
+// losslessly encoded from the asset catalog with cjxl (skip with --no-images).
 
 import Foundation
 
@@ -95,7 +95,7 @@ func spritesHTML(for category: Category, sprites: [CatalogSprite]) -> String {
         html.append(
             """
             <a title="\(sprite.name.htmlEscaped) (\(sprite.licence.htmlEscaped))" onclick="showSprite('\(sprite.name.jsInAttributeEscaped)', '\(sprite.id.jsInAttributeEscaped)', '\(sprite.artist.name.jsInAttributeEscaped)', '\(sprite.licence.jsInAttributeEscaped)')">
-                <img src="/sprite/\(variant.imageName.htmlEscaped).png" loading="lazy" alt="\(sprite.name.htmlEscaped)">
+                <img src="/sprite/\(variant.imageName.htmlEscaped).jxl" loading="lazy" alt="\(sprite.name.htmlEscaped)">
             </a>
 
             """)
@@ -108,7 +108,7 @@ func sidebarHTML(selected: Category) -> String {
     return categories.map { category in
         [
             "\(indent)<a href=\"/\(category.slug)/\"\(category.name == selected.name ? " class=\"selected\"" : "")>",
-            "\(indent)    <img src=\"/global/\(category.icon).png\">",
+            "\(indent)    <img src=\"/global/\(category.icon).jxl\">",
             "\(indent)    \(category.name.htmlEscaped)",
             "\(indent)</a>"
         ].joined(separator: "\n")
@@ -152,14 +152,14 @@ func pageHTML(for category: Category, sprites: [CatalogSprite]) -> String {
     \(sidebarHTML(selected: category))
                     <a title="Not Available on Web" class="disabled">
                         <picture>
-                            <source srcset="/global/fonts_dark.png" media="(prefers-color-scheme: dark)">
-                            <img src="/global/fonts.png">
+                            <source srcset="/global/fonts_dark.jxl" media="(prefers-color-scheme: dark)">
+                            <img src="/global/fonts.jxl">
                         </picture>
                         Fonts
                     </a>
                     <h4>Library</h4>
                     <a title="Not Available on Web" class="disabled">
-                        <img src="/global/folder.png">
+                        <img src="/global/folder.jxl">
                         My Collection
                     </a>
                     <div class="footer">
@@ -179,8 +179,8 @@ func pageHTML(for category: Category, sprites: [CatalogSprite]) -> String {
                     </div>
                     <a class="app-promo" href="https://apps.apple.com/app/sprite-catalog/id1560692872" target="_blank">
                         <picture>
-                            <source srcset="/global/app_promo_dark.png 2x" media="(prefers-color-scheme: dark)">
-                            <img srcset="/global/app_promo.png 2x">
+                            <source srcset="/global/app_promo_dark.jxl 2x" media="(prefers-color-scheme: dark)">
+                            <img srcset="/global/app_promo.jxl 2x">
                         </picture>
                     </a>
                 </section>
@@ -190,15 +190,15 @@ func pageHTML(for category: Category, sprites: [CatalogSprite]) -> String {
                     <h3 id="sprite-title">Sprite Title</h3>
                     <div>
                         <a title="Not Available on Web" class="disabled">
-                            <img srcset="/global/plus_icon_3x.png 3x">
+                            <img srcset="/global/plus_icon_3x.jxl 3x">
                         </a>
                         <a title="Not Available on Web" class="disabled">
-                            <img srcset="/global/recolor_icon_3x.png 3x">
+                            <img srcset="/global/recolor_icon_3x.jxl 3x">
                         </a>
                         <a onclick="closeSprite()">Close</a>
                     </div>
                 </div>
-                <img id="sprite-preview" src="/global/animals.png">
+                <img id="sprite-preview" src="/global/animals.jxl">
                 <p>Artist: <a id="artist-link" target="_blank">Artist Name</a></p>
                 <p>Licence: <a id="licence-link" target="_blank">Licence</a></p>
                 <div>
@@ -265,10 +265,49 @@ for category in categories {
     print("\(category.slug)/index.html — \(sprites.count) sprites")
 }
 
+/// Runs a command-line tool, returning whether it succeeded.
+func run(_ tool: String, _ arguments: [String]) -> Bool {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+    process.arguments = [tool] + arguments
+    process.standardOutput = FileHandle.nullDevice
+    process.standardError = FileHandle.nullDevice
+    guard (try? process.run()) != nil else { return false }
+    process.waitUntilExit()
+    return process.terminationStatus == 0
+}
+
+/// Rewrites a PNG for cjxl: keeps only the chunks up to IEND (some assets carry trailing bytes cjxl
+/// rejects) and, unless it embeds an ICC profile, drops gAMA/cHRM/sRGB. Those all say 1/2.2 here, which
+/// cjxl would encode as a pure 2.2 curve that browsers render visibly darker than the sRGB the art was drawn in.
+func cleanedPNG(_ data: Data) -> Data {
+    let bytes = [UInt8](data)
+    var chunks: [(type: String, range: Range<Int>)] = []
+    var offset = 8
+    while offset + 8 <= bytes.count {
+        let length = bytes[offset..<offset + 4].reduce(0) { $0 << 8 | Int($1) }
+        let type = String(decoding: bytes[offset + 4..<offset + 8], as: UTF8.self)
+        chunks.append((type, offset..<min(offset + 12 + length, bytes.count)))
+        offset += 12 + length
+        if type == "IEND" { break }
+    }
+    let hasProfile = chunks.contains { $0.type == "iCCP" }
+    var result = Data(bytes[0..<8])
+    for chunk in chunks where hasProfile || !["gAMA", "cHRM", "sRGB"].contains(chunk.type) {
+        result.append(contentsOf: bytes[chunk.range])
+    }
+    return result
+}
+
 if copiesImages {
+    guard run("cjxl", ["--version"]) else {
+        print("error: cjxl not found — install it with `brew install jpeg-xl`, or pass --no-images")
+        exit(1)
+    }
     let imagesURL = outputURL.appendingPathComponent("sprite", isDirectory: true)
     try? fileManager.createDirectory(at: imagesURL, withIntermediateDirectories: true)
-    var copied = 0
+    let scratchURL = fileManager.temporaryDirectory.appendingPathComponent("GenerateWebsite.png")
+    var encoded = 0
     var missing: [String] = []
     for imageName in usedImageNames.sorted() {
         let sourceURL = spritesAssetsURL
@@ -278,18 +317,20 @@ if copiesImages {
             missing.append(imageName)
             continue
         }
-        let destinationURL = imagesURL.appendingPathComponent("\(imageName).png")
-        try? fileManager.removeItem(at: destinationURL)
-        do {
-            try fileManager.copyItem(at: sourceURL, to: destinationURL)
-            copied += 1
-        } catch {
+        // Lossless, so the PNG the site's download button re-encodes is pixel-identical to the asset.
+        let destinationPath = imagesURL.appendingPathComponent("\(imageName).jxl").path
+        if let data = try? Data(contentsOf: sourceURL),
+           (try? cleanedPNG(data).write(to: scratchURL)) != nil,
+           run("cjxl", ["-q", "100", "-e", "9", "--quiet", scratchURL.path, destinationPath]) {
+            encoded += 1
+        } else {
             missing.append(imageName)
         }
     }
-    print("sprite/ — \(copied) images copied")
+    try? fileManager.removeItem(at: scratchURL)
+    print("sprite/ — \(encoded) images encoded")
     if !missing.isEmpty {
-        print("warning: \(missing.count) images missing from the asset catalog: \(missing.prefix(10).joined(separator: ", "))\(missing.count > 10 ? "…" : "")")
+        print("warning: \(missing.count) images missing or unencodable: \(missing.prefix(10).joined(separator: ", "))\(missing.count > 10 ? "…" : "")")
     }
 }
 
