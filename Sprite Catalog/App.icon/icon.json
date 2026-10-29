@@ -1,5 +1,20 @@
 {
-  "fill" : "system-light",
+  "fill" : {
+    "linear-gradient" : [
+      "srgb:0.95686,0.92157,0.85490,1.00000",
+      "display-p3:0.90820,0.87634,0.80685,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 1
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0
+      }
+    }
+  },
   "groups" : [
     {
       "layers" : [
