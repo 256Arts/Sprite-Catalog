@@ -14,6 +14,8 @@ struct SpriteDetailView: View {
     @Environment(\.openURL) var openURL
     @Environment(\.openWindow) var openWindow
     @Environment(\.requestReview) private var requestReview
+    /// Where Delete asks for confirmation. Absent in previews.
+    @Environment(MainWindowState.self) private var window: MainWindowState?
     
     @State var sprite: SpriteSet
     @State private var relatedSprites: [SpriteSet] = []
@@ -31,13 +33,29 @@ struct SpriteDetailView: View {
         return Image(sprite: filteredImage)
     }
 
-    #if DEBUG
-    private var copyIDButton: some View {
+    /// The toolbar's overflow: Delete for the user's own sprites, and Copy ID in development.
+    private var hasOverflowItems: Bool {
+        #if DEBUG
+        true
+        #else
+        sprite.isImported
+        #endif
+    }
+
+    @ViewBuilder
+    private var overflowItems: some View {
+        #if DEBUG
         Button("Copy ID", systemImage: "number.square") {
             Clipboard.copy(sprite.id)
         }
+        #endif
+        if sprite.isImported {
+            Button("Delete…", systemImage: "trash", role: .destructive) {
+                window?.deleting = [sprite]
+            }
+            .disabled(window == nil)
+        }
     }
-    #endif
 
     /// Pinning a toolbar item beside the title arrived in OS 27; before that it just trails. macOS
     /// has no top bar at all, so it takes the window toolbar's leading action slot.
@@ -202,23 +220,23 @@ struct SpriteDetailView: View {
             relatedSprites = await sprite.suggestedRelatedSprites()    // Refined by Apple Intelligence when available
         }
         .toolbar {
-            #if DEBUG
-            #if os(macOS)
-            ToolbarItem(placement: .secondaryAction) {
-                copyIDButton
-            }
-            #else
-            if #available(iOS 27.0, visionOS 27.0, *) {
-                ToolbarOverflowMenu {
-                    copyIDButton
+            if hasOverflowItems {
+                #if os(macOS)
+                ToolbarItemGroup(placement: .secondaryAction) {
+                    overflowItems
                 }
-            } else {
-                ToolbarItem(placement: .secondaryAction) {
-                    copyIDButton
+                #else
+                if #available(iOS 27.0, visionOS 27.0, *) {
+                    ToolbarOverflowMenu {
+                        overflowItems
+                    }
+                } else {
+                    ToolbarItemGroup(placement: .secondaryAction) {
+                        overflowItems
+                    }
                 }
+                #endif
             }
-            #endif
-            #endif
             ToolbarItem(placement: addToCollectionPlacement) {
                 addToCollectionMenu
             }

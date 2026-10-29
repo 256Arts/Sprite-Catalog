@@ -86,6 +86,35 @@ class CloudController {
         return SpriteCollection(title: "Imported", spriteIDs: Set(userSprites.map { $0.id }))
     }
 
+    /// Removes imported sprites — every PNG and the JSON describing each — from iCloud on all the
+    /// user's devices, and drops them from the collections that held them. Built-in sprites are skipped.
+    func delete(_ sprites: [SpriteSet]) {
+        let sprites = sprites.filter(\.isImported)
+        guard !sprites.isEmpty else { return }
+
+        let fileURLs = sprites.flatMap { sprite in
+            sprite.tiles.flatMap(\.variants).compactMap(\.fileURL)
+                + [userSpritesDirectoryURL.appendingPathComponent(sprite.id).appendingPathExtension("json")]
+        }
+        for url in fileURLs {
+            // A file that never downloaded is only its placeholder; a bare-PNG sprite has no JSON.
+            let placeholderURL = url.deletingLastPathComponent().appendingPathComponent(".\(url.lastPathComponent).icloud")
+            for url in [url, placeholderURL] where FileManager.default.fileExists(atPath: url.path) {
+                NSFileCoordinator().coordinate(writingItemAt: url, options: .forDeleting, error: nil) { url in
+                    try? FileManager.default.removeItem(at: url)
+                }
+            }
+        }
+
+        let ids = Set(sprites.map(\.id))
+        for collection in [SpriteCollection.myCollection, SpriteCollection.stickersCollection] where !collection.spriteIDs.isDisjoint(with: ids) {
+            collection.spriteIDs.subtract(ids)
+            try? collection.saveEdits()
+        }
+
+        spriteCollection = try? loadUserSprites()
+    }
+
     /// iOS lists a file that has not downloaded yet as a hidden ".<name>.icloud" placeholder.
     private static func resolvingPlaceholder(_ url: URL) -> URL {
         guard url.pathExtension == "icloud", url.lastPathComponent.hasPrefix(".") else { return url }

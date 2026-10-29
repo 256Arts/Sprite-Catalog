@@ -115,6 +115,16 @@ struct SpriteActions: View {
                 #endif
             }
         }
+
+        // Built-in sprites are the catalog's, so only a list of the user's own can be deleted.
+        if !sprites.isEmpty, sprites.allSatisfy(\.isImported) {
+            Section {
+                Button("Delete…", systemImage: "trash", role: .destructive) {
+                    window?.deleting = sprites
+                }
+                .disabled(window == nil)
+            }
+        }
     }
 
 }

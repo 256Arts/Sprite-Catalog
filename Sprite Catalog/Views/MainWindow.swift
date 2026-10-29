@@ -15,6 +15,9 @@ final class MainWindowState {
 
     var showingCutter = false
     var showingImport = false
+    /// Imported sprites waiting on the user to confirm their deletion. A menu cannot present the
+    /// confirmation itself, so every Delete button fills this and ``MainWindow`` asks.
+    var deleting: [SpriteSet] = []
     /// What the detail column has pushed on top of the screen the sidebar selected.
     var path = NavigationPath()
 
@@ -47,6 +50,8 @@ struct MainWindow: View {
     @State private var fontPreviewMode: FamilyDetailView.PreviewMode = .sample
     @State private var fontTestString = Sprite_CatalogApp.defaultFontTestString
     @State private var showingEvent = false
+    /// The sprite the detail screen on top is showing, so deleting it can step back off it.
+    @FocusedValue(\.spriteID) private var shownSpriteID
 
     var body: some View {
         NavigationSplitView {
@@ -105,6 +110,21 @@ struct MainWindow: View {
         }
         .sheet(isPresented: $state.showingImport) {
             ImportSpritesView(importer: .init(debugMode: false))
+        }
+        .confirmationDialog(
+            state.deleting.count == 1 ? "Delete “\(state.deleting[0].name)”?" : "Delete \(state.deleting.count) Sprites?",
+            isPresented: Binding(get: { !state.deleting.isEmpty }, set: { if !$0 { state.deleting = [] } }),
+            titleVisibility: .visible
+        ) {
+            Button(state.deleting.count == 1 ? "Delete Sprite" : "Delete Sprites", role: .destructive) {
+                if let shownSpriteID, state.deleting.contains(where: { $0.id == shownSpriteID }), !state.path.isEmpty {
+                    state.path.removeLast()
+                }
+                cloudController.delete(state.deleting)
+                state.deleting = []
+            }
+        } message: {
+            Text(state.deleting.count == 1 ? "This sprite will be deleted from iCloud on all your devices." : "These sprites will be deleted from iCloud on all your devices.")
         }
         .alert("Event Intro", isPresented: $showingEvent) {
             Button("OK", role: .close) { }

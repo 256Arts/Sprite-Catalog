@@ -212,6 +212,11 @@ struct SpriteSet: Equatable, Identifiable, Codable {
     /// syncs, and there are few enough to scan.
     private static let spritesByID: [String: SpriteSet] = Dictionary(allSprites.map({ ($0.id, $0) }), uniquingKeysWith: { first, _ in first })
 
+    /// Whether the user imported this sprite, so it lives in their iCloud container and can be deleted.
+    var isImported: Bool {
+        id.hasPrefix("c-")
+    }
+
     /// Resolves a sprite by `id`, searching the built-in catalog first, then user-imported (`c-`) sprites.
     static func withID(_ id: String) -> SpriteSet? {
         spritesByID[id] ?? CloudController.shared.userSprites.first(where: { $0.id == id })

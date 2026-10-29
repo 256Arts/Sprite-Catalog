@@ -19,6 +19,13 @@ struct SpriteCatalogCommands: Commands {
     @FocusedValue(\.spriteID) private var spriteID
     @FocusedValue(\.spriteSelection) private var selection
 
+    /// What Delete acts on: a grid's selection while it is selecting, otherwise the sprite on
+    /// screen — and only when every one of them is the user's own.
+    private var spritesToDelete: [SpriteSet] {
+        let sprites = selection?.sprites ?? spriteID.flatMap(SpriteSet.withID).map { [$0] } ?? []
+        return sprites.allSatisfy(\.isImported) ? sprites : []
+    }
+
     var body: some Commands {
         CommandGroup(after: .newItem) {
             Button("Import Sprites…", systemImage: "plus") {
@@ -63,6 +70,12 @@ struct SpriteCatalogCommands: Commands {
             }
             .keyboardShortcut("f", modifiers: [.command, .option])
             .disabled(spriteID == nil)
+
+            Button("Delete…", systemImage: "trash") {
+                window?.deleting = spritesToDelete
+            }
+            .keyboardShortcut(.delete)
+            .disabled(window == nil || spritesToDelete.isEmpty)
 
             #if DEBUG
             Button("Copy Sprite ID", systemImage: "number.square") {
